@@ -1,0 +1,194 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isExport]=true (exportClicked)="onExport()"></app-list-sub-header>
+            <!-- isExporttoPDF=true (exporttopdfClicked)="getData(true)" -->
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="w-100 row pl-4">
+                        <div class="col-12">
+                            <form [formGroup]="FilterForm">
+                                <div class="row">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="currentfrom" class="required">From</label>
+                                            <div class="input-group"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.currentfrom.errors }">
+                                                <input class="form-control doc-date" formcontrolname="currentfrom"
+                                                    ngbDatepicker #currentfrom="ngbDatepicker"
+                                                    (dateSelect)="OnCurrentFromDateSelection($event)" readonly
+                                                    [value]="formatter.format(CurrentFromDate)"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.currentfrom.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="currentfrom.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && filterForm.currentfrom.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.currentfrom.errors.required">
+                                                    Current From is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="currentto" class="required">To</label>
+                                            <div class="input-group"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }">
+                                                <input class="form-control doc-date" formcontrolname="currentto"
+                                                    ngbDatepicker #currentto="ngbDatepicker"
+                                                    (dateSelect)="OnCurrentToDateSelection($event)" readonly
+                                                    [value]="formatter.format(CurrentToDate)"
+                                                    [minDate]="CurrentToMindate"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="currentto.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && filterForm.currentto.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.currentto.errors.required">
+                                                    Current To is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="ordertype" class="required">Offer Type</label>
+                                            <ng-select [items]="OrderTypeList" class="form-control"
+                                                bindLabel="description" bindValue="code" formControlName="ordertype"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.ordertype.errors }">
+                                            </ng-select>
+                                            <div *ngIf="submitted && filterForm.ordertype.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.ordertype.errors.required">
+                                                    Offer Type is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-4">
+                                        <div class="form-group">
+                                            <button class="btn btn-orange-s" (click)="OnGenerateReportClick()"
+                                                appNoDblClick><i class=" icon-floppy-o"></i>Generate Report</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting" style="overflow: auto;"
+                    style="display: block;overflow-x: auto;"
+                    *ngIf="timemeasurementRFOCPOtoSOList && timemeasurementRFOCPOtoSOList.length > 0">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Offer No</th>
+                            <th>Order Type</th>
+                            <th>Article Type</th>
+                            <th class="text-right">Offer Value</th>
+                            <th>Segment</th>
+                            <th>Vertical</th>
+                            <th>Offer Created on</th>
+                            <th>SO Initiated on</th>
+                            <th>OM Team Submitted on</th>
+                            <th>SO Created on</th>
+                            <th class="text-right">Pending Month</th>
+                            <th class="text-right">Pending Days</th>
+                            <th class="text-right">Pending Time (hr)</th>
+                            <th class="text-right">Pending Time (m)</th>
+                            <th>Employee</th>
+                            <th>Dist Channel</th>
+                            <th>Means of Trans.</th>
+                            <th>Doc Type</th>
+                            <th>SO No.</th>
+                            <th>Article No.</th>
+                            <th class="text-right">Quantity</th>
+                            <th>Factor & Length</th>
+                            <th>PO Number</th>
+                            <th class="text-right">Under Dlv. Toletance</th>
+                            <th class="text-right">Over Dlv. Tolerance</th>
+                            <th>Laboratory Text</th>
+                            <th>Industry STD Text</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="timemeasurementRFOCPOtoSOList.length === 0">
+                            <td colspan="26" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let sg of timemeasurementRFOCPOtoSOList">
+                            <td>{{sg.OfferNo}}</td>
+                            <td>{{sg.OrderType}}</td>
+                            <td>{{sg.ArticleType}}</td>
+                            <td class="text-right">{{sg.OfferValue}}</td>
+                            <td>{{sg.Segment}}</td>
+                            <td>{{sg.Vertical}}</td>
+                            <td>{{sg.offercreatedon}}</td>
+                            <td>{{sg.soinitiatedate}}</td>
+                            <td>{{sg.OmTeamSubmittedOn}}</td>
+                            <td>{{sg.socreatedon}}</td>
+                            <td class="text-right">{{sg.PendingMonth}}</td>
+                            <td class="text-right">{{sg.PendingDays}}</td>
+                            <td class="text-right">{{sg.PendingTime}}</td>
+                            <td class="text-right">{{sg.PendingMinute}}</td>
+                            <td>{{sg.Employee}}</td>
+                            <td>{{sg.DistributionChannel}}</td>
+                            <td>{{sg.Meansoftransportation}}</td>
+                            <td>{{sg.orderdoctype}}</td>
+                            <td>{{sg.SONO}}</td>
+                            <td>{{sg.ArticleNo}}</td>
+                            <td class="text-right">{{sg.Quantity}}</td>
+                            <td>{{sg.FactorLength}}</td>
+                            <td>{{sg.CustomerPONo}}</td>
+                            <td class="text-right">{{sg.UnderDlvToletance}}</td>
+                            <td class="text-right">{{sg.OverDlvTolerance}}</td>
+                            <td>{{sg.Laboratorytext}}</td>
+                            <td>{{sg.Industrystdtext}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <!-- <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr> -->
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

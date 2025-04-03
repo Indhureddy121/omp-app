@@ -1,0 +1,187 @@
+<div class="login-outer">
+  <div class="login-img">
+    <!-- <img src="../../../../assets/images/sign-in-bg.jpg" style="height: 100%; width: 100%;" alt="Background" /> -->
+  </div>
+  <div class="login-rgt">
+    <div class="login-cnt m-auto">
+      <img src="../../../../assets/images/Lapp_Logo_rgb.svg" alt="Logo" />
+      <div>
+        <h1 class="txt-blue font-weight-bold pt-5 pb-2">OMP 2.0</h1>
+        <form class="ng-invalid ng-touched ng-dirty" [formGroup]="loginFrm">
+          <div class="form-group col-6 float-left p-0">
+            <label class="mr-2">
+              <input
+                type="radio"
+                formControlName="loginoption"
+                (click)="onLoginOptionChange($event)"
+                value="0"
+                class="mr-1"
+                [checked]="optLappEmployee"
+              />Employee
+            </label>
+          </div>
+          <div class="form-group col-6 float-right p-0">
+            <label class="mr-2">
+              <input
+                type="radio"
+                formControlName="loginoption"
+                (click)="onLoginOptionChange($event)"
+                value="1"
+                class="mr-1"
+                [checked]="optDealer"
+              />Dealer/Customer
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="username" class="required">{{ title }}</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="username"
+              maxlength="50"
+              [ngClass]="{ 'is-invalid': submitted && f.username.errors }"
+            />
+            <div
+              *ngIf="submitted && f.username.errors"
+              class="invalid-feedback"
+            >
+              <div *ngIf="f.username.errors.required">
+                {{ title }} is required.
+              </div>
+              <div *ngIf="f.username.errors.pattern">Invalid Email Address</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password" class="required">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              formControlName="password"
+              maxlength="50"
+              [ngClass]="{ 'is-invalid': submitted && f.password.errors }"
+            />
+            <div
+              *ngIf="submitted && f.password.errors"
+              class="invalid-feedback"
+            >
+              <div *ngIf="f.password.errors.required">
+                Password is required.
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-check-label ml-15px"
+              ><input
+                type="checkbox"
+                class="form-check-input"
+                formControlName="remember"
+              />
+              Remember Me
+            </label>
+          </div>
+          <div>
+            <button
+              type="submit"
+              class="btn btn-orange"
+              (click)="onLogin()"
+              appNoDblClick
+              #loginButton
+            >
+              <span *ngIf="!showLoader">LOGIN</span>
+              <span *ngIf="showLoader">
+                <span>Loading...</span>
+                <span
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+              </span>
+            </button>
+            <a
+              routerLink="/forgotPassword"
+              class="btn btn-link float-right mt-2"
+              >Forgot Password?</a>
+          </div>
+        </form>
+      </div>
+      <div *ngIf="pwaService.pwaInstallPrompt" style="margin-top: 30px">
+        <button
+          type="button"
+          class="btn btn-orange d-flex align-items-center p-2"
+          (click)="installPwa()"
+        >
+          <!-- <img style="height:20px;" src="../../../../assets/images/download-svgrepo-com.svg" alt="install" />  -->
+          <span style="font-weight: 500; font-size: 1.17rem">
+            &nbsp;Add to Home &nbsp;&nbsp;</span
+          >
+          <svg
+            viewBox="0 0 30 30"
+            height="30px"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            stroke="#ffffff"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M17 17H17.01M17.4 14H18C18.9319 14 19.3978 14 19.7654 14.1522C20.2554 14.3552 20.6448 14.7446 20.8478 15.2346C21 15.6022 21 16.0681 21 17C21 17.9319 21 18.3978 20.8478 18.7654C20.6448 19.2554 20.2554 19.6448 19.7654 19.8478C19.3978 20 18.9319 20 18 20H6C5.06812 20 4.60218 20 4.23463 19.8478C3.74458 19.6448 3.35523 19.2554 3.15224 18.7654C3 18.3978 3 17.9319 3 17C3 16.0681 3 15.6022 3.15224 15.2346C3.35523 14.7446 3.74458 14.3552 4.23463 14.1522C4.60218 14 5.06812 14 6 14H6.6M12 15V4M12 15L9 12M12 15L15 12"
+                stroke="#fff"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </g>
+          </svg>
+        </button>
+      </div>
+      <!-- floating message start -->
+      <!-- <div class="moving-text mt-3">
+        <span>The OMP 2.0 App is Launching Shortly..! <img src="../../../../../assets/icons/icon-192x192.png" alt="Image description" style="vertical-align: middle; height: 1em; width: 1em;"/></span>
+      </div> -->
+      <!-- floating message end -->
+    </div>
+  </div>
+
+
+  <ng-template #iosPwaPromptModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Install PWA</h4>
+      <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div>
+        To install this web app on your device, tap the Menu button and then
+        'Add to Home screen' button.
+      </div>
+      <div class="d-flex justify-content-center">
+        <i class="fas fa-ellipsis-v pwa-icon"></i>
+        <i class="fas fa-arrow-right pwa-icon"></i>
+        <i class="fas fa-plus-square pwa-icon"></i>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="modal.dismiss('Close')"
+      >
+        Close
+      </button>
+    </div>
+  </ng-template>
+</div>
+
+

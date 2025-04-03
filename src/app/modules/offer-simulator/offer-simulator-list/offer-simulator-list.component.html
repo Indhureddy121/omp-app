@@ -1,0 +1,186 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isAdd]=true (addClicked)="onAdd()">
+            </app-list-sub-header>
+            <div class="col-12">
+                <div>
+                    <div class="row">
+                        <div class="w-100 row pl-4">
+                            <div class="col-12 col-md-3 col-lg-3">
+                                <app-appsearch [model]="searchModel" class="col-12" (callBack)="onSearch($event)">
+                                </app-appsearch>
+                            </div>
+                            <div class="col-12 col-md-9 col-sm-9 mt-4">
+                                <form [formGroup]="FilterForm">
+                                    <div class="row">
+                                        <!-- <div class="col-12 col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <ng-select [items]="offerStatusList" class="form-control"
+                                                    bindLabel="description" bindValue="code"
+                                                    formControlName="offerstatus"
+                                                    (change)="onFilterStatusChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div> -->
+                                        <div class="col-12 col-md-3 col-sm-3">
+                                            <div class="form-group">
+                                                <ng-select [items]="offerDetailStatusList" class="form-control"
+                                                    bindLabel="description" bindValue="code"
+                                                    formControlName="offerdetailstatus"
+                                                    (change)="onFilterDetailStatusChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <input class="form-control doc-date" formcontrolname="Validfrom"
+                                                        ngbDatepicker #Validfrom="ngbDatepicker"
+                                                        [value]="formatter.format(validfromDate)"
+                                                        (dateSelect)="onValidFromDateSelection($event)" readonly
+                                                        [maxDate]="ValidMaxdate" />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="Validfrom.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <input class="form-control doc-date" formcontrolname="Validto"
+                                                        ngbDatepicker #Validto="ngbDatepicker"
+                                                        [value]="formatter.format(validtoDate)"
+                                                        (dateSelect)="onValidToDateSelection($event)" readonly />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="Validto.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                            <div class="form-group">
+                                                <ng-select [items]="pendingOnList" class="form-control"
+                                                    bindLabel="description" bindValue="code" formControlName="pendingon"
+                                                    (change)="onPendingOnChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting" id="table-offers">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th></th>
+                            <th (click)="headerClick($event)" name="offernumber" id="offernumber">Offer No</th>
+                            <th (click)="headerClick($event)" name="C.customername" id="C.customername">Account Name
+                            </th>
+                            <th (click)="headerClick($event)" name="U.fullname" id="U.fullname">Owner</th>
+                            <th (click)="headerClick($event)" name="O.offervalue" id="O.offervalue" class="text-right">
+                                Offer Value</th>
+
+                            <th (click)="headerClick($event)" name="O.Status" id="O.Status">Status</th>
+                            <th (click)="headerClick($event)" name="U3.fullname" id="U3.fullname"
+                                *ngIf="userrole && userrole == 'Admin'">Pending On
+                            </th>
+                            <th (click)="headerClick($event)" id="O.total_rmc_grossmargin" style="text-align: right;"
+                                *ngIf="isShowRGroupMargin">R. GM(%)
+                            </th>
+                            <th (click)="headerClick($event)" id="O.TotalGrossMargin" style="text-align: right;"
+                                *ngIf="isShowMargin">GM(%)
+                            </th>
+                            <th (click)="headerClick($event)" id="O.TotalTargetGrossMargin" style="text-align: right;"
+                                *ngIf="isShowMargin">
+                                T. GM(%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="offerslist.length == 0">
+                            <td colspan="15" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+
+                        <tr *ngFor="let off of offerslist" (dblclick)="onRowDoubleClick(off.offerid)">
+                            <td>
+                                <button class="btn btn-link p-0 mr-3" (click)="viewClicked(off.offerid)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-view.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="editClicked(off.offerid)"
+                                    *ngIf="off.isactive == 1 && off.status < 80"><img class="table-icon"
+                                        src="../../../../../assets/images/icon-edit.svg"></button>
+                            </td>
+                            <td>
+                                <span class="dot green" *ngIf="off.IsActive == 1"></span>
+                                <span class="dot red" *ngIf="off.IsActive == 0"></span>
+                                <span class="dot orange" *ngIf="off.IsExpired == 1"></span>
+                            </td>
+                            <td>{{off.offernumber}}</td>
+                            <td>{{off.customername}}</td>
+                            <td>{{off.ownername}}</td>
+                            <td class="text-right">{{(off.offervalue - off.totaldealercommission) | currency:'INR'}}
+                            </td>
+
+                            <td>{{off.showstatus}}</td>
+
+                            <td *ngIf="userrole && userrole == 'Admin'">
+                                {{off.pendingonname}}</td>
+                            <td align="right" *ngIf="isShowRGroupMargin">{{off.TotalRMCGrossMargin | percent:'2.2-2'}}
+                            </td>
+                            <td align="right" *ngIf="isShowMargin">{{off.totalgrossmargin | percent:'2.2-2'}}</td>
+                            <td align="right" *ngIf="isShowMargin">{{off.totaltargetgrossmargin | percent:'2.2-2'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="width: 100%;">
+                    <div style=" float: left;">
+                        <span class="dot green"></span> Active | <span class="dot red"></span> Inactive | <span
+                            class="dot orange"></span> Expired
+                    </div>
+                    <div style=" float:right;">
+                        <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                        <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination"
+                            style="margin-top: -10px;">
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                                <ng-template #elseFirst>
+                                    <a (click)="setPage(1)">First</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                                <ng-template #elsePrevious>
+                                    <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                                </ng-template>
+                            </li>
+                            <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                                <a (click)="setPage(page)">{{page}}</a>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                                <ng-template #elseNext>
+                                    <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                                <ng-template #elseLast>
+                                    <a (click)="setPage(pager.totalPages)">Last</a>
+                                </ng-template>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

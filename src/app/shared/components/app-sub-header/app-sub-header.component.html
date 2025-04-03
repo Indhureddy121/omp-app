@@ -1,0 +1,50 @@
+<div class="row" [ngClass]="(popupId === undefined) ? 'action-bar' : 'frDcon'">
+  <div [ngClass]="(popupId === undefined) ? 'action-bar col' : 'modal-action-bar'">
+    <div class="d-flex">
+      <div *ngIf="popupId === undefined ? true :false">
+        <app-breadcrumb></app-breadcrumb>
+      </div>
+      <div *ngIf="popupId !== undefined ? true :false">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <span>{{popupBreadCrumb}}</span>
+          </li>
+        </ol>
+      </div>
+      <div class="ml-auto my-auto">
+        <button class="btn btn-orange ml-2" *ngIf="isAdd" (click)="onAddClick()" [disabled]="isAddDisable" #addbutton><i
+            class="icon-plus-1"></i>Add New</button>
+        <button class="btn btn-orange-outline ml-2" *ngIf="isUpload" (click)="onUploadClick()"
+          [disabled]="isUploadDisable"><i class="icon-upload"></i>Upload</button>
+        <button class="btn btn-orange ml-2" *ngIf="isReset" (click)="onResetClick()" [disabled]="isResetDisable"><i
+            class="icon-reset"></i>Reset</button>
+        <button class="btn btn-orange-outline ml-2" *ngIf="isEdit" (click)="onEditClick()" [disabled]="isEditDisable"><i
+            class="icon-pencil"></i>Edit</button>
+        <button class="btn btn-orange-outline ml-2" *ngIf="isView" (click)="onViewClick()" [disabled]="isViewDisable"><i
+            class="icon-eye"></i>View</button>
+        <button class="btn btn-danger ml-2" *ngIf="isDelete" (click)="onDeleteClick()" [disabled]="isDeleteDisable"><i
+            class="icon-delete-garbage-streamline"></i>Delete</button>
+        <!-- <button class="btn btn-orange-outline ml-2 key key-m" *ngIf="isCancel" (click)="onCancelClick()"
+          [disabled]="isCancelDisable" #cancelbutton><i class="icon-x"></i>Cancel</button> -->
+        <button class="btn btn-orange-s" *ngIf="isSave" (click)="onSaveClick()" [disabled]="isSaveDisable"><i
+            class="icon-floppy-o"></i>Save</button>
+        <button class="btn btn-orange-s" *ngIf="isCreateOffer" (click)="onCreateOfferClick()"><i
+            class="fa fa-tag fa-lg"></i>Create Offer</button>
+        <button class="btn btn-orange-s" *ngIf="isCreateOrder" (click)="onCreateOrderClick()"><i
+            class="fa fa-tag fa-lg"></i>Create Order</button>
+        <button class="btn btn-orange-s ml-3" *ngIf="isPDF" (click)="onGeneratePDF()" [disabled]="isPDFDisable"
+          #pdfbutton><i class="icon-file-pdf-o"></i>Generate SO</button>
+        <button class="btn btn-green-s ml-3" *ngIf="isOfferApprove" (click)="onOfferApprove()"
+          [disabled]="isOfferApproveDisable" #approvebutton><i class="icon-file-pdf-o"></i>Approve</button>
+        <button class="btn btn-orange-s ml-3" *ngIf="isOfferReject" (click)="onOfferReject()"
+          [disabled]="isOfferRejectDisable" #rej><i class="icon-file-pdf-o"></i>Reject</button>
+        <button class="btn btn-orange-s ml-3" *ngIf="isSendForApproval" (click)="onSendForApproval()" #sendforso
+          [disabled]="isSendForApprovalDisable">Send for Approval</button>
+        <button class="btn btn-orange-s ml-3" *ngIf="isReview" (click)="onReview()" #review
+          [disabled]="isReviewDisable">Review</button>
+        <button class="btn btn-orange-outline ml-2 key key-m" *ngIf="isCancel" (click)="onCancelClick()"
+          [disabled]="isCancelDisable" #cancelbutton><i class="icon-x"></i>Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

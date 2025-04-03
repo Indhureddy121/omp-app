@@ -1,0 +1,61 @@
+<app-app-header></app-app-header>
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header [isEdit]="isView" [isSave]="isEdit || isAdd" [isCancel]="isView || isEdit || isAdd"
+                (cancelClicked)="cancelClicked()" (saveClicked)="saveClicked()" (editClicked)="onEditClick()">
+            </app-sub-header>
+            <div class="col-12">
+                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="portForm">
+
+                    <div class="row">
+                        <div class="col-12 col-md-4">
+                            <div class="form-group">
+                                <label class="required" for="portNo">Port Code</label>
+                                <input class="form-control" type="text" formControlName="portNo"
+                                    [ngClass]="{ 'is-invalid': submitted && f.portNo.errors }"
+                                    AllowAlphaNumericSpace=true>
+                                <div *ngIf="submitted && f.portNo.errors" class="invalid-feedback">
+                                    <div *ngIf="f.portNo.errors.required">
+                                        Port Code is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12  col-md-4">
+                            <div class="form-group">
+                                <label class="required" for="portName">Port Name</label>
+                                <input class="form-control" type="text" formControlName="portName" 
+                                    [ngClass]="{ 'is-invalid': submitted && f.portName.errors }"
+                                    AllowAlphaNumericSpace=true>
+                                <div *ngIf="submitted && f.portName.errors" class="invalid-feedback">
+                                    <div *ngIf="f.portName.errors.required">
+                                        Port Name is required
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-12  col-md-4">
+                            <div class="form-group">
+                                <label class="required" for="portChrg">Charges(%)</label>
+                                <input class="form-control" type="text" formControlName="portChrg"
+                                    [ngClass]="{ 'is-invalid': submitted && f.portChrg.errors }"
+                                    numericwithdecimal decimals="2" beforedecimals="2">
+                                <div *ngIf="submitted && f.portChrg.errors" class="invalid-feedback">
+                                    <div *ngIf="f.portChrg.errors.required">
+                                        Charges is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

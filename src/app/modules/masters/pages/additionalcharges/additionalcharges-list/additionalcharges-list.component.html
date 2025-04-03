@@ -1,0 +1,309 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header></app-list-sub-header>
+
+            <div class="col-12">
+                <div class="w-100">
+                    <form [formGroup]="AdditionalChargesDefaultForm">
+                        <div>
+                            <label><strong>Default Charges</strong></label>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                <div class="form-group">
+                                    <label for="deffreightcharges" class="required">Freight Charge(%)</label>
+                                    <input type="text" class="form-control" formControlName="deffreightcharges"
+                                        numericwithdecimal decimals="2" beforedecimals="1"
+                                        [ngClass]="{ 'is-invalid': defaultsubmitted && (additionalChargesDefaultForm.deffreightcharges.errors || additionalChargesDefaultForm.deffreightcharges.value > 0.99) }">
+                                    <div *ngIf="defaultsubmitted && additionalChargesDefaultForm.deffreightcharges.errors"
+                                        class="invalid-feedback">
+                                        <div *ngIf="additionalChargesDefaultForm.deffreightcharges.errors.required">
+                                            Freight Charges is required
+                                        </div>
+                                    </div>
+                                    <div *ngIf="defaultsubmitted && additionalChargesDefaultForm.deffreightcharges.value > 0.99"
+                                        class="invalid-feedback">
+                                        <div *ngIf="additionalChargesDefaultForm.deffreightcharges.value > 0.99">
+                                            Value must be less than 0.99
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                <div class="row">
+                                    <label for="deftrdcuttingchargesvalue" class="required">TRD Cutting
+                                        Charges</label>
+                                    <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12 pl-0">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control"
+                                                formControlName="deftrdcuttingchargesvalue" numericwithdecimal
+                                                decimals="4" beforedecimals="18"
+                                                [ngClass]="{ 'is-invalid': defaultsubmitted && additionalChargesDefaultForm.deftrdcuttingchargesvalue.errors }">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12 pl-0">
+                                        <ng-select [items]="currencyTypeList" class="form-control"
+                                            formControlName="deftrdcurrency" bindLabel="description" bindValue="code"
+                                            placeholder="Please select"
+                                            [ngClass]="{ 'is-invalid': defaultsubmitted && additionalChargesDefaultForm.deftrdcurrency.errors }">
+                                        </ng-select>
+                                    </div>
+                                </div>
+                                <div *ngIf="defaultsubmitted && additionalChargesDefaultForm.deftrdcuttingchargesvalue.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="additionalChargesDefaultForm.deftrdcuttingchargesvalue.errors.required">
+                                        Required
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                <div class="row">
+                                    <label for="defstdcuttingchargesvalue" class="required">STD Cutting
+                                        Charges</label>
+                                    <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12 pl-0">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control"
+                                                formControlName="defstdcuttingchargesvalue" numericwithdecimal
+                                                decimals="4" beforedecimals="18"
+                                                [ngClass]="{ 'is-invalid': defaultsubmitted && additionalChargesDefaultForm.defstdcuttingchargesvalue.errors }">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12 pl-0">
+                                        <ng-select [items]="currencyTypeList" class="form-control"
+                                            formControlName="defstdcurrency" bindLabel="description" bindValue="code"
+                                            placeholder="Please select"
+                                            [ngClass]="{ 'is-invalid': defaultsubmitted && additionalChargesDefaultForm.defstdcurrency.errors }">
+                                        </ng-select>
+                                    </div>
+                                </div>
+                                <div *ngIf="defaultsubmitted && additionalChargesDefaultForm.defstdcuttingchargesvalue.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="additionalChargesDefaultForm.defstdcuttingchargesvalue.errors.required">
+                                        Required
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-4">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-orange-s"
+                                        (click)="onDefaultSaveClick()">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <hr />
+                <div>
+                    <p>&nbsp;</p>
+                </div>
+                <div>
+                    <div class="row">
+                        <div class="w-100 row pl-4">
+                            <div class="col-12 col-md-4 col-lg-4">
+                                <app-appsearch [model]="searchModel" class="col-12 col-xl-8 col-lg-8 col-md-6 col-sm-12"
+                                    (callBack)="onSearch($event)"></app-appsearch>
+                            </div>
+                            <div class="col-12 col-md-8 col-lg-8 t-4" style="text-align: right;">
+                                <button class="btn btn-orange-s ml-2" (click)="OpenAddEditALPMasterPopup(undefined)"><i
+                                        class="icon-plus-1"></i>Add New</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting" id="table-additionalcharges">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th (click)="headerClick($event)" id="fromlocation">From Location</th>
+                            <th (click)="headerClick($event)" id="tolocation">To Location</th>
+                            <th (click)="headerClick($event)" id="freightcharge">Freight Charge(%)</th>
+                            <th (click)="headerClick($event)" id="trdcuttingchargesvalue">TRD Cutting Charges</th>
+                            <th (click)="headerClick($event)" id="stdcuttingchargesvalue">STD Cutting Charges</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="aclist.length === 0">
+                            <td colspan="6" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let ac of aclist">
+                            <td>
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenAddEditALPMasterPopup(ac.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenDeletePopup(ac.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-delete.svg"></button>
+                            </td>
+                            <td>{{ac.fromlocation}}</td>
+                            <td>{{ac.tolocation}}</td>
+                            <td>{{ac.freightcharge}}</td>
+                            <td>{{ac.trdcuttingchargesvalue}}</td>
+                            <td>{{ac.stdcuttingchargesvalue}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #DeleteConfirmationModal let-modal>
+    <app-delete-confirmation [model]="deleteConfirmModel" (ondelete)="onAdditionalChargesDelete($event)"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #AddEditAdditionalChargesModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit Additional Charges</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="AdditionalChargesForm">
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="fromlocation" class="required">From Location</label>
+                        <input type="text" class="form-control" formControlName="fromlocation"
+                            [ngClass]="{ 'is-invalid': submitted && additionalChargesForm.fromlocation.errors }">
+                        <div *ngIf="submitted && additionalChargesForm.fromlocation.errors" class="invalid-feedback">
+                            <div *ngIf="additionalChargesForm.fromlocation.errors.required">
+                                From Location is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="tolocation" class="required">To Location</label>
+                        <input class="form-control" type="text" formControlName="tolocation"
+                            [ngClass]="{ 'is-invalid': submitted && additionalChargesForm.tolocation.errors }">
+                        <div *ngIf="submitted && additionalChargesForm.tolocation.errors" class="invalid-feedback">
+                            <div *ngIf="additionalChargesForm.tolocation.errors.required">
+                                To Location is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="freightcharges" class="required">Freight Charge(%)</label>
+                        <input type="text" class="form-control" formControlName="freightcharges" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && (additionalChargesForm.freightcharges.errors || additionalChargesForm.freightcharges.value > 0.99) }">
+                        <div *ngIf="submitted && additionalChargesForm.freightcharges.errors" class="invalid-feedback">
+                            <div *ngIf="additionalChargesForm.freightcharges.errors.required">
+                                Freight Charges is required
+                            </div>
+                        </div>
+                        <div *ngIf="submitted && additionalChargesForm.freightcharges.value > 0.99"
+                            class="invalid-feedback">
+                            <div *ngIf="additionalChargesForm.freightcharges.value > 0.99">
+                                Value must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="trdcuttingchargesvalue" class="required">TRD Cutting Charges</label>
+                        <input type="text" class="form-control" formControlName="trdcuttingchargesvalue"
+                            numericwithdecimal decimals="4" beforedecimals="18"
+                            [ngClass]="{ 'is-invalid': submitted && additionalChargesForm.trdcuttingchargesvalue.errors }">
+                        <div *ngIf="submitted && additionalChargesForm.trdcuttingchargesvalue.errors"
+                            class="invalid-feedback">
+                            <div *ngIf="additionalChargesForm.trdcuttingchargesvalue.errors.required">
+                                Required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="trdcurrency" class="required">Currency</label>
+                        <ng-select [items]="currencyTypeList" class="form-control" formControlName="trdcurrency"
+                            bindLabel="description" bindValue="code" placeholder="Please select"
+                            [ngClass]="{ 'is-invalid': submitted && additionalChargesForm.trdcurrency.errors }">
+                        </ng-select>
+                        <div *ngIf="submitted && additionalChargesForm.trdcurrency.errors" class="invalid-feedback">
+                            <div *ngIf="additionalChargesForm.trdcurrency.errors.required">
+                                Currency is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="stdcuttingchargesvalue" class="required">STD Cutting Charges</label>
+                        <input type="text" class="form-control" formControlName="stdcuttingchargesvalue"
+                            numericwithdecimal decimals="4" beforedecimals="18"
+                            [ngClass]="{ 'is-invalid': submitted && additionalChargesForm.stdcuttingchargesvalue.errors }">
+                        <div *ngIf="submitted && additionalChargesForm.stdcuttingchargesvalue.errors"
+                            class="invalid-feedback">
+                            <div *ngIf="additionalChargesForm.stdcuttingchargesvalue.errors.required">
+                                Required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="stdcurrency" class="required">Currency</label>
+                        <ng-select [items]="currencyTypeList" class="form-control" formControlName="stdcurrency"
+                            bindLabel="description" bindValue="code" placeholder="Please select"
+                            [ngClass]="{ 'is-invalid': submitted && additionalChargesForm.stdcurrency.errors }">
+                        </ng-select>
+                        <div *ngIf="submitted && additionalChargesForm.stdcurrency.errors" class="invalid-feedback">
+                            <div *ngIf="additionalChargesForm.stdcurrency.errors.required">
+                                Currency is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onSaveClick()">Save</button>
+    </div>
+</ng-template>

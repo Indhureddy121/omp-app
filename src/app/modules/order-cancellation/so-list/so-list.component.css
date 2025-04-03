@@ -1,0 +1,22 @@
+.sono-link {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.sono-link:hover {
+  color: darkblue;
+}
+
+.cancellation-in-progress {
+  background-color: #d2ec74;
+  color: #130203;
+}
+.cancellation-success {
+  background-color: #a3f8aa;
+  color: #130203;
+}
+.cancellation-rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}

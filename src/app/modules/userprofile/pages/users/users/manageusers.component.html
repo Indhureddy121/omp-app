@@ -1,0 +1,188 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header [isEdit]="isView &&  (userdata && !userdata.userid)" [isSave]="isEdit || isAdd"
+                [isCancel]="isView || isEdit || isAdd" (cancelClicked)="cancelClicked()" (saveClicked)="onSaveClick()"
+                (editClicked)="onEditClick()"></app-sub-header>
+            <div class="col-12">
+                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="usersForm">
+                    <div class="row">
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="userEmail" class="required">Email</label>
+                                <input type="email" class="form-control" formControlName="userEmail"
+                                    [ngClass]="{ 'is-invalid': submitted && f.userEmail.errors}" maxlength="100">
+                                <div *ngIf="submitted && f.userEmail.errors" class="invalid-feedback">
+                                    <div *ngIf="f.userEmail.errors.required">
+                                        Email is required
+                                    </div>
+                                    <div *ngIf="f.userEmail.errors.pattern">
+                                        Invalid Email Address
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required">Password</label>
+                                <input type="password" class="form-control" formControlName="userPassword"
+                                    [attr.disabled]="isEdit || isView ? '' : null"
+                                    [ngClass]="{ 'is-invalid': submitted && f.userPassword.errors}" maxlength="16">
+                                <div *ngIf="submitted && f.userPassword.errors" class="invalid-feedback">
+                                    <div *ngIf="f.userPassword.errors.required">
+                                        Password is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="fullName" class="required">Full Name</label>
+                                <input type="text" class="form-control" formControlName="fullName"
+                                    [ngClass]="{ 'is-invalid': submitted && f.fullName.errors}" maxlength="60"
+                                    AllowAlphaNumericSpace=true>
+                                <div *ngIf="submitted && f.fullName.errors" class="invalid-feedback">
+                                    <div *ngIf="f.fullName.errors.required">
+                                        Full Name is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="employeeSapId">Employee SAP ID</label>
+                                <input type="text" class="form-control" formControlName="employeeSapId" maxlength="16"
+                                    AllowAlphaNumeric="true">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="managerId">Manager</label>
+                                <ng-select [items]="managerList" class="form-control" bindLabel="fullname"
+                                    bindValue="id" placeholder="Select Manager" formControlName="managerId">
+                                </ng-select>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required" for="type">Type</label>
+                                <ng-select [items]="UserTypeList" class="form-control" bindLabel="description"
+                                    bindValue="code" placeholder="Select Type" formControlName="type"
+                                    (change)="onTypeChange($event)"
+                                    [ngClass]="{ 'is-invalid': submitted && f.type.errors }">
+                                </ng-select>
+                                <div *ngIf="submitted && f.type.errors" class="invalid-feedback">
+                                    <div *ngIf="f.type.errors.required">
+                                        Type is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="roleId" class="required">Role (Level)</label>
+                                <ng-select [items]="rolesList" class="form-control" bindLabel="role_name"
+                                    bindValue="role_code" placeholder="Select Role" formControlName="roleId"
+                                    [ngClass]="{ 'is-invalid': submitted && f.roleId.errors }">
+                                </ng-select>
+                                <div *ngIf="submitted && f.roleId.errors" class="invalid-feedback">
+                                    <div *ngIf="f.roleId.errors.required">
+                                        Role (Level) is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group switch-inline">
+                                <input type="checkbox" id="userStatus" class="switch" formcontrolname="userStatus"
+                                    [checked]="userStatusFlag" (change)="toggle($event,'status')"
+                                    >
+                                <label class="switch-label" for="userStatus">Status</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="sfdcid">SFDC ID</label>
+                                <input type="text" class="form-control" formControlName="sfdcid"
+                                    [attr.disabled]="isAdd || isEdit || isView ? '' : null" maxlength="16"
+                                    AllowAlphaNumeric="true">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="vertical" class="required">Vertical</label>
+                                <ng-select [items]="varticalsList" class="form-control" bindLabel="code"
+                                    bindValue="code" placeholder="Select Vertical" formControlName="vertical"
+                                    [ngClass]="{ 'is-invalid': submitted && f.vertical.errors }">
+                                </ng-select>
+                                <div *ngIf="submitted && f.vertical.errors" class="invalid-feedback">
+                                    <div *ngIf="f.vertical.errors.required">
+                                        Vertical is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="segment" class="required">Segment</label>
+                                <ng-select [items]="segmentList" class="form-control" bindLabel="code" bindValue="code"
+                                    placeholder="Select Segment" formControlName="segment"
+                                    [ngClass]="{ 'is-invalid': submitted && f.segment.errors }">
+                                </ng-select>
+                                <div *ngIf="submitted && f.segment.errors" class="invalid-feedback">
+                                    <div *ngIf="f.segment.errors.required">
+                                        Segment is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="phoneno">Phone No</label>
+                                <input type="text" class="form-control" formControlName="phoneno"
+                                    [attr.disabled]="isView ? '' : null" maxlength="10" OnlyNumber="true">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12" *ngIf="!isAdd">
+                            <div class="form-group switch-inline">
+                                <input type="checkbox" id="onleave" class="switch" formcontrolname="onleave"
+                                    [checked]="onleaveFlag" (change)="toggle($event,'onLeave')" >
+                                <label class="switch-label" for="onleave">On Leave</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="Business_Segment2">Business Segment 2</label>
+                                <input type="text" class="form-control" formControlName="Business_Segment2"
+                                     maxlength="198" AllowAlphaNumericSpace=true>
+                               
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="Business_Segment3">Business Segment 3</label>
+                                <input type="text" class="form-control" formControlName="Business_Segment3"
+                                    maxlength="60" AllowAlphaNumericSpace=true>
+                               
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-5 col-lg-5 col-md-6 col-sm-12" *ngIf="!isAdd">
+                            <div class="form-group switch-inline d-flex justify-content-end" style="margin-right: 3.4rem;">
+                                <input type="checkbox" id="lock" class="switch" formcontrolname="lock"
+                                    [checked]="onLockCheckedFlag" (change)="toggle($event,'lock')">
+                                <label class="switch-label" for="lock">Lock</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

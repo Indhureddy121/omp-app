@@ -1,0 +1,203 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isAdd]="showAddButton" (addClicked)="onAddClick()"></app-list-sub-header>
+            <div class="col-12">
+                <div>
+                    <div class="row">
+                        <div class="w-100 row pl-4">
+                            <div class="col-12 col-md-3 col-lg-3">
+                                <app-appsearch [model]="searchModel" (callBack)="onSearch($event)"></app-appsearch>
+                            </div>
+
+                            <div class="col-12 col-md-9 col-sm-9">
+                                <form [formGroup]="FilterForm">
+                                    <div class="row">
+                                        <div class="col-12 col-md-2 col-sm-2" *ngIf="ShowRCStatus">
+                                            <div class="form-group">
+                                                <ng-select [items]="statusList" class="form-control"
+                                                    bindLabel="description" bindValue="code" formControlName="status"
+                                                    (change)="onFilterStatusChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <ng-select [items]="rcTypeList" class="form-control"
+                                                    bindLabel="description" bindValue="code" formControlName="rctype"
+                                                    (change)="onFilterTypeChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-2 col-sm-2" *ngIf="ShowRCStatus">
+                                            <div class="form-group">
+                                                <ng-select [items]="rcStatusList" class="form-control"
+                                                    bindLabel="description" bindValue="code" formControlName="rcstatus"
+                                                    (change)="onFilterDetailStatusChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <input class="form-control doc-date" formcontrolname="Validfrom"
+                                                        ngbDatepicker #Validfrom="ngbDatepicker"
+                                                        [value]="formatter.format(validfromDate)"
+                                                        (dateSelect)="onValidFromDateSelection($event)" readonly
+                                                        [maxDate]="ValidMaxdate" />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="Validfrom.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <input class="form-control doc-date" formcontrolname="Validto"
+                                                        ngbDatepicker #Validto="ngbDatepicker"
+                                                        [value]="formatter.format(validtoDate)"
+                                                        (dateSelect)="onValidToDateSelection($event)" readonly />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="Validto.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12" *ngIf="ShowRCStatus">
+                                            <div class="form-group">
+                                                <ng-select [items]="pendingOnList" class="form-control"
+                                                    bindLabel="description" bindValue="code" formControlName="pendingon"
+                                                    (change)="onPendingOnChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting">
+                    <thead class="thead-inverse" id="table-ratecontractlist">
+                        <tr>
+                            <th style="width: 90px">Action</th>
+                            <th style="width: 30px"></th>
+                            <th style="width: 60px" (click)="headerClick($event)" id="rcNumber">RC Number</th>
+                            <th style="width: 5px" (click)="headerClick($event)" id="ver">Ver</th>
+                            <th (click)="headerClick($event)" id="soldTo">Sold To</th>
+                            <th style="width: 80px" (click)="headerClick($event)" id="rcType">RC Type</th>
+                            <th style="width: 100px" (click)="headerClick($event)" id="status">Status</th>
+                            <th style="width: 200px" (click)="headerClick($event)" id="actionRequired">Action Required
+                            </th>
+                            <th style="width: 80px" (click)="headerClick($event)" id="validFrom">Valid From</th>
+                            <th style="width: 80px" (click)="headerClick($event)" id="validFrom">Valid To</th>
+                            <th style="width: 100px">Pending On</th>
+                            <!-- <th>Create Order</th> -->
+                            <th (click)="headerClick($event)" id="totalrmcgrossmargin" align="right"
+                                *ngIf="isShowRGroupMargin">R. GM(%)</th>
+                            <th (click)="headerClick($event)" id="totalgrossmargin" align="right" *ngIf="isShowMargin">
+                                GM(%)</th>
+                            <th (click)="headerClick($event)" id="totaltargetgrossmargin" align="right"
+                                *ngIf="isShowMargin">T. GM(%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="rateContractList.length === 0">
+                            <td colspan="14" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let cst of rateContractList" (dblclick)="onRowDoubleClick(cst.id)">
+                            <!-- cst.status 80 -->
+                            <td>
+                                <button class="btn btn-link p-0 mr-2" (click)="viewClicked(cst.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-view.svg"></button>
+                                <button class="btn btn-link p-0 mr-2" (click)="onCreateOrderClick(cst.id)"
+                                    *ngIf="cst.status == 80 && cst.isactive"><img class="table-icon"
+                                        src="../../../../../assets/images/icon-plus-6-blue.svg"
+                                        title="Create RC Order"></button>
+
+                                <!-- && cst.status < 80 -->
+                                <button class="btn btn-link p-0 mr-2" (click)="editClicked(cst.id)" *ngIf="cst.isactive == 1 && cst.status != 30 &&
+                                     ((cst.status < 80 && cst.rctype == 10) ||
+                                     (cst.status <= 80 && cst.rctype == 20 && userdata && userdata.usercode == 0))">
+                                    <img class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                                <button class="btn btn-link p-0" (click)="onMakeaCloneClick(cst.id)"
+                                    *ngIf="cst.isactive == 1 && userdata && userdata.usercode == 0"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-plus-6.svg"
+                                        title="Make a clone"></button>
+                            </td>
+                            <td>
+                                <span class="dot green" *ngIf="cst.isactive == 1"></span>
+                                <span class="dot red" *ngIf="cst.isactive == 0"></span>
+                                <span class="dot orange" *ngIf="cst.isexpired == 1"></span>
+                            </td>
+                            <td>{{cst.rcnumbertext}}</td>
+                            <td>{{cst.ver}}</td>
+                            <td>{{cst.soldtoparty}} - {{cst.soldtoparty_name}}</td>
+                            <td>{{cst.rctype_text}}</td>
+                            <td>{{cst.status_text}}</td>
+                            <td>{{cst.actionrequired}}</td>
+                            <td>{{cst.validfrom | date:dateFormate : '+0000'}}</td>
+                            <td>{{cst.validto | date:dateFormate : '+0000'}}</td>
+                            <td>{{cst?.pendingonname}}</td>
+                            <!-- <td *ngIf="cst.status == 80 && cst.isactive">
+                                <button class="btn btn-link p-0" (click)="onCreateOrderClick(cst.id)">
+                                    Create Order
+                                </button>
+                            </td>
+                            <td *ngIf="cst.status < 80 || !cst.isactive"></td> -->
+                            <td align="right" *ngIf="isShowRGroupMargin">{{cst.totalrmcgrossmargin | percent:'2.2-2'}}
+                            </td>
+                            <td align="right" *ngIf="isShowMargin">{{cst.totalrmcgrossmargin | percent:'2.2-2'}}</td>
+                            <td align="right" *ngIf="isShowMargin">{{cst.totaltargetgrossmargin | percent:'2.2-2'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="width: 100%;">
+                    <div style=" float: left;">
+                        <span class="dot green"></span> Active | <span class="dot red"></span> Inactive | <span
+                            class="dot orange"></span> Expired
+                    </div>
+                    <div style=" float:right;">
+                        <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                        <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination"
+                            style="margin-top: -10px;">
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                                <ng-template #elseFirst>
+                                    <a (click)="setPage(1)">First</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                                <ng-template #elsePrevious>
+                                    <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                                </ng-template>
+                            </li>
+                            <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                                <a (click)="setPage(page)">{{page}}</a>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                                <ng-template #elseNext>
+                                    <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                                <ng-template #elseLast>
+                                    <a (click)="setPage(pager.totalPages)">Last</a>
+                                </ng-template>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

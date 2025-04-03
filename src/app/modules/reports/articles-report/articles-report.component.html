@@ -1,0 +1,121 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isExport]=true (exportClicked)="onExport()"></app-list-sub-header>
+
+            <div class="col-12">
+                <div>
+                    <form [formGroup]="FilterForm">
+                        <div class="w-100 row">
+                            <!-- <div class="col-12 col-md-2 col-lg-2">
+                                <input type="input" class="form-control" formControlName="search" placeholder="Search">
+                            </div> -->
+                            <div class="col-12 col-md-10 col-sm-10">
+                                <div class="row w-100">
+
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="currentfrom" class="required">From</label>
+                                            <div class="input-group"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.currentfrom.errors }">
+                                                <input class="form-control doc-date" formcontrolname="currentfrom"
+                                                    ngbDatepicker #currentfrom="ngbDatepicker"
+                                                    (dateSelect)="OnCurrentFromDateSelection($event)" readonly
+                                                    [value]="formatter.format(CurrentFromDate)"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.currentfrom.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="currentfrom.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && filterForm.currentfrom.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.currentfrom.errors.required">
+                                                    Current From is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="currentto" class="required">To</label>
+                                            <div class="input-group"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }">
+                                                <input class="form-control doc-date" formcontrolname="currentto"
+                                                    ngbDatepicker #currentto="ngbDatepicker"
+                                                    (dateSelect)="OnCurrentToDateSelection($event)" readonly
+                                                    [value]="formatter.format(CurrentToDate)"
+                                                    [minDate]="CurrentToMindate"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="currentto.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && filterForm.currentto.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.currentto.errors.required">
+                                                    Current To is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-4">
+                                        <div class="form-group">
+                                            <button class="btn btn-orange-s" (click)="OnGenerateReportClick()"
+                                                appNoDblClick><i class=" icon-floppy-o"></i>Generate Report</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting"
+                    *ngIf="ArticleReport && ArticleReport.length > 0">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Lapp Opportunity Id</th>
+                            <th>Offerno</th>
+                            <th>Article No</th>
+                            <th>Description</th>
+                            <th>Industry Std Text</th>
+                            <th>Item Type</th>
+                            <th>Quantity</th>
+                            <th>Cost</th>
+                            <th>RMC Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="ArticleReport.length === 0">
+                            <td colspan="14" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let ol of ArticleReport">
+                            <td>{{ol.lappopportunityid}}</td>
+                            <td>{{ol.offerno}}</td>
+                            <td>{{ol.ArticleNo}}</td>
+                            <td>{{ol.description}}</td>
+                            <td>{{ol.industry_std_text}}</td>
+                            <td>{{ol.ItemType}}</td>
+                            <td>{{ol.Quantity}}</td>
+                            <td>{{ol.Cost}}</td>
+                            <td>{{ol.rmc_cost}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="7"><strong>Total</strong></td>
+                            <td><strong>{{Total_OfferValue}}</strong></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,280 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isExport]=true (exportClicked)="onExport()"></app-list-sub-header>
+
+            <div class="col-12">
+                <div>
+                    <form [formGroup]="FilterForm">
+                        <div class="w-100 row">
+                            <div class="col-12 col-md-2 col-lg-2">
+                                <input type="input" class="form-control" formControlName="search" placeholder="Search">
+                            </div>
+                            <div class="col-12 col-md-10 col-sm-10">
+                                <div class="row w-100">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <ng-select [items]="OrderTypeList" class="form-control"
+                                                bindLabel="description" bindValue="code" formControlName="ordertype"
+                                                (change)="onOrderTypeChange($event)" placeholder="Select Type">
+                                            </ng-select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <ng-select [items]="OwnerList" class="form-control" bindLabel="description"
+                                                bindValue="description" formControlName="owner"
+                                                (keyup)="onOwnerChange($event)" placeholder="Select Owner">
+                                            </ng-select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <ng-select [items]="SegmentList" class="form-control"
+                                                bindLabel="description" bindValue="description"
+                                                formControlName="segment" (keyup)="onSegmentChange($event)"
+                                                placeholder="Select Segment">
+                                            </ng-select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <div class="input-group"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.currentfrom.errors }">
+                                                <input class="form-control doc-date" formcontrolname="currentfrom"
+                                                    ngbDatepicker #currentfrom="ngbDatepicker"
+                                                    (dateSelect)="OnCurrentFromDateSelection($event)" readonly
+                                                    [value]="formatter.format(CurrentFromDate)"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.currentfrom.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="currentfrom.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && filterForm.currentfrom.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.currentfrom.errors.required">
+                                                    From Date is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <div class="input-group"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }">
+                                                <input class="form-control doc-date" formcontrolname="currentto"
+                                                    ngbDatepicker #currentto="ngbDatepicker"
+                                                    (dateSelect)="OnCurrentToDateSelection($event)" readonly
+                                                    [value]="formatter.format(CurrentToDate)"
+                                                    [minDate]="CurrentToMindate" [maxDate]="CurrentToMaxdate"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="currentto.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && filterForm.currentto.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.currentto.errors.required">
+                                                    To Date is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <button class="btn btn-orange-s" (click)="OnGenerateReportClick()"
+                                                appNoDblClick><i class=" icon-floppy-o"></i>Generate Report</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting"
+                    *ngIf="OrderList && OrderList.length > 0">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Type</th>
+                            <th>Drt/ Indrt</th>
+                            <th>OMP No</th>
+                            <th>SO No</th>
+                            <th>SO Cr. Dt</th>
+                            <th>Sold to Party</th>
+                            <th>Ship to Party</th>
+                            <th>Account</th>
+                            <th>Owner / Emp Resp</th>
+                            <th>Segment</th>
+                            <th class="text-right">Offer Value</th>
+                            <th class="text-right">GM(%)</th>
+                            <th class="text-right">T. GM(%)</th>
+                            <th>Dlv Info</th>
+                            <th>Inv Info</th>
+                            <th>Delivery Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="OrderList.length === 0">
+                            <td colspan="14" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let ol of OrderList">
+                            <td>{{ol.typedescription}}</td>
+                                <td>{{ol.directindirect}}</td>
+                            
+                            <td>{{ol.offerno}}</td>
+                            <!-- <td>{{ol.sono}}</td> -->
+                            <td><a (click)="sendSoNo(ol.sono)" class="sono-link">{{ol.sono}}</a></td>
+                            <td>{{ol.created_date}}</td>
+                            <td>{{ol.SoldToParty}}</td>
+                            <td>{{ol.ShipToParty}}</td>
+                            <td>{{ol.accountname}}</td>
+                            <td>{{ol.ownername}}</td>
+                            <td>{{ol.segment}}</td>
+                            <td class="text-right">{{ol.offervalue}}</td>
+                            <td class="text-right">{{ol.TotalGrossMargin}}</td>
+                            <td class="text-right">{{ol.TotalTargetGrossMargin}}</td>
+                            <td><button class="btn btn-link p-0"
+                                (click)="onDeliveryLinkClicked(ol.sono)">Delivery</button></td>
+                                <td><button class="btn btn-link p-0"
+                                    (click)="onInvoiceLinkClicked(ol.sono)">Invoice</button></td>
+                            <td>{{ol.showstatus}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="10"><strong>Total</strong></td>
+                            <td class="text-right"><strong>{{Total_OfferValue}}</strong></td>
+                            <td colspan="3"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<!-- INVOICE -->
+<ng-template #OrderDashboardInvoiceModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">SO Number {{invoiceSONumber}} - INVOICE </h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="modal-body">
+
+        <table class="table table-hover table-responsive table-sorting"
+                    >
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Sales Item No.</th>
+                            <th>Material No.</th>
+                            <th>Material Desc</th>
+                            <th>Quantity</th>
+                            <th>Billed Date</th>
+                            <th>Billed Qty</th>
+                            <th>Delivery No.</th>
+                            <th>Delivery Item</th>
+                            <th>Invoice No.</th>
+                            <th>Net Value Header</th>
+                            <th>Tax Amount Header</th>
+                            
+                            
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="invoiceData.length === 0">
+                            <td colspan="14" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <ng-container *ngFor="let invoice of invoiceData">
+                            <tr *ngFor="let result of invoice.DBORDTOINVOICENAV.results">
+                             <td>{{ invoice.Salesitem }}</td>
+                              <td>{{ invoice.Materialno }}</td>
+                              <td>{{ invoice.MaterialDesc }}</td>
+                              <td>{{ invoice.Quantity }}</td>
+                              <td>{{ result.Billingdate }}</td>
+                              <td>{{ result.Billedqty }}</td>
+                              <td>{{ result.Deliveryno }}</td>
+                              <td>{{ result.Deliveryitem }}</td>
+                              <td>{{ result.Invoiceno }}</td>
+                              <td>{{ result.Netvalueheader }}</td>
+                              <td>{{ result.Taxamountheader }}</td>
+                            </tr>
+                          </ng-container>
+                            
+                            
+                </table>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+    </div>
+</ng-template>
+
+<!-- Delivery -->
+
+<ng-template #OrderDashboardDeliveryModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">SO Number {{invoiceSONumber}} - Delivery</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="modal-body">
+
+        <table class="table table-hover table-responsive table-sorting">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Sales Item No.</th>
+                            <th>Material No.</th>
+                            <th>Material Desc</th>
+                            <th>Quantity</th>
+                            <th>Delivery No.</th>
+                            <th>Delivery Item</th>
+                            <th>Delivered Qty</th>
+                            <th>Delivery Status</th>
+                            
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="deliveryData.length === 0">
+                            <td colspan="14" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        
+                        <ng-container *ngFor="let delivery of deliveryData">
+                            <tr *ngFor="let result of delivery.DBORDTODELIVERYNAV.results">
+                             <td>{{ delivery.Salesitem }}</td>
+                              <td>{{ delivery.Materialno }}</td>
+                              <td>{{ delivery.MaterialDesc }}</td>
+                              <td>{{ delivery.Quantity }}</td>
+                              <td>{{ result.Deliveryno }}</td>
+                              <td>{{ result.Deliveryitem }}</td>
+                              <td>{{ result.Deliveredqty }}</td>
+                              <td>{{ result.Deliverystatus }}</td>
+                              
+                            </tr>
+                          </ng-container>
+                            
+                </table>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+    </div>
+</ng-template>

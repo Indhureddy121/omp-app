@@ -1,0 +1,5 @@
+<div class="gridSearchBox">
+    <form [formGroup]="searchForm">
+      <input placeholder="Article No" (keyup.enter)='onSearchSubmit()' (keydown.tab)='onSearchSubmit()' formControlName="searchValue" class="gridSearchInput" maxlength="100">
+    </form>
+  </div>

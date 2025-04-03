@@ -1,0 +1,270 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isUpload]="!viewOnly" [isExport]=true [isHistory]="!viewOnly"
+                (historyClicked)="getLog()" [isAdd]="!viewOnly" (uploadClicked)="open(content)"
+                (exportClicked)="onExport()" (addClicked)="OpenAddEditFreightMasterPopup(undefined)">
+            </app-list-sub-header>
+            <div class="col-12">
+               
+                    <div class="row">
+                        <div class="col-12  col-md-8 col-sm-12">
+                            <app-appsearch [model]="searchModel" (callBack)="onSearch($event)"></app-appsearch>
+                        </div>
+                    
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting" id="table-freightfactor">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th style="display:none;">ID</th>
+                            <th>Action</th>
+                            <th (click)="headerClick($event)" id="articleno">Article No.</th>
+                            <th (click)="headerClick($event)" id="primary_plant">Primary Plant</th>
+                            <th (click)="headerClick($event)" id="owf">OWF</th>
+                            <th (click)="headerClick($event)" id="adjfactorone">Adjustment Factor 1</th>
+                            <th (click)="headerClick($event)" id="adjfactortwo">Adjustment Factor 2</th>
+                            <th (click)="headerClick($event)" id="adjfactorthree">Adjustment Factor 3</th>
+                            <th (click)="headerClick($event)" id="adjfactorfour">Adjustment Factor 4</th>
+                            <th (click)="headerClick($event)" id="adjfactorfive">Adjustment Factor 5</th>
+                            <th (click)="headerClick($event)" id="adjfactorsix">Adjustment Factor 6</th>
+                            <th (click)="headerClick($event)" id="total">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="freightmasterList.length === 0">
+                            <td colspan="11" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let stdItem of freightmasterList">
+                            <td style="display:none;">{{stdItem.id}}</td>
+                            <td *ngIf="!viewOnly">
+                                <button class="btn btn-link p-0 mr-3"
+                                    (click)="OpenAddEditFreightMasterPopup(stdItem.id)"><img class="table-icon"
+                                        src="../../../../../assets/images/icon-edit.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenDeletePopup(stdItem.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-delete.svg"></button>
+                            </td>
+                            <td *ngIf="viewOnly"></td>
+                            <td>{{stdItem.articleno}}</td>
+                            <td>{{stdItem.primary_plant}}</td>
+                            <td>{{stdItem.owf}}</td>
+                            <td>{{stdItem.adjfactorone}}</td>
+                            <td>{{stdItem.adjfactortwo}}</td>
+                            <td>{{stdItem.adjfactorthree}}</td>
+                            <td>{{stdItem.adjfactorfour}}</td>
+                            <td>{{stdItem.adjfactorfive}}</td>
+                            <td>{{stdItem.adjfactorsix}}</td>
+                            <td>{{stdItem.total}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Freight Factor Master</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="!isShowDownload">
+            <form [formGroup]="importmodel" enctype="multipart/form-data" method="POST">
+                <div class="form-group" (ngSubmit)="uploadFile($event)">
+                    <input type="file" id="importFile" (change)="uploadedFile($event)" #fileInput
+                        accept=".xlsx, .xls" />
+                </div>
+
+            </form>
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                    (click)="downloadSample()">here</button> to download sample file.</p>
+        </div>
+
+        <div *ngIf="isShowDownload">
+            <fieldset class="custom-fieldset">
+                <p class="pl-2 pt-2">Data has been imported successfully.</p>
+            </fieldset>
+
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link"
+                    (click)="exportfiles(savedResult.status_file_name)">here</button> to download status. </p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="!isShowDownload">
+            <button type="button" class="btn btn-orange-outline-s mr-2"
+                (click)="modal.dismiss('Cross click')">Cancel</button>
+            <button type="button" class="btn btn-orange-s" (click)="onSave()">Save</button>
+        </div>
+        <div *ngIf="isShowDownload">
+            <button type="button" class="btn btn-orange-s" (click)="onDismiss()">Ok</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #DeleteConfirmationModal let-modal>
+    <app-delete-confirmation [model]="deleteConfirmModel" (ondelete)="onFreightMasterDelete($event)"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #AddEditItemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit Freight Factor Master</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="FreightMasterForm">
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="articleno" class="required">Article Number</label>
+                        <input type="text" class="form-control" formControlName="articleno"
+                            [ngClass]="{ 'is-invalid': submitted && freightMasterForm.articleno.errors }">
+                        <div *ngIf="submitted && freightMasterForm.articleno.errors" class="invalid-feedback">
+                            <div *ngIf="freightMasterForm.articleno.errors.required">
+                                Please Enter Article Number
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="owf">OWF</label>
+                        <input type="text" class="form-control" formControlName="owf" numericwithdecimal decimals="2"
+                            beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && freightMasterForm.owf.value > 0.99 }">
+                        <div *ngIf="submitted && freightMasterForm.owf.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="freightMasterForm.owf.value > 0.99">
+                                OWF must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="adjfactorone">Adjustment Factor1</label>
+                        <input type="text" class="form-control" formControlName="adjfactorone" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && freightMasterForm.adjfactorone.value > 0.99 }">
+                        <div *ngIf="submitted && freightMasterForm.adjfactorone.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="freightMasterForm.adjfactorone.value > 0.99">
+                                Adjustment Factor1 must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="adjfactortwo">Adjustment Factor2</label>
+                        <input type="text" class="form-control" formControlName="adjfactortwo" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && freightMasterForm.adjfactortwo.value > 0.99 }">
+                        <div *ngIf="submitted && freightMasterForm.adjfactortwo.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="freightMasterForm.adjfactortwo.value > 0.99">
+                                Adjustment Factor2 must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="adjfactorthree">Adjustment Factor3</label>
+                        <input type="text" class="form-control" formControlName="adjfactorthree" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && freightMasterForm.adjfactorthree.value > 0.99 }">
+                        <div *ngIf="submitted && freightMasterForm.adjfactorthree.value > 0.99"
+                            class="invalid-feedback">
+                            <div *ngIf="freightMasterForm.adjfactorthree.value > 0.99">
+                                Adjustment Factor3 must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="adjfactorfour">Adjustment Factor4</label>
+                        <input type="text" class="form-control" formControlName="adjfactorfour" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && freightMasterForm.adjfactorfour.value > 0.99 }">
+                        <div *ngIf="submitted && freightMasterForm.adjfactorfour.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="freightMasterForm.adjfactorfour.value > 0.99">
+                                Adjustment Factor4 must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="adjfactorfive">Adjustment Factor5</label>
+                        <input type="text" class="form-control" formControlName="adjfactorfive" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && freightMasterForm.adjfactorfive.value > 0.99 }">
+                        <div *ngIf="submitted && freightMasterForm.adjfactorfive.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="freightMasterForm.adjfactorfive.value > 0.99">
+                                Adjustment Factor5 must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="adjfactorsix">Adjustment Factor6</label>
+                        <input type="text" class="form-control" formControlName="adjfactorsix" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && freightMasterForm.adjfactorsix.value > 0.99 }">
+                        <div *ngIf="submitted && freightMasterForm.adjfactorsix.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="freightMasterForm.adjfactorsix.value > 0.99">
+                                Adjustment Factor6 must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onFreightMasterSaveClick()">Save</button>
+    </div>
+</ng-template>

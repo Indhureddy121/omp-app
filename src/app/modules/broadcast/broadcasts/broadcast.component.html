@@ -1,0 +1,129 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- isRoleSourceManual -->
+            <app-sub-header [isEdit]="isView" [isSave]="isEdit || isAdd" [isCancel]="isView || isEdit || isAdd"
+                (cancelClicked)="cancelClicked()" (saveClicked)="onSaveClick()" (editClicked)="onEditClick()">
+            </app-sub-header>
+            <div class="col-12">
+                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="BroadcastForm">
+                    <div class="row">
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required" for="title">Title</label>
+                                <input class="form-control" type="text" formControlName="title"
+                                    [ngClass]="{ 'is-invalid': submitted && broadcastForm.title.errors }"
+                                    AllowAlphaNumeric="true" maxlength="20"
+                                    [attr.disabled]="isAdd || isEdit ? null : ''">
+                                <div *ngIf="submitted && broadcastForm.title.errors" class="invalid-feedback">
+                                    <div *ngIf="broadcastForm.title.errors.required">
+                                        Title is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <div style="float: left;">
+                                    <label for="description" class="required">Description</label>
+                                </div>
+                                <div style="float: right;">
+                                    <span *ngIf="isAdd">
+                                        <i class="fas fa-exclamation"></i> <i>
+                                            {{1000 - Description?.length}} characters
+                                            left.</i></span>
+                                </div>
+                                <textarea rows=" 3" cols="50" class="form-control" maxlength="512"
+                                    formControlName="description" [attr.disabled]="isAdd || isEdit ? null : ''"
+                                    [ngClass]="{ 'is-invalid': submitted && broadcastForm.description.errors }"
+                                    [(ngModel)]="Description" maxlength="500"></textarea>
+                                <div *ngIf="submitted && broadcastForm.description.errors" class="invalid-feedback">
+                                    <div *ngIf="broadcastForm.description.errors.required">
+                                        Description is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12" *ngIf="isAdd || isEdit">
+                            <div class="form-group">
+                                <label class="required" for="fromdate">From</label>
+                                <div class="input-group">
+                                    <input class="form-control doc-date" formcontrolname="fromdate" ngbDatepicker
+                                        #FromDateTime="ngbDatepicker" [value]="formatter.format(FromDate)"
+                                        (dateSelect)="onFromDateSelection($event)" readonly [minDate]="todayMinDate" />
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary calendar"
+                                            (click)="FromDateTime.toggle()" type="button"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12" *ngIf="isView">
+                            <label>From</label>
+                            <input class="form-control" type="text" formControlName="fromdate">
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12" *ngIf="isAdd || isEdit">
+                            <div class="form-group">
+                                <label class="required" for="todate">To</label>
+                                <div class="input-group">
+                                    <input class="form-control doc-date" formcontrolname="todate" ngbDatepicker
+                                        #ToDateTime="ngbDatepicker" [value]="formatter.format(ToDate)"
+                                        (dateSelect)="onToDateSelection($event)" readonly [minDate]="Mindate" />
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary calendar" (click)="ToDateTime.toggle()"
+                                            type="button"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12" *ngIf="isView">
+                            <label>To</label>
+                            <input class="form-control" type="text" formControlName="todate">
+                        </div>
+
+
+                        <div class="col-12 col-xl-1 col-lg-1 col-md-2 col-sm-12" *ngIf="isAdd || isEdit">
+                            <div class="form-group">
+                                <label class="required">Attachments</label>
+                                <div><button (click)="fileInput.click()">Select File</button>
+                                    <input type="file" id="importFile" style="display: none;"
+                                        (change)="BroadcastfileChangeListener($event)" #fileInput />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-1 col-lg-1 col-md-2 col-sm-12" *ngIf="isView">
+                            <div class="form-group">
+                                <label class="required">Attachments</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12 mt-3" *ngIf="broadcastfiles.length > 0">
+                            <div class="row">
+                                <div *ngFor="let broadcastfiledtl of broadcastfiles;let f=index"
+                                    class="col-md-12 col-lg-6 outer-container-upload-control">
+                                    <div class="upload-control-filetype-container"><img class="table-icon-lg"
+                                            src="../../../../../assets/images/{{setFileTypeIcon(broadcastfiledtl.type)}}">
+                                    </div>
+                                    <div class="upload-control-filename-container dot-views">
+                                        <a href="javascript:void(0)" *ngIf="broadcastfiledtl.id"
+                                            (click)="downloadFile(broadcastfiledtl.name,broadcastfiledtl.id,broadcastfiledtl.type)">
+                                            {{broadcastfiledtl.name}}</a><span
+                                            *ngIf="!broadcastfiledtl.id">{{broadcastfiledtl.name}}</span>
+                                    </div>
+                                    <div class="upload-control-delete-container" *ngIf="isAdd || isEdit">
+                                        <button class="btn btn-link p-0" (click)="removeBroadcastFile()">
+                                            <img class="table-icon" src="../../../../../assets/images/icon-delete1.svg"
+                                                title="delete image"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

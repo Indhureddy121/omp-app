@@ -1,0 +1,146 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isExport]=true (exportClicked)="onExport()"></app-list-sub-header>
+            <!-- isExporttoPDF=true (exporttopdfClicked)="getData(true)" -->
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="w-100 row pl-4">
+                        <div class="col-12">
+                            <form [formGroup]="FilterForm">
+                                <div class="row">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="fromDate" class="required">From</label>
+                                            <div class="input-group"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.fromdate.errors }">
+                                                <input class="form-control doc-date" formcontrolname="fromDate"
+                                                    ngbDatepicker #fromDate="ngbDatepicker"
+                                                    (dateSelect)="OnFromDateSelection($event)" readonly
+                                                    [value]="formatter.format(FromDate)"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.fromdate.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="fromDate.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && filterForm.fromdate.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.fromdate.errors.required">
+                                                    From Date is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="toDate" class="required">To</label>
+                                            <div class="input-group"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.todate.errors }">
+                                                <input class="form-control doc-date" formcontrolname="toDate"
+                                                    ngbDatepicker #toDate="ngbDatepicker"
+                                                    (dateSelect)="OnToDateSelection($event)" readonly
+                                                    [value]="formatter.format(ToDate)"
+                                                    [minDate]="ToMindate"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.todate.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="toDate.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && filterForm.todate.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.todate.errors.required">
+                                                    To date is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-4">
+                                        <div class="form-group">
+                                            <button class="btn btn-orange-s" (click)="OnGenerateReportClick()"
+                                                appNoDblClick><i class=" icon-floppy-o"></i>Generate Report</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting"
+                    *ngIf="offerapprovedrecordsdataList && offerapprovedrecordsdataList.length > 0">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Sr. No.</th>
+                            <th>Offer No.</th>
+                            <th>Article No.</th>
+                            <th>LAPP Opportunity ID</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Qty.</th>
+                            <th>Cutting Charges</th>
+                            <th>Dealer Commision Per</th>
+                            <th>Discount %</th>
+                            <th>GM %</th>
+                            <th>R.GM %</th>
+                            <th>T.GM %</th>
+                            <th>SAP ID</th>
+                            <th>Sale Order NO.</th>
+                            <th>Seq NO.</th>
+                            <th>List Price</th>
+                            <th>Unit Price</th>
+                            <th>Net Value</th>
+                            <th>Offer Approved Date</th>
+                            <th>Offer Created Date</th>
+                        </tr> 
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="offerapprovedrecordsdataList.length === 0">
+                            <td colspan="21" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let oa of offerapprovedrecordsdataList; let i=index">
+                            <td>{{i + 1}}</td>
+                            <th>{{ oa['Offer No'] }}</th>
+                            <th>{{ oa['Article No']}}</th>
+                            <th>{{ oa['lappopportunityid']}}</th>
+                            <th>{{ oa['Type']}}</th>
+                            <th>{{ oa['Description']}}</th>
+                            <th>{{ oa['Qty']}}</th>
+                            <th>{{ oa['Cutting Charges']}}</th>
+                            <th>{{ oa['DealerCommissionPer']}}</th>
+                            <th>{{ oa['Discount %']}}</th>
+                            <th>{{ oa['GM%']}}</th>
+                            <th>{{ oa['R.GM%']}}</th>
+                            <th>{{ oa['T.GM%']}}</th>
+                            <th>{{ oa['SAP ID']}}</th>
+                            <th>{{ oa['Sale Order No']}}</th>
+                            <th>{{ oa['Seq No']}}</th>
+                            <th>{{ oa['List Price']}}</th>
+                            <th>{{ oa['Unit Price']}}</th>
+                            <th>{{ oa['Net Value']}}</th>
+                            <th>{{ oa['Offer Approved date (Approved in all levels)']}}</th>
+                            <th>{{ oa['Offer Created date'] }}</th>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <!-- <tr>
+                            <td colspan="2"><strong>Total</strong></td>
+                            <td class="text-right"><strong>{{rpreviousyear | number : '1.2-2'}}</strong></td>
+                            <td class="text-right"><strong>{{rcurrentyear | number : '1.2-2'}}</strong></td>
+                            <td class="text-right"
+                                [ngClass]="{'text-danger': growthvspy < 0, 'text-success': growthvspy > 0, 'text-nochange': growthvspy == 0}">
+                                <strong>{{growthvspy | percent:'2.2-2'}}</strong>
+                            </td>
+                            <td class="text-right"><strong>{{gmpreviousyear | percent:'2.2-2'}}</strong></td>
+                            <td class="text-right"><strong>{{gmcurrentyear | percent:'2.2-2'}}</strong></td>
+                        </tr> -->
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

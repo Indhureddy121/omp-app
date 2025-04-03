@@ -1,0 +1,96 @@
+<div class="page-wrapper">
+  <div class="container-fluid">
+    <div class="row">
+      <app-list-sub-header [isAdd]="true" [isExport]="true" [isRefresh]=true (addClicked)="onAddClick()"
+        (refreshClicked)="onRefreshClick()" (exportClicked)="onExport()"></app-list-sub-header>
+
+      <div class="col-12">
+       
+          <div class="row">
+            <app-appsearch [model]="searchModel" 
+              (callBack)="onSearch($event)"></app-appsearch>
+          </div>
+        
+
+        <table class="table table-hover table-responsive table-sorting" id="table-users">
+          <thead class="thead-inverse">
+            <tr>
+              <th>Action</th>
+              <th (click)="headerClick($event)" id="U.userid">User Id</th>
+              <th (click)="headerClick($event)" id="U.fullname">Full Name</th>
+              <th (click)="headerClick($event)" id="U.employee_sap_id">SAP ID</th>
+              <th (click)="headerClick($event)" id="R.role_code">Role</th>
+              <th (click)="headerClick($event)" id="U.user_email">Email</th>
+              <th (click)="headerClick($event)" id="U.islocked">Locked uesr</th>
+              <th (click)="headerClick($event)" id="U.user_mobile_no">Phone</th>
+              <th (click)="headerClick($event)" id="U.status">Status</th>
+              <th (click)="headerClick($event)" id="U.onleave">On Leave</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="usersList == 0">
+              <td colspan="9" style="text-align: center;">
+                No Records Found
+              </td>
+            </tr>
+
+            <tr *ngFor="let user of usersList" (dblclick)="onRowDoubleClick(user.id)">
+              <td>
+                <!-- <a class="mr-3" *ngIf="!showEditIcon(user.user_source)" href="javascript:void(0);"><img class="table-icon"></a> -->
+                <!-- <a class="mr-3" routerLink="/userprofile/users/edit/{{user.id}}" *ngIf="!user.userid"><img
+                    class="table-icon" src="../../../../../assets/images/icon-edit.svg"></a>
+                <a routerLink="/userprofile/users/view/{{user.id}}"><img class="table-icon"
+                    src="../../../../../assets/images/icon-view.svg"></a> -->
+
+                <button *ngIf="!user.userid" (click)="onUserEditClick(user.id)" class="btn btn-link p-0 mr-3"><img
+                    class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                <button (click)="onUserViewClick(user.id)" class="btn btn-link p-0 mr-3"><img class="table-icon"
+                    src="../../../../../assets/images/icon-view.svg"></button>
+              </td>
+              <td>{{user.userid}}</td>
+              <td>{{user.fullname}}</td>
+              <td>{{user.employee_sap_id}}</td>
+              <td>{{user.role_code}}</td>
+              <td>{{user.user_email}}</td>
+              <td>{{user.islocked}}</td>
+              <td>{{user.user_mobile_no}}</td>
+              <td>{{user.status | titlecase}}</td>
+              <td>{{user.onleave}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+        <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+          
+          <li [ngClass]="{disabled:pager.currentPage === 1}">
+            <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+            <ng-template #elseFirst>
+              <a (click)="setPage(1)">First</a>
+            </ng-template>
+          </li>
+          <li [ngClass]="{disabled:pager.currentPage === 1}">
+            <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+            <ng-template #elsePrevious>
+              <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+            </ng-template>
+          </li>
+          <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+            <a (click)="setPage(page)">{{page}}</a>
+          </li>
+          <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+            <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+            <ng-template #elseNext>
+              <a (click)="setPage(pager.currentPage + 1)">Next</a>
+            </ng-template>
+          </li>
+          <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+            <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+            <ng-template #elseLast>
+              <a (click)="setPage(pager.totalPages)">Last</a>
+            </ng-template>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

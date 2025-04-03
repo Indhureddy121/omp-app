@@ -1,0 +1,350 @@
+<app-app-header></app-app-header>
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isUpload]=true [isExport]=true [isHistory]=true [isAdd]=true
+                (historyClicked)="getLog()" [isRefresh]=true (uploadClicked)="open(content)"
+                (exportClicked)="onExportClicked()" (addClicked)="OpenAddEditCostMasterPopup(undefined)">
+            </app-list-sub-header>
+
+            <div class="col-12">
+                
+                    <div class="row">
+                        <div class="col-12  col-md-8 col-sm-12">
+                            <app-appsearch (callBack)="onSearch($event)"></app-appsearch>
+                        </div>
+                    </div>
+                
+                <table style="display: block;overflow-x: auto;" class="table table-hover table-responsive table-sorting" id="table-rmcostmaster">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th (click)="headerClick($event)" name="articleno" id="articleno">Artical No</th>
+                            <th (click)="headerClick($event)" name="description" id="description">Description</th>
+                            <th (click)="headerClick($event)" name="typeofproduct" id="typeofproduct">Type</th>
+                            <th (click)="headerClick($event)" name="currency" id="currency">Currency</th>
+                            <th (click)="headerClick($event)" name="copperweight" id="copperweight">Copper Weight (Kg/Km)</th>
+                            <th (click)="headerClick($event)" name="copperindex" id="copperindex">Copper Index (Kg/Km)</th>
+                            <th (click)="headerClick($event)" name="baseprice" id="baseprice">Base Price</th>
+                            <th (click)="headerClick($event)" name="copper_base_cost" id="copper_base_cost">Copper Base
+                                Cost</th>
+                            <th (click)="headerClick($event)" name="adjustment_fullcu" id="adjustment_fullcu">Adjustment
+                                Full CU</th>
+                            <th (click)="headerClick($event)" name="other_rmc" id="other_rmc">Other RM Cost (INR/m)</th>
+                            <th (click)="headerClick($event)" name="overheads" id="overheads">Overheads (INR/m)</th>
+                            <th (click)="headerClick($event)" name="standardcost" id="otherrmcost">Standard Cost (INR/m)</th>
+                            <th (click)="headerClick($event)" name="finalcost_c" id="finalcost_c">Final Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="rmcostmasterlist.length === 0">
+                            <td colspan="14" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let cm of rmcostmasterlist">
+                            <td>
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenAddEditCostMasterPopup(cm.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenDeletePopup(cm.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-delete.svg"></button>
+                            </td>
+                            <td>{{cm.articleno}}</td>
+                            <td>{{cm.description}}</td>
+                            <td>{{cm.typeofproduct}}</td>
+                            <td>{{cm.currency}}</td>
+                            <td>{{cm.copperweight}}</td>
+                            <td>{{cm.copperindex}}</td>
+                            <td>{{cm.baseprice}}</td>
+                            <td>{{cm.copper_base_cost}}</td>
+                            <td>{{cm.adjustment_fullcu}}</td>
+                            <td>{{cm.other_rmc}}</td>
+                            <td>{{cm.overheads}}</td>
+                            <td>{{cm.standardcost}}</td>
+                            <td>{{cm.finalcost_c}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Cost Master</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="!isShowDownload">
+            <form [formGroup]="importmodel" enctype="multipart/form-data" method="POST">
+                <div class="form-group row">
+                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                        <label class="required">Product Type</label>
+                        <ng-select [items]="productTypeList" class="form-control" formControlName="productType"
+                            bindLabel="description" bindValue="code" placeholder="Please select"
+                            [ngClass]="{ 'is-invalid': submitted && importrmcost.productType.errors }">
+                        </ng-select>
+                        <div *ngIf="submitted && importrmcost.productType.errors" class="invalid-feedback">
+                            <div *ngIf="importrmcost.productType.errors.required">
+                                Product Type is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" (ngSubmit)="uploadFile($event)">
+                    <input type="file" id="importFile" (change)="uploadedFile($event)" #fileInput
+                        accept=".xlsx, .xls" />
+                </div>
+            </form>
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                    (click)="downloadSample('std')">here</button> to download Standard(STD) product sample file.</p>
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                    (click)="downloadSample('trd')">here</button> to download Trading(TRD) sample file.</p>
+
+        </div>
+
+        <div *ngIf="isShowDownload">
+            <fieldset class="custom-fieldset">
+                <p class="pl-2 pt-2">Data has been imported successfully.</p>
+            </fieldset>
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link"
+                    (click)="exportfiles(savedResult.status_file_name)">here</button> to download status.</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="!isShowDownload">
+            <button type="button" class="btn btn-orange-outline-s mr-2"
+                (click)="modal.dismiss('Cross click')">Cancel</button>
+            <button type="button" class="btn btn-orange-s" (click)="onSave()">Save</button>
+        </div>
+        <div *ngIf="isShowDownload">
+            <button type="button" class="btn btn-orange-s" (click)="onDismiss()">Ok</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #DeleteConfirmationModal let-modal>
+    <app-delete-confirmation [model]="deleteConfirmModel" (ondelete)="onProductMasterDelete($event)"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #AddEditItemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit Cost Master</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="CostMasterForm">
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="articleno" class="required">Article Number</label>
+                        <input type="text" class="form-control" formControlName="articleno" OnlyNumber
+                            [ngClass]="{ 'is-invalid': submitted && costMasterForm.articleno.errors }">
+                        <div *ngIf="submitted && costMasterForm.articleno.errors" class="invalid-feedback">
+                            <div *ngIf="costMasterForm.articleno.errors.required">
+                                Please Enter Article Number
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="description" class="required">Description</label>
+                        <input class="form-control" type="text" formControlName="description"
+                            [ngClass]="{ 'is-invalid': submitted && costMasterForm.description.errors }">
+                        <div *ngIf="submitted && costMasterForm.description.errors" class="invalid-feedback">
+                            <div *ngIf="costMasterForm.description.errors.required">
+                                Please Enter Description
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="primaryplant" class="required">Primary Plant</label>
+                        <input type="text" class="form-control" formControlName="primaryplant"
+                            [ngClass]="{ 'is-invalid': submitted && costMasterForm.primaryplant.errors }">
+                        <div *ngIf="submitted && costMasterForm.primaryplant.errors" class="invalid-feedback">
+                            <div *ngIf="costMasterForm.primaryplant.errors.required">
+                                Please Enter Primary Plant
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <ng-select [items]="currencyTypeList" class="form-control" formControlName="currency"
+                            bindLabel="description" bindValue="code" placeholder="Please select"
+                            [ngClass]="{ 'is-invalid': submitted && costMasterForm.currency.errors }">
+                        </ng-select>
+                        <div *ngIf="submitted && costMasterForm.currency.errors" class="invalid-feedback">
+                            <div *ngIf="costMasterForm.currency.errors.required">
+                                Currency is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="standardcost">Standard Cost</label>
+                        <input type="text" class="form-control" formControlName="standardcost" numericwithdecimal
+                            decimals="2" beforedecimals="18">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="copperindex">Copper Index</label>
+                        <input type="text" class="form-control" formControlName="copperindex" numericwithdecimal
+                            decimals="2" beforedecimals="18">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label class="mr-2">
+                            <input type="radio" formControlName="propducttype" (click)="onProductTypeChnage($event)"
+                                value="std" [checked]='productTypeSTD'>Standard(STD)
+                        </label>
+                        <label>
+                            <input type="radio" formControlName="propducttype" (click)="onProductTypeChnage($event)"
+                                value="trd" [checked]='productTypeTRD'>Trading(TRD)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="productTypeSTD">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="copperweight">Copper Weight</label>
+                        <input type="text" class="form-control" formControlName="copperweight" numericwithdecimal
+                            decimals="2" beforedecimals="18">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="baseprice">Base Price</label>
+                        <input type="text" class="form-control" formControlName="baseprice" numericwithdecimal
+                            decimals="2" beforedecimals="18">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="copperbasecost">Copper Base Cost</label>
+                        <input type="text" class="form-control" formControlName="copperbasecost" numericwithdecimal
+                            decimals="2" beforedecimals="18">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="otherrmc">Other RMC</label>
+                        <input type="text" class="form-control" formControlName="otherrmc" numericwithdecimal
+                            decimals="4" beforedecimals="2">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="overhead">Overhead</label>
+                        <input type="text" class="form-control" formControlName="overhead" numericwithdecimal
+                            decimals="4" beforedecimals="2">
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="productTypeTRD">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="cubase">CU Base</label>
+                        <input type="text" class="form-control" formControlName="cubase" numericwithdecimal decimals="2"
+                            beforedecimals="18">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="transferprice">Transfer Price</label>
+                        <input type="text" class="form-control" formControlName="transferprice" numericwithdecimal
+                            decimals="2" beforedecimals="18">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onCostSaveClick()">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #ExportTypeModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Export - Cost Master</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div>
+            <form [formGroup]="ExportTypeForm">
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label class="required">Product Type</label>
+                        <ng-select [items]="productTypeList" class="form-control" formControlName="productType"
+                            bindLabel="description" bindValue="code" placeholder="Please select"
+                            [ngClass]="{ 'is-invalid': submitted && exportTypeForm.productType.errors }">
+                        </ng-select>
+                        <div *ngIf="submitted && exportTypeForm.productType.errors" class="invalid-feedback">
+                            <div *ngIf="exportTypeForm.productType.errors.required">
+                                Product Type is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onExport()">Export</button>
+    </div>
+</ng-template>

@@ -1,0 +1,14 @@
+.numberValidation{
+    width: 100%;
+    margin-top: 2px;
+    line-height: 1;
+    position: absolute;
+    font-size: 0.846rem;
+    font-style: italic;
+    color: #f00;
+    display: block;
+}
+
+.redtext{
+    color: red;
+}

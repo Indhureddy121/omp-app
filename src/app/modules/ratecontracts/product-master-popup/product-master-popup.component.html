@@ -1,0 +1,80 @@
+<div *ngIf="isProductsLoaded">
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Search Product</h4>
+      <button type="button" class="close" aria-label="Close" (click)="close()">
+          <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  <div class="modal-body">
+      <!-- <form [formGroup]="RejectForm"> -->
+      <div class="col-12">
+         
+              <div class="row">
+                  <div class="col-12">
+                      <app-appsearch [model]="searchModel" (callBack)="onSearch($event)"></app-appsearch>
+                  </div>
+              </div>
+        
+          <table class="table table-hover table-responsive table-sorting" id="table-productmaster">
+              <thead class="thead-inverse">
+                  <tr>
+                      <th>Action</th>
+                      <th (click)="headerClick($event)" name="articleno" id="articleno">Article Number</th>
+                      <th (click)="headerClick($event)" name="description" id="description">Description</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngIf="productmasterlist.length == 0">
+                      <td colspan="3" style="text-align: center;">
+                          No Records Found
+                      </td>
+                  </tr>
+                  <tr *ngFor="let pm of productmasterlist" (dblclick)="onSelectProductClick(pm.articleno)">
+                      <td>
+                          <button class="btn btn-link p-0"
+                              (click)="onSelectProductClick(pm.articleno)">Select</button>
+                      </td>
+                      <td>{{pm.articleno}}</td>
+                      <td>{{pm.description}}</td>
+                  </tr>
+              </tbody>
+          </table>
+
+          <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+          <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+              <li [ngClass]="{disabled:pager.currentPage === 1}">
+                  <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                  <ng-template #elseFirst>
+                      <a (click)="setPage(1)">First</a>
+                  </ng-template>
+              </li>
+              <li [ngClass]="{disabled:pager.currentPage === 1}">
+                  <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                  <ng-template #elsePrevious>
+                      <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                  </ng-template>
+              </li>
+              <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                  <a (click)="setPage(page)">{{page}}</a>
+              </li>
+              <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                  <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                  <ng-template #elseNext>
+                      <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                  </ng-template>
+              </li>
+              <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                  <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                  <ng-template #elseLast>
+                      <a (click)="setPage(pager.totalPages)">Last</a>
+                  </ng-template>
+              </li>
+          </ul>
+      </div>
+      <!-- </form> -->
+  </div>
+  <div class="modal-footer">
+      <button type="button" class="btn btn-orange-outline-s mr-2"
+          (click)="close()">Cancel</button>
+  </div>
+</div>

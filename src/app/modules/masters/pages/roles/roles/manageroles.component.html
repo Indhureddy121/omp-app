@@ -1,0 +1,72 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- isRoleSourceManual -->
+            <app-sub-header [isEdit]="isView" [isSave]="isEdit || isAdd" [isCancel]="isView || isEdit || isAdd"
+                (cancelClicked)="cancelClicked()" (saveClicked)="onSaveClick()" (editClicked)="onEditClick()">
+            </app-sub-header>
+            <div class="col-12">
+                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="rolesForm">
+                    <div class="row">
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required" for="roleCode">Role Code</label>
+                                <input class="form-control" type="text" formControlName="roleCode"
+                                    [ngClass]="{ 'is-invalid': submitted && f.roleCode.errors }"
+                                    AllowAlphaNumeric="true" maxlength="20">
+                                <div *ngIf="submitted && f.roleCode.errors" class="invalid-feedback">
+                                    <div *ngIf="f.roleCode.errors.required">
+                                        Role code is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required" for="roleName">Role Name</label>
+                                <input class="form-control" type="text" formControlName="roleName"
+                                    [ngClass]="{ 'is-invalid': submitted && f.roleName.errors }" maxlength="100">
+                                <div *ngIf="submitted && f.roleName.errors" class="invalid-feedback"
+                                    AllowAlphaNumericSpace=true>
+                                    <div *ngIf="f.roleName.errors.required">
+                                        Name is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="orderlevel">Order Level</label>
+                                <input class="form-control" type="text" formControlName="orderlevel" [OnlyNumber]=true>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-1 col-lg-1 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <input style="margin-right: 5px; margin-top: 20px;" type="checkbox"
+                                    formcontrolname="isconfig" [checked]="isConfigChecked"
+                                    (change)="toggleIsConfig($event)" [attr.disabled]="isView ? '' : null">
+                                Isconfig
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-1 col-lg-1 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <input style="margin-right: 5px; margin-top: 20px;" type="checkbox"
+                                    formcontrolname="isdealer" [checked]="isDealerChecked"
+                                    (change)="toggleIsDealer($event)" [attr.disabled]="isView ? '' : null">
+                                Is Dealer
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <input style="margin-right: 5px; margin-top: 20px;" type="checkbox"
+                                    formcontrolname="ischannelpartner" [checked]="isChannelPartnerChecked"
+                                    (change)="toggleIsChannelPartner($event)" [attr.disabled]="isView ? '' : null">
+                                Is Channel Partner
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

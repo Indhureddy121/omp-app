@@ -1,0 +1,147 @@
+<div class="page-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<app-list-sub-header></app-list-sub-header>
+			<div class="col-12">
+				<div class="row">
+					<div class="col-12">
+						<form class="ng-invalid ng-touched ng-dirty" [formGroup]="approvalMatrixForm">
+							<div class="row">
+								<div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+									<div class="form-group">
+										<label class="required" for="vertical">Vertical</label>
+										<ng-select [items]="verticalList" class="form-control" bindLabel="code"
+											bindValue="code" placeholder="Select Vertical" formControlName="vertical"
+											[ngClass]="{ 'is-invalid': submittedsearch && f.vertical.errors }"
+											(change)="onVerticalChange($event)">
+										</ng-select>
+										<div *ngIf="submittedsearch && f.vertical.errors" class="invalid-feedback">
+											<div *ngIf="f.vertical.errors.required">
+												Vertical is required
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-12 col-xl-3 col-lg-3 col-md-6 col-sm-12">
+									<div class="form-group">
+										<label class="required" for="segmentCode">Segment</label>
+										<ng-select [items]="segmentCodeList" class="form-control" bindLabel="code"
+											bindValue="code" placeholder="Select Segment" formControlName="segmentCode"
+											[ngClass]="{ 'is-invalid': submittedsearch && f.segmentCode.errors }"
+											(change)="onSegmentChange()">
+										</ng-select>
+										<div *ngIf="submittedsearch && f.segmentCode.errors" class="invalid-feedback">
+											<div *ngIf="f.segmentCode.errors.required">
+												Segment is required
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-12 col-xl-1 col-lg-1 col-md-6 col-sm-12">
+									<label>&nbsp;</label>
+									<div class="form-group">
+										<button class="btn btn-orange-s ml-3" (click)="onSearchBtnClick()"><i
+												class="icon-search"></i>Search</button>
+									</div>
+								</div>
+								<div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12"
+									*ngIf="approvalMatrixList && approvalMatrixList.length == 0">
+									<label>&nbsp;</label>
+									<div class="form-group">
+										<button class="btn btn-orange-s" (click)="openLg(content1, 0)"><i
+												class="icon-plus-1"></i>Add</button>
+									</div>
+								</div>
+								<div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12"
+									*ngIf="approvalMatrixList && approvalMatrixList.length != 0">
+									<label>&nbsp;</label>
+									<div class="form-group">
+										<button class="btn btn-orange-s" (click)="openLg(content1, 1)"><i
+												class="icon-pencil"></i>Edit</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12" style="overflow-x:auto;">
+						<table class="table table-hover table-responsive table-sorting" id="table-approval-matrix">
+							<thead class="thead-inverse">
+								<tr>
+									<th>Vertical</th>
+									<th>Segment</th>
+									<th>Role</th>
+									<th>Margin(%)</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr *ngIf="approvalMatrixList.length == 0">
+									<td colspan="4" style="text-align: center;">
+										No Records Found
+									</td>
+								</tr>
+								<tr *ngFor="let appmat of approvalMatrixList">
+									<td>{{vertical}}</td>
+									<td>{{segment}}</td>
+									<td>{{appmat.role_code}}</td>
+									<td>{{appmat.margin}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modals -->
+<ng-template #content1 let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Add/Edit Approval Matrix</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<div *ngIf="altleastOneLevelSet">
+			<font color="red">Please set atleast one level for margin in matrix.</font>
+		</div>
+		<div *ngIf="alreadyRoleAssigned">
+			<font color="red">This role is already assigned to another level</font>
+		</div>
+		<form class="ng-invalid ng-touched ng-dirty" [formGroup]="approvalMatrixInnerForm">
+			<table class="table table-hover table-responsive table-sorting" id="table-approval-matrix">
+				<thead class="thead-inverse">
+					<tr>
+						<td>Vertical :</td>
+						<td>{{vertical}}</td>
+					</tr>
+					<tr>
+						<td>Segment :</td>
+						<td>{{segment}}</td>
+					</tr>
+					<tr>
+						<th>Role</th>
+						<th>Margin</th>
+					</tr>
+					<ng-container *ngIf="approvalMatrixList.length > 0">
+						<tr *ngFor="let role of approvalMatrixList; let i=index">
+							<td>{{role.role_code}}</td>
+							<td style="width: 50%;">
+								<input class="form-control" type="text" id="mrg{{i}}" value="{{role.margin}}"
+									(change)="onMarginChange($event)" formControlName="approvalMatrixMargin"
+									numericwithdecimalminus decimals="3" beforedecimals="2">
+							</td>
+						</tr>
+					</ng-container>
+				</thead>
+			</table>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-orange-outline-s mr-2" (click)="onCancelClick()">Cancel</button>
+		<button type="button" class="btn btn-orange-s" (click)="onSaveClick()">Save</button>
+	</div>
+</ng-template>

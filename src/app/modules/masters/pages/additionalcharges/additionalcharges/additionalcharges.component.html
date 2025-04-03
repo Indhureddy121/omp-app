@@ -1,0 +1,51 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header [isEdit]="isView" [isSave]="isEdit || isAdd" [isCancel]="isView || isEdit || isAdd" 
+            (cancelClicked)="cancelClicked()" (saveClicked)="onSubmit()" (editClicked)="onEditClick()"></app-sub-header>
+            <div class="col-12">
+                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="additionalchargesForm">
+                    <div class="row">
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required" for="additionalchargesName">Name of Charges</label>
+                                <input class="form-control" type="text" formControlName="additionalchargesName"
+                                    [ngClass]="{ 'is-invalid': submitted && f.additionalchargesName.errors }" AllowAlphaNumericSpacewithSpecialCharacter=true>
+                                <div *ngIf="submitted && f.additionalchargesName.errors" class="invalid-feedback">
+                                    <div *ngIf="f.additionalchargesName.errors.required">
+                                        Name is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required" for="additionalchargesPercentage">Percentage(%)</label>
+                                <input class="form-control" type="text" formControlName="additionalchargesPercentage"
+                                    [ngClass]="{ 'is-invalid': submitted && f.additionalchargesPercentage.errors }" numericwithdecimal decimals="2" beforedecimals="2">
+                                <div *ngIf="submitted && f.additionalchargesPercentage.errors" class="invalid-feedback">
+                                    <div *ngIf="f.additionalchargesPercentage.errors.required">
+                                        Percentage is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="additionalchargesapplyon" class="required">Apply On</label>
+                                <ng-select [items]="applyonList" class="form-control" bindLabel="label"
+                                    bindValue="value" formControlName="additionalchargesapplyon" placeholder="Select Apply On"
+                                    [ngClass]="{ 'is-invalid': submitted && f.additionalchargesapplyon.errors }">
+                                </ng-select>
+                                <div *ngIf="submitted && f.additionalchargesapplyon.errors" class="invalid-feedback">
+                                    <div *ngIf="f.additionalchargesapplyon.errors.required">Apply On is required</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

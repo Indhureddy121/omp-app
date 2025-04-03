@@ -1,0 +1,9 @@
+.sono-link {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.sono-link:hover {
+    color: darkblue;
+}

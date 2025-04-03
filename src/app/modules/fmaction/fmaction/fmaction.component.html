@@ -1,0 +1,132 @@
+<app-app-header></app-app-header>
+<div class="page-wrapper pb-8">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header [isCancel]="isView || isEdit || isAdd" (cancelClicked)="cancelClicked()"
+                [isSave]="isEditSection('freightsection')" (saveClicked)="onSubmit()">
+            </app-sub-header>
+            <div class="col-12">
+                <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0, ngb-panel-1" [destroyOnHide]="false">
+                    <ngb-panel id="ngb-panel-0" class="pb-0">
+                        <ng-template ngbPanelTitle>Requirements</ng-template>
+                        <ng-template ngbPanelContent>
+                            <form class="ng-invalid ng-touched ng-dirty" [formGroup]="RequirementForm">
+                                <div class="row">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Article No</label>
+                                            <input type="text" formControlName="articleno" class="form-control"
+                                                [attr.disabled]="isAdd || isEdit || isView" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Description</label>
+                                            <input type="text" formControlName="reqdescription" class="form-control"
+                                                [attr.disabled]="isAdd || isEdit || isView" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Attachments</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12 mt-3"
+                                        *ngIf="requirementdocs && requirementdocs.length > 0">
+                                        <div class="row">
+                                            <div *ngFor="let file of requirementdocs;let f=index"
+                                                class="col-md-12 col-lg-6 outer-container-upload-control">
+                                                <div class="upload-control-filetype-container"><img
+                                                        class="table-icon-lg"
+                                                        src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                                </div>
+                                                <div class="upload-control-filename-container dot-views"><a
+                                                        href="javascript:void(0)" *ngIf="isEdit || isView"
+                                                        (click)="downloadFile(file.name,file.id,file.type)">
+                                                        {{file.name}}</a><span *ngIf="isAdd">{{file.name}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </ng-template>
+                    </ngb-panel>
+                    <ngb-panel id="ngb-panel-1" class="pt-0">
+                        <ng-template ngbPanelTitle>Freight Information</ng-template>
+                        <ng-template ngbPanelContent>
+                            <form class="ng-invalid ng-touched ng-dirty" [formGroup]="FreightInformationForm">
+                                <div class="row">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>OWF</label>
+                                            <input type="text" formControlName="owf" class="form-control"
+                                                [attr.disabled]="!isEditSection('freightsection') ? '' : null"
+                                                numericwithdecimal decimals="4" beforedecimals="8" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Adjustment Factor One</label>
+                                            <input type="text" formControlName="adjfactone" class="form-control"
+                                                [attr.disabled]="!isEditSection('freightsection') ? '' : null"
+                                                numericwithdecimal decimals="4" beforedecimals="8" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Adjustment Factor Two</label>
+                                            <input type="text" formControlName="adjfacttwo" class="form-control"
+                                                [attr.disabled]="!isEditSection('freightsection') ? '' : null"
+                                                numericwithdecimal decimals="4" beforedecimals="8" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Adjustment Factor Three</label>
+                                            <input type="text" formControlName="adjfactthree" class="form-control"
+                                                [attr.disabled]="!isEditSection('freightsection') ? '' : null"
+                                                numericwithdecimal decimals="4" beforedecimals="8" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Adjustment Factor Four</label>
+                                            <input type="text" formControlName="adjfactfour" class="form-control"
+                                                [attr.disabled]="!isEditSection('freightsection') ? '' : null"
+                                                numericwithdecimal decimals="4" beforedecimals="8" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Adjustment Factor Five</label>
+                                            <input type="text" formControlName="adjfactfive" class="form-control"
+                                                [attr.disabled]="!isEditSection('freightsection') ? '' : null"
+                                                numericwithdecimal decimals="4" beforedecimals="8" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Adjustment Factor Six</label>
+                                            <input type="text" formControlName="adjfactsix" class="form-control"
+                                                [attr.disabled]="!isEditSection('freightsection') ? '' : null"
+                                                numericwithdecimal decimals="4" beforedecimals="8" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-2"
+                                    *ngIf="isEditSection('freightsection')">
+                                    <div class="row alert alert-info">
+                                        <input style="margin-right: 5px; margin-top: 3px;" type="checkbox"
+                                            formcontrolname="iscomplete" (change)="toggleIsComplete($event)">
+                                        I have completed the required information and it's ready to process further.
+                                    </div>
+                                </div>
+                            </form>
+                        </ng-template>
+                    </ngb-panel>
+                </ngb-accordion>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,205 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isRefresh]="true" (refreshClicked)="onRefreshClick()" [isExport]="true"
+                (exportClicked)="onExport()">
+            </app-list-sub-header>
+
+            <div class="col-12">
+                <div>
+                    <div class="row">
+                        <div class="w-100 row pl-4">
+                            <div class="col-12 col-md-3 col-lg-3">
+                                <app-appsearch [model]="searchModel" (callBack)="onSearch($event)">
+                                </app-appsearch>
+                            </div>
+                            <div class="col-12 col-md-9 col-sm-9">
+                                <form [formGroup]="FilterForm">
+                                    <div class="row">
+                                        <div class="col-12 col-md-3 col-sm-3">
+                                            <div class="form-group">
+                                                <ng-select [items]="orderStatusList" class="form-control"
+                                                    bindLabel="description" bindValue="code"
+                                                    formControlName="orderstatus"
+                                                    (change)="onFilterStatusChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <ng-select [items]="OrderTypeList" class="form-control"
+                                                    bindLabel="description" bindValue="code" formControlName="ordertype"
+                                                    (change)="onOrderTypeChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <input class="form-control doc-date" formcontrolname="Validfrom"
+                                                        ngbDatepicker #Validfrom="ngbDatepicker"
+                                                        [value]="formatter.format(validfromDate)"
+                                                        (dateSelect)="onValidFromDateSelection($event)" readonly />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="Validfrom.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <input class="form-control doc-date" formcontrolname="Validto"
+                                                        ngbDatepicker #Validto="ngbDatepicker"
+                                                        [value]="formatter.format(validtoDate)"
+                                                        (dateSelect)="onValidToDateSelection($event)" readonly />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="Validto.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting" id="table-orders">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th></th>
+                            <th (click)="headerClick($event)" id="offernumber">Type</th>
+                            <th (click)="headerClick($event)" id="OP.lappopportunityid">LAPP Opportunity ID</th>
+                            <th (click)="headerClick($event)" id="offernumber">No</th>
+                            <th (click)="headerClick($event)" id="O.SO_SAP_id">SO Id</th>
+                            <th (click)="headerClick($event)" id="O.soCreatedDate">SO Created Date</th>
+                            <th (click)="headerClick($event)" id="C.customername">Account Name</th>
+                            <th (click)="headerClick($event)" id="U.fullname">Owner</th>
+                            <th (click)="headerClick($event)" id="O.offervalue" class="text-right">Order Value</th>
+                            <th (click)="headerClick($event)" id="OS.status">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="orderslist.length == 0">
+                            <td colspan="10" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+
+                        <tr *ngFor="let O of orderslist" (dblclick)="onRowDoubleClick(O.offerid, O.type)">
+                            <td>
+                                <button class="btn btn-link p-0 mr-3" (click)="viewClicked(O.offerid, O.type)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-view.svg"></button>
+                            </td>
+                            <td>
+                                <span class="dot green" *ngIf="O.IsActive == 1"></span>
+                                <span class="dot red" *ngIf="O.IsActive == 0"></span>
+                                <span class="dot orange" *ngIf="O.IsExpired == 1"></span>
+                            </td>
+                            <td>{{O.typedescription}}</td>
+                            <td>{{O.lappopportunityid}}</td>
+                            <td>{{O.offernumber}}</td>
+                            <td>{{O.soid}}</td>
+                            <td>{{O.soCreatedDate | date:dateFormate}}</td>
+                            <td>{{O.accountname}}</td>
+                            <td>{{O.ownername}}</td>
+                            <td class="text-right">{{O.offervalue | currency:'INR'}}</td>
+                            <td><button class="btn btn-link p-0"
+                                    (click)="onDetailStatus(O.offerid, O.soid, O.type, O.status)">{{O.showstatus}}</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="width: 100%;">
+                    <!-- <div style=" float: left;">
+                        <span class="dot green"></span> Active | <span class="dot red"></span> Inactive | <span
+                            class="dot orange"></span> Expired
+                    </div> -->
+                    <div style=" float:right;">
+                        <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                        <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination"
+                            style="margin-top: -10px;">
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                                <ng-template #elseFirst>
+                                    <a (click)="setPage(1)">First</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                                <ng-template #elsePrevious>
+                                    <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                                </ng-template>
+                            </li>
+                            <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                                <a (click)="setPage(page)">{{page}}</a>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                                <ng-template #elseNext>
+                                    <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                                <ng-template #elseLast>
+                                    <a (click)="setPage(pager.totalPages)">Last</a>
+                                </ng-template>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<ng-template #DetailStatusModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Item Detail Status ({{SONO}}) - {{ItemHeaderStatus}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="col-12">
+            <table class="table table-hover table-responsive" id="table-stock">
+                <thead class="thead-inverse">
+                    <tr>
+                        <th>Item Number</th>
+                        <th>Material Number</th>
+                        <th>Dlv. Qty</th>
+                        <th>Dlv. Item</th>
+                        <th>Dlv. Num</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="ItemDetailStatusList.length == 0">
+                        <td colspan="3" style="text-align: center;">
+                            No Records Found
+                        </td>
+                    </tr>
+                    <tr *ngFor="let sd of ItemDetailStatusList">
+                        <td>{{sd.ItmNumber}}</td>
+                        <td>{{sd.Material}}</td>
+                        <td>{{sd.DlvQty}}</td>
+                        <td>{{sd.DelivItem}}</td>
+                        <td>{{sd.DelivNumb}}</td>
+                        <td>{{sd.itemstatus}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+    </div>
+</ng-template>

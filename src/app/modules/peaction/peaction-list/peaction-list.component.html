@@ -1,0 +1,515 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isUpload]=true (uploadClicked)="open()" [isExport]=true (exportClicked)="onExport()">
+            </app-list-sub-header>
+            <div class="col-12">
+                <div>
+                    <div class="row">
+                        <div class="w-100 row pl-4">
+                            <div class="col-12 col-md-3 col-lg-3">
+                                <app-appsearch [model]="searchModel" (callBack)="onSearch($event)">
+                                </app-appsearch>
+                            </div>
+                            <div class="col-12 col-md-9 col-sm-9">
+                                <form [formGroup]="FilterForm">
+                                    <div class="row">
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                            <div class="form-group">
+                                                <ng-select [items]="itemtatusList" class="form-control"
+                                                    bindLabel="description" bindValue="code"
+                                                    formControlName="itemStatus"
+                                                    (change)="onFilterItemStatusChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                            <div class="form-group">
+                                                <ng-select [items]="itemSPRStatusList" class="form-control"
+                                                    bindLabel="description" bindValue="code"
+                                                    formControlName="itemSPRStatus"
+                                                    (change)="onFilterStatusChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <ng-select [items]="FilterAssignToList" class="form-control"
+                                                    bindLabel="description" bindValue="userid"
+                                                    formControlName="itemAssigneTo"
+                                                    (change)="onFilterFilterAssignToChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <ng-select [items]="VerticalsList" class="form-control"
+                                                    bindLabel="code" bindValue="code"
+                                                    formControlName="vertical"
+                                                    (change)="onVerticalChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-hover table-responsive table-sorting" id="table-additionalcharges">
+                    <!-- style="display: block;overflow-x: auto;"  -->
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th></th>
+                            <th (click)="headerClick($event)" id="offernumber">Offer No</th>
+                            <th (click)="headerClick($event)" id="lappopportunityid">LAPP Opp. ID</th>
+                            <th (click)="headerClick($event)" id="created_date">Enquiry Date</th>
+                            <th (click)="headerClick($event)" id="articleno">Artical No.</th>
+                            <th (click)="headerClick($event)" id="sapid">SAP ID</th>
+                            <th (click)="headerClick($event)" id="description">Description</th>
+                            <th (click)="headerClick($event)" id="quantity">Quantity</th>
+                            <th>Attachments</th>
+                            <th (click)="headerClick($event)" id="assignto">Assign To</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="pelist.length == 0">
+                            <td colspan="10" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let pe of pelist">
+                            <td>
+                                <button class="btn btn-link p-0 mr-3"
+                                    *ngIf="pe.IsActive == 0 || pe.IsDelete == 1 || pe.status >= 40"
+                                    (click)="viewClicked(pe.id)"><img class="table-icon"
+                                        src="../../../../../assets/images/icon-view.svg"></button>
+                                <button class="btn btn-link p-0 mr-3"
+                                    *ngIf="pe.IsActive == 1 && pe.IsDelete == 0 && pe.status < 40"
+                                    (click)="editClicked(pe.id)"><img class="table-icon"
+                                        src="../../../../../assets/images/icon-edit.svg"></button>
+                            </td>
+                            <td><span class="dot green" *ngIf="pe.IsActive == 1 && pe.IsDelete == 0"></span>
+                                <span class="dot red" *ngIf="pe.IsActive == 0 || pe.IsDelete == 1"></span>
+                            </td>
+                            <td>{{pe.offernumber}} </td>
+                            <td>{{pe.lappopportunityid}}</td>
+                            <td>{{pe.created_date | date: dateformate : '+0000'}}</td>
+                            <td>{{pe.articleno}}</td>
+                            <td>{{pe.sapid}}</td>
+                            <td title="{{pe.sprform_fields}}" *ngIf="pe.sprform_fields && pe.status < 30">
+                                {{pe.sprform_fields}}</td>
+                            <td title="{{pe.description}}" *ngIf="!pe.sprform_fields || pe.status >= 30">
+                                {{pe.description}}</td>
+                            <td>{{pe.quantity}}</td>
+                            <td><button *ngIf="pe.offerstatus <= 50 && pe.IsActive == 1 && pe.IsDelete == 0"
+                                    class="btn btn-link p-0" (click)="openOfferListModal(pe.offerid)">Upload</button>
+                            </td>
+                            <td>
+                                <button *ngIf="!pe.assignto && canAssign" class="btn btn-link p-0"
+                                    (click)="openAssigneeModal(pe.id, pe.offerid)">Add
+                                </button>
+                                <button *ngIf="pe.assignto && canAssign && pe.status <= 30" class="btn btn-link p-0"
+                                    (click)="openAssigneeModal(pe.id, pe.offerid)">Edit
+                                </button>
+                                <i *ngIf="pe.assignto && pe.status <= 30"> | </i>
+                                {{ pe.assignto}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="width: 100%;">
+                    <div style=" float: left;">
+                        <span class="dot green"></span> Active | <span class="dot red"></span> Inactive or Expired
+                    </div>
+                    <div style=" float:right;">
+                        <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                        <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                                <ng-template #elseFirst>
+                                    <a (click)="setPage(1)">First</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                                <ng-template #elsePrevious>
+                                    <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                                </ng-template>
+                            </li>
+                            <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                                <a (click)="setPage(page)">{{page}}</a>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                                <ng-template #elseNext>
+                                    <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                                <ng-template #elseLast>
+                                    <a (click)="setPage(pager.totalPages)">Last</a>
+                                </ng-template>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+
+<ng-template #AssigneeModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit Assign To</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="AssigneeForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row form-group">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="assignto">Assign To</label>
+                                <ng-select [items]="AssigntoList" class="form-control" formControlName="assignto"
+                                    bindLabel="description" bindValue="userid" placeholder="Please Select">
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <input type="checkbox" style="margin-right: 5px; margin-top: 3px;"
+                                    formControlName="isassigntoallitem">
+                                <label for="completedlv">Apply to all items of the opportunity.</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer text-right">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onAssignToSaveClick()">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #ImportSPRItemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Import Items</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="ImportItemsForm">
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label class="required">Attachments</label>
+                        <div><button (click)="fileInput.click()">Select File</button>
+                            <input type="file" style="display: none;" (change)="ImportItemsfileChangeListener($event)"
+                                #fileInput accept=".xlsx, .xls" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mt-3" *ngIf="ImportItemFiles">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-6 outer-container-upload-control">
+                            <div class="upload-control-filetype-container"><img class="table-icon-lg"
+                                    src="../../../../../assets/images/{{setFileTypeIcon(ImportItemFiles.type)}}">
+                            </div>
+                            <div class="upload-control-filename-container dot-views">
+                                <span>{{ImportItemFiles.name}}</span>
+                            </div>
+                            <div class="upload-control-delete-container">
+                                <button class="btn btn-link p-0" (click)="removeImportItemFile()">
+                                    <img class="table-icon" src="../../../../../assets/images/icon-delete1.svg"
+                                        title="delete image"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                (click)="downloadImportItemSample()">here</button> to download sample file.</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onImportItemSave()">Verify</button>
+    </div>
+</ng-template>
+
+<ng-template #ItemStatusModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Status of import items</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <div class="overflow-auto">
+                    <table class="table table-hover table-responsive table-sorting" id="table-opportunities">
+                        <thead class="thead-inverse">
+                            <tr>
+                                <th>Offer no</th>
+                                <th>Article no</th>
+                                <th>Description</th>
+                                <th>Customer part no</th>
+                                <th>Item Type</th>
+                                <th>Primary Plant</th>
+                                <!-- <th>Currency</th> -->
+                                <th>UOM</th>
+                                <th>Length</th>
+                                <th>Industry Std Text</th>
+                                <th>PG</th>
+                                <th>PH</th>
+                                <th>PH Two</th>
+                                <th>PH Six</th>
+                                <th>Lab Text</th>
+                                <th>Standard Cost</th>
+                                <th>Copper Weight</th>
+                                <th>Copper Index</th>
+                                <th>Base Price</th>
+                                <th>Copper Base Cost</th>
+                                <th>Other RMC</th>
+                                <th>Variable O/H</th>
+                                <th>Fixed O/H</th>
+                                <th>ALP</th>
+                                <th>MSQ</th>
+                                <th>MDQ</th>
+                                <th>OWF</th>
+                                <th>Valid From</th>
+                                <th>Valid To</th>
+                                <th>Remarks</th>
+                                <th>Item Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let iis of importItemStatus">
+                                <td>{{iis['OFFERNO']}}</td>
+                                <td>{{iis['ARTICLENO']}}</td>
+                                <td>{{iis['DESCRIPTION']}}</td>
+                                <td>{{iis['CUSTOMERPARTNO']}}</td>
+                                <td>{{iis['ITEMTYPE']}}</td>
+                                <td>{{iis['PRIMARYPLANT']}}</td>
+                                <!-- <td>{{iis['CURRENCY']}}</td> -->
+                                <td>{{iis['UOM']}}</td>
+                                <td>{{iis['LENGTH']}}</td>
+                                <td>{{iis['INDUSTRYSTDTEXT']}}</td>
+                                <td>{{iis['PG']}}</td>
+                                <td>{{iis['PH']}}</td>
+                                <td>{{iis['PHTWO']}}</td>
+                                <td>{{iis['PHSIX']}}</td>
+                                <td>{{iis['LABTEXT']}}</td>
+                                <td>{{iis['STANDARDCOST']}}</td>
+                                <td>{{iis['COPPERWEIGHT']}}</td>
+                                <td>{{iis['COPPERINDEX']}}</td>
+                                <td>{{iis['BASEPRICE']}}</td>
+                                <td>{{iis['COPPERBASECOST']}}</td>
+                                <td>{{iis['OTHERRMC']}}</td>
+                                <td>{{iis['VARIABLEOH']}}</td>
+                                <td>{{iis['FIXEDOH']}}</td>
+                                <td>{{iis['ALP']}}</td>
+                                <td>{{iis['MSQ']}}</td>
+                                <td>{{iis['MDQ']}}</td>
+                                <td>{{iis['OWF']}}</td>
+                                <td>{{iis['VALIDFROM']}}</td>
+                                <td>{{iis['VALIDTO']}}</td>
+                                <td>{{iis.REMARKS}}</td>
+                                <td>{{iis.ItemRemarks}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onProceedItem(0)">Save</button>
+        <button type="button" class="btn btn-orange-s" (click)="onProceedItem(1)">Submit</button>
+    </div>
+</ng-template>
+
+<ng-template #ExportSPRItemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Export Items</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="ExportItemsForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="mr-2">
+                            <input type="radio" formControlName="exportoption" (click)="onExportOptionChange($event)"
+                                value="3" class="mr-1" [checked]='dwnldfilteredData'>Download filtered data (All
+                            columns)
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="mr-2">
+                            <input type="radio" formControlName="exportoption" (click)="onExportOptionChange($event)"
+                                value="0" class="mr-1" [checked]='dwnldforImport'>Download filtered data (for Import)
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="mr-2">
+                            <input type="radio" formControlName="exportoption" (click)="onExportOptionChange($event)"
+                                value="1" class="mr-1" [checked]='dwnldforReport'>Download Report (Dump data in date
+                            range)
+                        </label>
+                    </div>
+                    <div class="row" *ngIf="dwnldforReport">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="required">Valid From</label>
+                                <div class="input-group">
+                                    <input class="form-control doc-date" formcontrolname="validfrom" ngbDatepicker
+                                        #ValidFrom="ngbDatepicker" [value]="formatter.format(validfromDate)"
+                                        (dateSelect)="onOffValidFromDateSelection($event)" readonly />
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary calendar" (click)="ValidFrom.toggle()"
+                                            type="button"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="required">Valid To</label>
+                                <div class="input-group">
+                                    <input class="form-control doc-date" formcontrolname="validto" ngbDatepicker
+                                        #ValidTo="ngbDatepicker" [value]="formatter.format(validtoDate)"
+                                        (dateSelect)="onOffValidToDateSelection($event)" readonly
+                                        [maxDate]="ValidMaxdate" [minDate]="ValidMindate" />
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary calendar" (click)="ValidTo.toggle()"
+                                            type="button"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="radio" formControlName="exportoption" (click)="onExportOptionChange($event)"
+                                value="2" class="mr-1" [checked]='dwnldbyOpportunityId'>Download Report by LAPP
+                            Opportunity Id (Dump data for Opportunity ID)
+                        </label>
+                    </div>
+                    <div class="row" *ngIf="dwnldbyOpportunityId">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="opportunityid" class="required">Opportunity Id</label>
+                                <input type="text" class="form-control" formControlName="opportunityid"
+                                    [ngClass]="{ 'is-invalid': submitted && exportItemsForm.opportunityid.errors }">
+                                <div *ngIf="submitted && exportItemsForm.opportunityid.errors" class="invalid-feedback">
+                                    <div *ngIf="exportItemsForm.opportunityid.errors.required">
+                                        Opportunity Id is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onExportClick()">Export</button>
+    </div>
+</ng-template>
+
+<ng-template #OfferArticlesModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Attached document for Item(s)</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <div class="overflow-auto">
+                    <table class="table table-hover table-responsive table-sorting" id="table-opportunities">
+                        <thead class="thead-inverse">
+                            <tr>
+                                <th width="8%">Offer no</th>
+                                <th width="15%">Article no</th>
+                                <th>Description</th>
+                                <th width="8%">Quantity</th>
+                                <th width="40%">Attachment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of OfferArticleList">
+                                <td width="8%">{{item.offernum}}</td>
+                                <td width="15%">{{item.articleno}}</td>
+                                <td>{{item.description}}</td>
+                                <td width="8%">{{item.quantity}}</td>
+                                <td width="40%">
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <div><button (click)="fileInput.click()">Select File</button>
+                                                    <input type="file" id="importFile" style="display: none;"
+                                                        (change)="OfferArticleFileChangeListener($event, item.itemid)"
+                                                        #fileInput />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-9" *ngIf="item.files.length > 0">
+                                            <div class="row">
+                                                <div *ngFor="let file of item.files;let f=index"
+                                                    class="col-8 outer-container-upload-control">
+                                                    <div class="upload-control-filetype-container"><img
+                                                            class="table-icon-lg"
+                                                            src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                                    </div>
+                                                    <div class="upload-control-filename-container dot-views">
+                                                        <span>{{file.name}}</span>
+                                                    </div>
+                                                    <div class="upload-control-delete-container">
+                                                        <button class="btn btn-link p-0"
+                                                            (click)="removeOfferArticleFile(item.itemid)">
+                                                            <img class="table-icon"
+                                                                src="../../../../../assets/images/icon-delete1.svg"
+                                                                title="delete image"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onOfferArticleSave()">Save</button>
+    </div>
+</ng-template>

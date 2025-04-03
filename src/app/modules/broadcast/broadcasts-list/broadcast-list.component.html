@@ -1,0 +1,136 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isAdd]="true" (addClicked)="onAddClick()"></app-list-sub-header>
+
+            <div class="col-12">
+                
+                    <div class="row">
+                        <app-appsearch [model]="searchModel" class="col-12 col-xl-8 col-lg-8 col-md-6 col-sm-12"
+                            (callBack)="onSearch($event)">
+                        </app-appsearch>
+                    </div>
+                
+
+                <table class="table table-hover table-responsive table-sorting" id="table-offers">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th width="7%">Action</th>
+                            <th></th>
+                            <th (click)="headerClick($event)" name="title" id="title">Title</th>
+                            <th (click)="headerClick($event)" name="description" id="description">
+                                Description</th>
+                            <th width="10%" (click)="headerClick($event)" name="fromdate" id="fromdate">
+                                From Date</th>
+                            <th width="10%" (click)="headerClick($event)" name="todate" id="todate">
+                                To Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="broadcastslist.length == 0">
+                            <td colspan="6" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let bl of broadcastslist; let j=index;" (dblclick)="onRowDoubleClick(bl.id)">
+                            <td>
+                                <button class="btn btn-link p-0 mr-3" (click)="viewClicked(bl.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-view.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="editClicked(bl.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenDeleteConfirmationPopup(j, bl.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-delete.svg"></button>
+                            </td>
+                            <td><span class="dot orange" *ngIf="bl.isexpire == 1"></span></td>
+                            <td>{{bl.title}}</td>
+                            <td>{{bl.description}}</td>
+                            <td>{{bl.fromdate | date:dateFormate}}</td>
+                            <td>{{bl.todate | date:dateFormate}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- <div style="width: 100%;">
+                    <div style=" float:right;">
+                        <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination"
+                            style="margin-top: -10px;">
+                            <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                                <ng-template #elseFirst>
+                                    <a (click)="setPage(1)">First</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                                <ng-template #elsePrevious>
+                                    <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                                </ng-template>
+                            </li>
+                            <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                                <a (click)="setPage(page)">{{page}}</a>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                                <ng-template #elseNext>
+                                    <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                                <ng-template #elseLast>
+                                    <a (click)="setPage(pager.totalPages)">Last</a>
+                                </ng-template>
+                            </li>
+                        </ul>
+                    </div>
+                </div> -->
+
+                <div style="width: 100%;">
+                    <div style=" float: left;">
+                        <span class="dot orange"></span> Expired
+                    </div>
+                    <div style=" float:right;">
+                        <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                        <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination"
+                            style="margin-top: -10px;">
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                                <ng-template #elseFirst>
+                                    <a (click)="setPage(1)">First</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                                <ng-template #elsePrevious>
+                                    <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                                </ng-template>
+                            </li>
+                            <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                                <a (click)="setPage(page)">{{page}}</a>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                                <ng-template #elseNext>
+                                    <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                                <ng-template #elseLast>
+                                    <a (click)="setPage(pager.totalPages)">Last</a>
+                                </ng-template>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #DeleteModel let-modal>
+    <app-delete-confirmation [model]="deleteConfirModel" (ondelete)="onDelete($event)"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>

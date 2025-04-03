@@ -1,0 +1,77 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header></app-list-sub-header>
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12">
+                        <form [formGroup]="FilterForm">
+                            <div class="row">
+                                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="articleno" class="required">Article No</label>
+                                        <input type="text" formControlName="articleno" class="form-control"
+                                            [ngClass]="{ 'is-invalid': submitted && filterForm.articleno.errors }" />
+                                        <div *ngIf="submitted && filterForm.articleno.errors" class="invalid-feedback">
+                                            <div *ngIf="filterForm.articleno.errors.required">
+                                                Article no is required
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-4">
+                                    <div class="form-group">
+                                        <button class="btn btn-orange-s" (click)="OnGenerateReportClick()"
+                                            appNoDblClick><i class=" icon-floppy-o"></i>Generate Report</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting"
+                    *ngIf="itemstockdata && itemstockdata.length > 0">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Material</th>
+                            <th>Description</th>
+                            <th>Location</th>
+                            <th>Location Description</th>
+                            <th>Length</th>
+                            <th>Factor</th>
+                            <th class="text-right">Quantity</th>
+                            <th>Batch</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="itemstockdata.length === 0">
+                            <td colspan="8" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let is of itemstockdata">
+                            <td>{{is.Matnr}}</td>
+                            <td>{{is.Maktx}}</td>
+                            <td>{{is.Werks}}</td>
+                            <td>{{is.Name1}}</td>
+                            <td>{{is.Length}}</td>
+                            <td>{{is.Factor}}</td>
+                            <td class="text-right">{{is.AQty}}</td>
+                            <td>{{is.Batch}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6"><strong>Total</strong></td>
+                            <td class="text-right"><strong>{{Total_Quantity}}</strong></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

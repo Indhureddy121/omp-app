@@ -1,0 +1,11 @@
+.action-buttons{
+    display: flex;
+}
+
+.input-group-text{
+    cursor: pointer !important;
+    background: #ff7100;
+    i{
+        color: #524f4f;
+    }
+}

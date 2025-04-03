@@ -1,0 +1,23 @@
+form{
+    display: flex;
+    left: 10px;
+    position: relative;
+    min-width: 90%;
+}
+
+.input-group{
+min-width: 100%;
+}
+
+input{
+    height: 34px !important;
+    min-width: 100%;
+}
+
+.input-group-text{
+    cursor: pointer !important;
+    background: #ff7100;
+    i{
+        color: #fff;
+    }
+}

@@ -1,0 +1,114 @@
+<button (click)="toggleMenu()" class="menu-toggle" [class.open]="isMenuOpen">
+  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="white" class="bi bi-list" viewBox="0 0 20 20">
+    <path fill-rule="evenodd"
+      d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+  </svg>
+</button>
+<div class="menu-container" [class.open]="isMenuOpen">
+  <div class="side-menu-list">
+    <li *ngFor="let menuitem of menuList">
+      <a routerLink="{{menuitem.screen_url}}">
+        <img alt="{{menuitem.screen_name}}" src="../../../../assets/images/{{menuitem.menu_image}}" />
+        <span>
+          <p>{{menuitem.screen_name}}</p>
+          <span *ngIf="menuitem.id == 8 && pendingApproval > 0">{{pendingApproval}}</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu(orderCancellationList)">
+        <img src="../../../../assets/images/icon-quotation.svg" />
+        <span>
+          <p>Order Cancellation</p>
+        </span>
+        <button class="icon-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-chevron-down"
+            viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+              d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708" />
+          </svg>
+        </button>
+      </a>
+      <ul class="submenu" *ngIf="orderCancellationList.isSubmenuOpen">
+        <li *ngFor="let submenuItem of orderCancellationList.menus">
+          <a routerLink="{{ submenuItem.screen_url }}">
+            <span>
+              <p>{{ submenuItem.screen_name }}</p>
+            </span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu(reportsList)">
+        <img src="../../../../assets/images/icon-reports.svg" />
+        <span>
+          <p>Reports</p>
+        </span>
+        <button class="icon-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-chevron-down"
+            viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+              d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708" />
+          </svg>
+        </button>
+      </a>
+      <ul class="submenu" *ngIf="reportsList.isSubmenuOpen">
+        <li *ngFor="let submenuItem of reportsList.menus">
+          <a routerLink="{{ submenuItem.screen_url }}">
+            <span>
+              <p>{{ submenuItem.screen_name }}</p>
+            </span>
+          </a>
+        </li>
+      </ul>
+    </li>
+  </div>
+</div>
+
+
+
+<div #mainHeaderMenu class="collapse navbar-collapse h-md-100 main-menu">
+  <ul class="mr-auto">
+    <li *ngFor="let menuitem of menuList"><a routerLink="{{menuitem.screen_url}}">
+        <img alt="{{menuitem.screen_name}}"
+          src="../../../../assets/images/{{menuitem.menu_image}}"><span>{{menuitem.screen_name}} <span
+            *ngIf="menuitem.id == 8 && pendingApproval > 0" class="notificationbadge">{{pendingApproval}}</span></span>
+      </a>
+    </li>
+  </ul>
+</div>
+<div ngbDropdown class="nav-item masternav ml-auto mr-3 submenu-out" style="padding-left:20px;">
+  <div id="dropdownSubContracting" ngbDropdownToggle class="nav-link">
+    <img src="../../../../assets/images/icon-quotation.svg" />
+    <span>Order Cancellation</span>
+  </div>
+  <div ngbDropdownMenu aria-labelledby="dropdownSubContracting"
+    class="dropdown-menu right-drpdown dropdown-menu-right dropdown-reports">
+    <a class="dropdown-item" *ngFor="let menuchild of orderCancellationList.menus"
+      routerLink="{{ menuchild.screen_url }}" data-toggle="tooltip" data-placement="top"
+      title="{{ menuchild.screen_name }}">{{ menuchild.screen_name }}</a>
+  </div>
+</div>
+<div ngbDropdown class="nav-item masternav ml-auto mr-3 submenu-out">
+  <div id="dropdownSubContracting" ngbDropdownToggle class="nav-link">
+    <img src="../../../../assets/images/icon-reports.svg" />
+
+    <span>Reports</span>
+  </div>
+  <div ngbDropdownMenu aria-labelledby="dropdownSubContracting"
+    class="dropdown-menu right-drpdown dropdown-menu-right dropdown-reports">
+    <a class="dropdown-item" *ngFor="let menuchild of reportsList.menus" routerLink="{{ menuchild.screen_url }}"
+      data-toggle="tooltip" data-placement="top" title="{{ menuchild.screen_name }}">
+      {{ menuchild.screen_name }}</a>
+  </div>
+</div>
+<div ngbDropdown class="nav-item masternav mr-2 submenu-in">
+  <div id="dropdownSubContracting" ngbDropdownToggle class="nav-link">
+    <img alt="Masters" src="../../../../assets/images/icon-masters.svg" /><span>Masters</span>
+  </div>
+  <div ngbDropdownMenu aria-labelledby="dropdownSubContracting" class="dropdown-menu right-drpdown dropdown-menu-right">
+    <a class="dropdown-item" *ngFor="let menuchild of masterList.menus" routerLink="{{ menuchild.screen_url }}">{{
+      menuchild.screen_name }}</a>
+  </div>
+</div>

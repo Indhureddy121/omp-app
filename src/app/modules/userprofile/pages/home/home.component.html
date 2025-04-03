@@ -1,0 +1,409 @@
+<app-app-header></app-app-header>
+<div class="page-wrapper pt-130px">
+    <div class="container-fluid">
+        <div class="text-right mb-2">
+            <button class="btn btn-orange-s mr-2" (click)="onSAPReportMatrixSyncClick()" *ngIf="isAdmin">
+                <i class="icon-refresh"></i>Sync SAP Report Matrix</button>
+            <button class="btn btn-orange-s" (click)="onSFDCRefreshClick()">
+                <i class="icon-refresh"></i>Account refresh from SFDC</button>
+        </div>
+        <div class="row">
+            <div class="col-12 row" *ngIf="usertype < 20">
+                <div class="col-12" *ngIf="UserOnLeave">
+                    <div class="form-group alert alert-danger">
+                        <!-- <label>You are on leave today. Click <a>here</a> to change.</label> -->
+                        <p class="mb-0">You are on leave today. Click<button type="link" class="btn-link button-link"
+                                (click)="onChangeLeaveSettingClick()">here</button>to
+                            change.</p>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="row" *ngIf="LeaveUsersList && LeaveUsersList.length > 0">
+                        <div class="col-12">
+                            <h5>User(s) on leave today</h5>
+                        </div>
+                        <div class="col-9 overflow-auto">
+                            <table class="table table-hover table-responsive table-sorting">
+                                <thead class="thead-inverse">
+                                    <tr>
+                                        <th width="60">Role</th>
+                                        <th>User</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let user of LeaveUsersList">
+                                        <td>{{user.role}}</td>
+                                        <td>{{user.fullname}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12" *ngIf="userrole=='Admin'">
+                    
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5>API List</h5>
+                            </div>
+                            <div class="col-lg-9 overflow-auto">
+                                <table class="table table-hover table-responsive table-sorting">
+                                    <thead class="thead-inverse">
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>count</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <!-- sap list start -->
+                                            <td><a href="https://documenter.getpostman.com/view/39669935/2sAYHzJ46o#b37f7027-9335-47ec-be7c-b2ae548882de"
+                                                target="_blank">List of API from SAP</a></td>
+                                            <td>3</td>
+                                            <!-- sap list end -->
+                                        </tr>
+                                        <tr>
+                                            <th><a href="https://documenter.getpostman.com/view/5324173/SzYevvgx"
+                                                    target="_blank">List of API from SFDC</a></th>
+                                            <td>5</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                    </div>
+                    
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+
+                    <div *ngIf="approvalrequiredList && approvalrequiredList.length > 0">
+                        <div>
+                            <h5>Approval Required</h5>
+                        </div>
+                        <div class="overflow-auto">
+                            <table class="table table-hover table-responsive table-sorting">
+                                <thead class="thead-inverse">
+                                    <tr>
+                                        <th width="50">Type</th>
+                                        <th width="60">No</th>
+                                        <th>Customer Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of approvalrequiredList">
+                                        <td>{{item.type}}</td>
+                                        <td><button class="btn btn-link p-0"
+                                                (click)="redirecttodetail(item.id, item.typecode)">{{item.offerno}}</button>
+                                        </td>
+                                        <td>{{item.customername}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mb-3">
+                        </div>
+                    </div>
+                    <div *ngIf="cpovalidationrequiredList && cpovalidationrequiredList.length > 0">
+                        <div>
+                            <h5>CPO Validation Required</h5>
+                        </div>
+                        <div class="overflow-auto">
+                            <table class="table table-hover table-responsive table-sorting">
+                                <thead class="thead-inverse">
+                                    <tr>
+                                        <th width="50">Type</th>
+                                        <th width="60">No</th>
+                                        <th>Customer Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of cpovalidationrequiredList">
+                                        <td>{{item.type}}</td>
+                                        <td><button class="btn btn-link p-0"
+                                                (click)="redirecttodetail(item.id, item.typecode)">{{item.offerno}}</button>
+                                        </td>
+                                        <td>{{item.customername}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mb-3">
+                        </div>
+                    </div>
+                    <div *ngIf="fmapprovalrequiredList && fmapprovalrequiredList.length > 0">
+                        <div>
+                            <h5>FM Approval Required</h5>
+                        </div>
+                        <div class="overflow-auto">
+                            <table class="table table-hover table-responsive table-sorting">
+                                <thead class="thead-inverse">
+                                    <tr>
+                                        <th width="50">Type</th>
+                                        <th width="60">No</th>
+                                        <th>Customer Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of fmapprovalrequiredList">
+                                        <td>{{item.type}}</td>
+                                        <td><button class="btn btn-link p-0"
+                                                (click)="redirecttodetail(item.id, item.typecode)">{{item.offerno}}</button>
+                                        </td>
+                                        <td>{{item.customername}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mb-3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12" *ngIf="usertype == 20">
+                <div>
+                    <div class="row card-group">
+                        <div class="col-6" *ngFor="let BL of BroadcastList">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title flash"><strong>{{BL.title}}</strong></h5>
+                                    <p class="card-text">{{BL.description}}</p>
+                                    <div class="col-12 mt-3 pl-0" *ngIf="BL.files">
+                                        <div class="row">
+                                            <div *ngFor="let filedtl of BL.files;let f=index"
+                                                class="col-md-12 col-lg-6 outer-container-upload-control">
+                                                <div class="upload-control-filetype-container"><img
+                                                        class="table-icon-lg"
+                                                        src="../../../../../assets/images/{{setFileTypeIcon(filedtl.type)}}">
+                                                </div>
+                                                <div class="upload-control-filename-container dot-views">
+                                                    <a href="javascript:void(0)"
+                                                        (click)="downloadFile(filedtl.name,filedtl.id,filedtl.type)">
+                                                        {{filedtl.name}}</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="row mt-4" *ngIf="userrole=='Admin'">
+            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <div class="row">
+                    <div class="col-12">
+                        <h5>User Info</h5>
+                    </div>
+                    <div class="col-lg-9 overflow-auto">
+                        <table class="table table-hover table-responsive table-sorting">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Total user</td>
+                                    <td>{{totalRows}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Active user</td>
+                                    <td>{{ActiveUserCount}}</td>
+                                </tr>
+                                <tr>
+                                    <td>InActive user</td>
+                                    <td>{{InActiveUserCount}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Locked User</td>
+                                    <td>{{LockedUser}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <div class="row mt-4" *ngIf="LeaveUsersList && LeaveUsersList.length > 0">
+                    <div class="col-12">
+                        <h5>Database Info (MySQL)</h5>
+                    </div>
+                    <div class="col-lg-9 overflow-auto">
+                        <table class="table table-hover table-responsive table-sorting">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>MySQL version</td>
+                                    <td>8.0.21</td>
+                                </tr>
+                                <tr>
+                                    <td>Total No of Tables</td>
+                                    <td>114</td>
+                                </tr>
+                                <tr>
+                                    <td>DB Size</td>
+                                    <td>16.2GB</td>
+                                </tr>
+                                <tr>
+                                    <td>Backup Path</td>
+                                    <td>D:\OMP_PRD_BACKUP_01102024</td>
+                                </tr>
+                                <tr>
+                                    <td>Last Backup Date & Time</td>
+                                    <td>13/11/2024 12:30PM</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4" *ngIf="userrole=='Admin'">
+            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5>Customer Info</h5>
+                    </div>
+                    <div class="col-lg-9 overflow-auto">
+                        <table class="table table-hover table-responsive table-sorting">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Total Customer</td>
+                                    <td>{{totalRows1}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Active Customer</td>
+                                    <td>{{ActiveCustomerCount}}</td>
+                                </tr>
+                                <tr>
+                                    <td>InActive Customer</td>
+                                    <td>{{InActiveCustomerCount}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Customer type 10</td>
+                                    <td>{{CustomerType10}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Customer type 20</td>
+                                    <td>{{CustomerType20}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5>Application Info</h5>
+                    </div>
+                    <div class="col-lg-9 overflow-auto">
+                        <table class="table table-hover table-responsive table-sorting">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Front-End</td>
+                                    <td>Angular JS (version 8.3)</td>
+                                </tr>
+                                <tr>
+                                    <td>Back-End</td>
+                                    <td>Node JS (version 12.8)</td>
+                                </tr>
+                                <tr>
+                                    <td>Framework</td>
+                                    <td>Loopback (version 3)</td>
+                                </tr>
+                                <tr>
+                                    <td>Backup Path</td>
+                                    <td>D:\OMP_PRD_BACKUP_01102024</td>
+                                </tr>
+                                <tr>
+                                    <td>Last Backup Date</td>
+                                    <td>21/10/2024 12:30PM</td>
+                                </tr>
+                                <tr>
+                                    <td>File Size</td>
+                                    <td>612MB</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4" *ngIf="userrole=='Admin'">
+            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5>SFDC Info</h5>
+                    </div>
+                    <div class="col-lg-9 overflow-auto">
+                        <table class="table table-hover table-responsive table-sorting">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Path</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Password Path</td>
+                                    <td>D:\Shared\OMP\production\node\OMPnode\server\config.production.json</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5>BitBucket Info</h5>
+                    </div>
+                    <div class="col-lg-9 overflow-auto">
+                        <table class="table table-hover table-responsive table-sorting">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Path</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>BitBucket CodeBase</td>
+                                    <td><a href="https://bitbucket.org/" target="_blank">Link</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+</div>
+<app-app-footer></app-app-footer>

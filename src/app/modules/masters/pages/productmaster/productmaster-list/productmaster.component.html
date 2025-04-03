@@ -1,0 +1,307 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isUpload]="!viewOnly" [isExport]=true [isHistory]="!viewOnly" [isAdd]="!viewOnly" [isDownload]=true
+                (historyClicked)="getLog()" (uploadClicked)="open(content)" (exportClicked)="onExport()" (downloadClicked)="getDownload()"
+                (addClicked)="OpenAddEditProductMasterPopup(undefined)">
+            </app-list-sub-header>
+
+            <div class="col-12">
+                
+                    <div class="row">
+                        <div class="col-12  col-md-8 col-sm-12">
+                            <app-appsearch [model]="searchModel" (callBack)="onSearch($event)"></app-appsearch>
+                        </div>
+                    </div>
+                
+                <table class="table table-hover table-responsive table-sorting" id="table-productmaster">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th (click)="headerClick($event)" id="articleno">Article Number</th>
+                            <th (click)="headerClick($event)" id="description">Description</th>
+                            <th (click)="headerClick($event)" id="uom">UOM</th>
+                            <th (click)="headerClick($event)" id="industry_std_text">Industry STD Text</th>
+                            <th (click)="headerClick($event)" id="lab_text">LAB Text</th>
+                            <th (click)="headerClick($event)" id="hsncode">HSN</th>
+                            <th (click)="headerClick($event)" id="pg">PG</th>
+                            <th (click)="headerClick($event)" id="ph">PH</th>
+                            <th (click)="headerClick($event)" id="ph2">PH2</th>
+                            <th (click)="headerClick($event)" id="ph6">PH6</th>
+                            <th (click)="headerClick($event)" id="sapid">SAP ID</th>
+                            <th (click)="headerClick($event)" id="length">Length</th>
+                            <th (click)="headerClick($event)" id="mdq">MDQ</th>
+                            <th (click)="headerClick($event)" id="isfixedalp">Is Fixed ALP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="productmasterlist.length == 0">
+                            <td colspan="15" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let pm of productmasterlist">
+                            <td *ngIf="!viewOnly">
+                                <button class="btn btn-link p-0 mr-3"
+                                    (click)="OpenAddEditProductMasterPopup(pm.id)"><img class="table-icon"
+                                        src="../../../../../assets/images/icon-edit.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenDeletePopup(pm.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-delete.svg"></button>
+                            </td>
+                            <td *ngIf="viewOnly"></td>
+                            <td>{{pm.articleno}}</td>
+                            <td>{{pm.description}}</td>
+                            <td>{{pm.uom}}</td>
+                            <td>{{pm.industry_std_text}}</td>
+                            <td>{{pm.lab_text}}</td>
+                            <td>{{pm.hsncode}}</td>
+                            <td>{{pm.pg}}</td>
+                            <td>{{pm.ph}}</td>
+                            <td>{{pm.phtwo}}</td>
+                            <td>{{pm.phsix}}</td>
+                            <td>{{pm.sapid}}</td>
+                            <td>{{pm.length}}</td>
+                            <td>{{pm.mdq}}</td>
+                            <td>{{pm.isfixedalp}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Product Master</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="!isShowDownload">
+            <form [formGroup]="importmodel" enctype="multipart/form-data" method="POST">
+                <div class="form-group" (ngSubmit)="uploadFile($event)">
+                    <input type="file" id="importFile" (change)="uploadedFile($event)" #fileInput
+                        accept=".xlsx, .xls" />
+                </div>
+
+            </form>
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                    (click)="downloadSample()">here</button> to download sample file.</p>
+        </div>
+
+        <div *ngIf="isShowDownload">
+            <fieldset class="custom-fieldset">
+                <p class="pl-2 pt-2">Data has been imported successfully.</p>
+            </fieldset>
+
+            <p class="pl-2 pt-2">click <button type="link" class="btn-link button-link"
+                    (click)="exportfiles(savedResult.status_file_name)">here</button> to download status.</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="!isShowDownload">
+            <button type="button" class="btn btn-orange-outline-s mr-2"
+                (click)="modal.dismiss('Cross click')">Cancel</button>
+            <button type="button" class="btn btn-orange-s" (click)="onSave()">Save</button>
+        </div>
+        <div *ngIf="isShowDownload">
+            <button type="button" class="btn btn-orange-s" (click)="onDismiss()">Ok</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #DeleteConfirmationModal let-modal>
+    <app-delete-confirmation [model]="deleteConfirmModel" (ondelete)="onProductMasterDelete($event)"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #AddEditItemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit Product Master</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="ProductMasterForm">
+            <div class="row">
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label for="articleno" class="required">Article Number</label>
+                        <input type="text" class="form-control" formControlName="articleno"
+                            [ngClass]="{ 'is-invalid': submitted && productMasterForm.articleno.errors }">
+                        <div *ngIf="submitted && productMasterForm.articleno.errors" class="invalid-feedback">
+                            <div *ngIf="productMasterForm.articleno.errors.required">
+                                Please Enter Article Number
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                    <div class="form-group">
+                        <label for="description" class="required">Description</label>
+                        <input class="form-control" type="text" formControlName="description"
+                            [ngClass]="{ 'is-invalid': submitted && productMasterForm.description.errors }">
+                        <div *ngIf="submitted && productMasterForm.description.errors" class="invalid-feedback">
+                            <div *ngIf="productMasterForm.description.errors.required">
+                                Please Enter Description
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label for="uom" class="required">UOM</label>
+                        <ng-select [items]="UOMList" class="form-control" formControlName="uom" bindLabel="description"
+                            bindValue="code" (change)="onUOMChange($event)"
+                            [ngClass]="{ 'is-invalid': submitted && productMasterForm.uom.errors }">
+                        </ng-select>
+                        <div *ngIf="submitted && productMasterForm.uom.errors" class="invalid-feedback">
+                            <div *ngIf="productMasterForm.uom.errors.required">
+                                Please Select UOM
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label for="labtext">LAB Text</label>
+                        <input type="text" class="form-control" formControlName="labtext">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                    <div class="form-group">
+                        <label for="industrystdtext">Industry STD Text</label>
+                        <input type="text" class="form-control" formControlName="industrystdtext">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label for="hsn">HSN</label>
+                        <input type="text" class="form-control" formControlName="hsn">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label for="productgroup" class="required">PG</label>
+                        <input type="text" class="form-control" formControlName="productgroup"
+                            [ngClass]="{ 'is-invalid': submitted && productMasterForm.productgroup.errors }">
+                        <div *ngIf="submitted && productMasterForm.productgroup.errors" class="invalid-feedback">
+                            <div *ngIf="productMasterForm.productgroup.errors.required">
+                                Please Enter PG
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label for="ph" class="required">PH</label>
+                        <input type="text" class="form-control" formControlName="ph"
+                            [ngClass]="{ 'is-invalid': submitted && productMasterForm.ph.errors }">
+                        <div *ngIf="submitted && productMasterForm.ph.errors" class="invalid-feedback">
+                            <div *ngIf="productMasterForm.ph.errors.required">
+                                Please Enter PH
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label for="ph2">PH2</label>
+                        <input type="text" class="form-control" formControlName="ph2"
+                            [ngClass]="{ 'is-invalid': submitted && productMasterForm.ph2.errors }">
+                        <div *ngIf="submitted && productMasterForm.ph2.errors" class="invalid-feedback">
+                            <div *ngIf="productMasterForm.ph2.errors.required">
+                                Please Enter PH2
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label for="ph6">PH6</label>
+                        <input type="text" class="form-control" formControlName="ph6"
+                            [ngClass]="{ 'is-invalid': submitted && productMasterForm.ph6.errors }">
+                        <div *ngIf="submitted && productMasterForm.ph6.errors" class="invalid-feedback">
+                            <div *ngIf="productMasterForm.ph6.errors.required">
+                                Please Enter PH6
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label for="sapid">SAP ID</label>
+                        <input type="text" class="form-control" formControlName="sapid">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label for="length">Length</label>
+                        <input type="text" class="form-control" formControlName="length" OnlyNumberPipe
+                            placeholder="eg. 100|200|500"
+                            [ngClass]="{ 'is-invalid': submitted && productMasterForm.length.errors }">
+                        <div *ngIf="submitted && productMasterForm.length.errors" class="invalid-feedback">
+                            <div *ngIf="productMasterForm.length.errors.required">
+                                Please Enter Length
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label for="mdq">MDQ</label>
+                        <input type="text" class="form-control" formControlName="mdq" OnlyNumber=true>
+                    </div>
+                </div>
+                <!-- <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group switch-inline">
+                        <input type="checkbox" id="fixedalp" class="switch" formcontrolname="fixedalp"
+                            [checked]="IsFixedALPFlag" (change)="onIsFixedALPChange($event)">
+                        <label class="switch-label" for="fixedalp">Is Fixed ALP</label>
+                    </div>
+                </div> -->
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onProductMasterSaveClick()">Save</button>
+    </div>
+</ng-template>

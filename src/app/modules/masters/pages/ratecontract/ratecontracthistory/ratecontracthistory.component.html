@@ -1,0 +1,100 @@
+<app-app-header></app-app-header>
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isCancel]="true" (cancelClicked)="cancelClicked()"></app-list-sub-header>
+            <!-- <div class="col-12"></div>
+                <div class="action-bar row">
+                    <div class="col-12 col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                        <ol class="breadcrumb">
+                            <li><a class="breadcrumb-item mr-2" routerLink="/home"><img class="icon-22"
+                                        src="../../../../../assets/images/icon-home-b.svg"></a></li>
+                            <li class="breadcrumb-item"><span>Masters</span></li>
+                            <li class="breadcrumb-item"><span>Import Copper Index</span></li>
+                        </ol>
+                    </div>
+                </div>
+            </div> -->
+            <div class="col-12">
+                <div class="w-50">
+                    <div class="row">
+                        <div class="col-12  col-md-8 col-sm-12">
+                            <!-- <app-appsearch (callBack)="onSearch($event)"></app-appsearch> -->
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting" id="table-additionalcharges">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th style="display:none;">ID</th>
+                            <th name="Imported On" id="imported_on" (click)="headerClick($event)">Imported On</th>
+                            <th name="Imported By" id="imported_by" (click)="headerClick($event)">Imported By</th>
+                            <th name="Imported File" id="imported_file_name" (click)="headerClick($event)">Imported File
+                            </th>
+                            <th name="Status File" id="status_file_name" (click)="headerClick($event)">Status File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="historyList.length === 0">
+                            <td colspan="5" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let ci of historyList">
+                            <!-- <td>
+                                <button class="btn btn-link p-0 mr-3" (click)="viewClicked(ac.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-view.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="editClicked(ac.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                            </td> -->
+                            <td style="display:none;">{{ci.id}}</td>
+                            <td>{{ci.imported_on | date:'dd/MM/yyyy'}}</td>
+                            <td> {{ci.importedbyname}}</td>
+                            <td><button class="btn btn-link p-0"
+                                    (click)="downloadFile(ci.imported_file_name,false)">{{ci.imported_file_name}}</button>
+                            </td>
+                            <td><button class="btn btn-link p-0"
+                                    (click)="downloadFile(ci.status_file_name,true)">{{ci.status_file_name}}</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>

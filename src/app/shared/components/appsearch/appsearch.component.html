@@ -1,0 +1,17 @@
+<!-- <div class="gridSearchBox">
+  <form [formGroup]="searchForm">
+    <input placeholder="Search" (keyup.enter)='onSearchSubmit()' (keydown.tab)='onSearchSubmit()' formControlName="searchValue" class="gridSearchInput" maxlength="100">
+  </form>
+</div> -->
+
+<div class="input-group mb-3">
+  <form [formGroup]="searchForm">
+  <input type="text" formControlName="searchValue" class="form-control" placeholder="Search.."
+  (keyup.enter)='onSearchSubmit()' (keydown.tab)='onSearchSubmit()' maxlength="100">
+  <div class="input-group-append" (click)="onSearchSubmit()">
+    <span class="input-group-text" id="basic-addon2">
+          <i class="icon-search"></i>
+      </span>
+  </div>
+</form>
+</div>

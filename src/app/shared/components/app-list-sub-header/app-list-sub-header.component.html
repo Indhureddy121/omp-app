@@ -1,0 +1,34 @@
+<div class="action-bar col">
+  <div class="sub-header-container">
+    <div>
+      <app-breadcrumb></app-breadcrumb>
+    </div>
+    <div class="ml-auto my-auto">
+      <button class="btn btn-orange-outline ml-2 key key-m" *ngIf="isCancel" (click)="onCancelClick()"
+        [disabled]="isCancelDisable" #cancelbutton><i class="icon-x"></i>Cancel</button>
+      <button class="btn btn-orange-outline ml-2" *ngIf="isAuthorize" (click)="onAuthorizeClick()"
+        [disabled]="isAuthorizeDisable"><i class="icon-check"></i>{{commonResourceModel.authorizekey}}</button>
+      <button class="btn btn-orange-s" *ngIf="isRefresh" (click)="onRefreshClick()" [disabled]="isRefreshDisable"
+        #uploadbutton><i class="icon-refresh"></i>Refresh</button>
+      <button class="btn btn-orange-s ml-2" *ngIf="isExport" (click)="onExportClick()" [disabled]="isExportDisable"
+        #exportbutton><i class="icon-upload"></i>Export</button>
+      <button class="btn btn-orange-s ml-2" *ngIf="isExporttoPDF" (click)="onExporttoPDFClick()" [disabled]="isExporttoPDFDisable"
+        #exporttopdfbutton><i class="icon-upload"></i>Export to PDF</button>
+      <button class="btn btn-orange-s ml-2" *ngIf="isUpload" (click)="onUploadClick()" [disabled]="isUploadDisable"
+        #uploadbutton><i class="icon-download"></i>Import</button>
+      <button class="btn btn-orange-s ml-2" *ngIf="isAdd" (click)="onAddClick()" [disabled]="isAddDisable" #addbutton><i
+          class="icon-plus-1"></i>Add New</button>
+      <button class="btn btn-orange-s ml-2" *ngIf="isHistory" (click)="onHistoryClick()" [disabled]="isHistoryDisable"
+        #downloadbutton><i class="icon-reset"></i>History</button>
+      <button class="btn btn-orange-s ml-2" *ngIf="isDownload" (click)="onDownloadClick()" [disabled]="isDownloadDisable"
+        #downloadbutton><i class="icon-upload"></i>Download</button>
+      <button class="btn btn-orange-s ml-2" *ngIf="isSearch" (click)="onSearchClick()" [disabled]="isSearchDisable"
+        #searchbutton><i></i>Search</button>
+        <button class="btn btn-orange-s ml-2" *ngIf="isSearch" (click)="onSearchClick()" [disabled]="isSearchDisable"
+        #searchbutton><i></i>Search</button>
+      <button class="btn btn-orange-s  ml-2" *ngIf="isSAPRefresh" (click)="onSAPRefreshClick()"
+        [disabled]="isSAPRefreshDisable" #saprefreshbutton><i class="icon-refresh"></i>SAP Refresh</button>
+      <!-- <button *ngIf="isResetFilter" class="btn btn-orange-s ml-2" (click)="deleteFilter()" [disabled]="isResetFilterDisable"  #resetFilterBtn><i class="icon-refresh"></i>Reset Filter</button> -->
+    </div>
+  </div>
+</div>

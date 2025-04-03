@@ -1,0 +1,195 @@
+<app-app-header></app-app-header>
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header [isCancel]="isView || isEdit || isAdd" 
+            (cancelClicked)="cancelClicked()"></app-sub-header>
+            <div class="col-12">
+                <form  class="ng-invalid ng-touched ng-dirty">
+                    <div class="row">
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required">SFDC ID</label>
+                                <p class="form-text-view">{{customer.sfdcid}}</p>
+
+                                <!-- <input type="text" class="form-control" formControlName="sfdcid" [attr.disabled]="true"> -->
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12" *ngIf="sapExist">
+                            <div class="form-group">
+                                <label class="required">SAP ID</label>
+
+                                <!-- <input type="text" class="form-control" formControlName="sapid" [attr.disabled]="true"> -->
+                                <p class="form-text-view">{{customer.sapid}}</p>
+                                <!-- <p class="form-text-view">
+                                    <button type="button" class="btn btn-link p-0" (click)="open(content)">Link</button>
+                                </p> -->
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12" *ngIf="!sapExist">
+                            <div class="form-group">
+                                <label class="required">SAP ID</label>
+                                <!-- <input type="text" class="form-control" formControlName="sapid" (onclick)="setSapid()"> -->
+                                
+                                <p class="form-text-view">
+                                    <button type="button" class="btn btn-link p-0" (click)="open(content)">Add SAPID</button>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required">GST No</label>
+                                <p class="form-text-view">{{customer.gstno}}</p>
+                                <!-- <input type="text" class="form-control" formControlName="gstno" [attr.disabled]="true"> -->
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required">Full Name</label>
+                                <p class="form-text-view">{{customer.customername}}</p>
+                                <!-- <input type="text" class="form-control" formControlName="fullname"
+                                    [attr.disabled]="true"> -->
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required">Email</label>
+                                <p class="form-text-view">{{customer.email}}</p>
+                                <!-- <input type="text" class="form-control" formControlName="email" [attr.disabled]="true"> -->
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required">Contact No</label>
+                                <p class="form-text-view">{{customer.contactno}}</p>
+                                <!-- <input type="text" class="form-control" formControlName="contactno"
+                                    [attr.disabled]="true"> -->
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required">Status</label>
+                                <p class="form-text-view">{{customer.status}}</p>
+                                <!-- <input type="text" class="form-control" formControlName="status" [attr.disabled]="true"> -->
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+
+            </div>
+            <div class=" col-12">
+                <div class="row mt-3">
+                    <div class="col-12 col-md-12 col-sm-12">
+                        <div class="sub-title">Billing Address</div>
+                    </div>
+                </div>
+                <hr>
+                <table class="table table-hover table-responsive">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Address 1 </th>
+                            <th>Address 2</th>
+                            <th>City</th>
+                            <th>Pin Code</th>
+                            <th>State</th>
+                            <th>Is Default</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let billadd of billingAddress">
+                            <td>{{billadd.address1}}</td>
+                            <td>{{billadd.address2 }}</td>
+                            <td>{{billadd.city}}</td>
+                            <td>{{billadd.pincode}}</td>
+                            <td>{{billadd.state}}</td>
+                            <td>{{billadd.isDefault}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12">
+                <div class="row mt-3">
+                    <div class="col-12 col-md-12 col-sm-12">
+                        <div class="sub-title">Shipping Address</div>
+                    </div>
+                </div>
+                <hr>
+                <table class="table table-hover table-responsive">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Address 1 </th>
+                            <th>Address 2</th>
+                            <th>City</th>
+                            <th>Pin Code</th>
+                            <th>State</th>
+                            <th>Is Default</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let shipAdd of shipmentAddress">
+                            <td>{{shipAdd.address1}}</td>
+                            <td>{{shipAdd.address2 }}</td>
+                            <td>{{shipAdd.city}}</td>
+                            <td>{{shipAdd.pincode}}</td>
+                            <td>{{shipAdd.state}}</td>
+                            <td>{{shipAdd.isDefault}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12">
+                <div class="row mt-3">
+                    <div class="col-12 col-md-12 col-sm-12">
+                        <div class="sub-title">Opportunities</div>
+                    </div>
+                </div>
+                <hr>
+                <table class="table table-hover table-responsive">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Oppo. Id</th>
+                            <th>Owner</th>
+                            <th>Account Name</th>
+                            <th>Value</th>
+                            <th>Stage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let opp of opportunity">
+                            <td>{{opp.oppid}}</td>
+                            <td>{{opp.owner}}</td>
+                            <td>{{opp.accountname}}</td>
+                            <td>{{opp.accvalue}}</td>
+                            <td>{{opp.stage}}</td>
+                           
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Insert SAP ID for the customer</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form  [formGroup]="frmsapmodel">
+            <div class="form-group">
+                <label>New SAP ID</label>
+                <input class="form-control" formControlName="newSapId" type="text" >
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="modal.close('Save click')">Save</button>
+    </div>
+</ng-template>

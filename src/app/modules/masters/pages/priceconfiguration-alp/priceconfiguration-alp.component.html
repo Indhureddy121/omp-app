@@ -1,0 +1,150 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header></app-sub-header>
+            <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <div class="card">
+                    <div class="card-header"><strong>LCP (Euro)</strong></div>
+                    <div class="card-body">
+                        <form [formGroup]="delpriceconfigurationForm" class="ng-invalid ng-touched ng-dirty">
+                            <p class="m-0">Base</p>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Price</label>
+                                <div class="col-sm-3">
+                                    <p class="form-text-view">{{del_baseprice}}</p>
+                                </div>
+                            </div>
+                            <p class="m-0">Current</p>
+                            <div class="form-group row">
+                                <label for="pc_delprice" class="required col-sm-2 col-form-label">Price</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" formControlName="pc_delprice"
+                                        [ngClass]="{ 'is-invalid': delsubmitted && f.pc_delprice.errors }"
+                                        numericwithdecimal decimals="2" beforedecimals="8">
+                                    <div *ngIf="delsubmitted && f.pc_delprice.errors" class="invalid-feedback">
+                                        <div *ngIf="f.pc_delprice.errors.required">
+                                            Current Price is required
+                                        </div>
+                                    </div>
+                                </div>
+                                <label for="pc_delExchangerate" class="required col-sm-2 col-form-label pl-0">Exchange
+                                    Rate</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" formControlName="pc_delExchangerate"
+                                        [ngClass]="{ 'is-invalid': delsubmitted && f.pc_delExchangerate.errors }"
+                                        numericwithdecimal decimals="2" beforedecimals="8">
+                                    <div *ngIf="delsubmitted && f.pc_delExchangerate.errors" class="invalid-feedback">
+                                        <div *ngIf="f.pc_delExchangerate.errors.required">
+                                            Exchange Rate is required
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <button type="button" class="btn btn-orange-s-l"
+                                        (click)="delsaveclicked()">Save</button>
+                                </div>
+                            </div>
+                        </form>
+                        <hr>
+                        <h5 class="card-title mt-3"><strong>Change History</strong></h5>
+                        <table class="table table-hover table-responsive table-fixed table-scroll">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th class="col-6">Change Date</th>
+                                    <th class="col-3 text-right">Price</th>
+                                    <th class="col-3 text-right">Exchange Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngIf="delpriceList.length === 0">
+                                    <td colspan="2" style="text-align: center;">
+                                        No Records Found
+                                    </td>
+                                </tr>
+                                <tr *ngFor="let pc_del of delpriceList">
+                                    <td class="col-6">{{pc_del.price_changedate | date:dateFormate}}</td>
+                                    <td class="col-3 text-right">{{pc_del.price}}</td>
+                                    <td class="col-3 text-right">{{pc_del.exchange_rate}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <div class="card">
+                    <div class="card-header"><strong>LCP (Dollar)</strong></div>
+                    <div class="card-body">
+                        <form [formGroup]="lmepriceconfigurationForm" class="ng-invalid ng-touched ng-dirty">
+                            <p class="m-0">Base</p>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Price</label>
+                                <div class="col-sm-3">
+                                    <p class="form-text-view">{{lme_baseprice}}</p>
+                                </div>
+                                <label for="pc_lmeBaseExchangerate" class="col-sm-2 col-form-label pl-0">Exchange
+                                    Rate</label>
+                                <div class="col-sm-3">
+                                    <p class="form-text-view">{{base_lme_exch}}</p>
+                                </div>
+                            </div>
+                            <p class="m-0">Current</p>
+                            <div class="form-group row">
+                                <label for="pc_lmeprice" class="required col-sm-2 col-form-label">Price</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" formControlName="pc_lmeprice"
+                                        [ngClass]="{ 'is-invalid': lmesubmitted && f2.pc_lmeprice.errors }"
+                                        numericwithdecimal decimals="2" beforedecimals="8">
+                                    <div *ngIf="lmesubmitted && f2.pc_lmeprice.errors" class="invalid-feedback">
+                                        <div *ngIf="f2.pc_lmeprice.errors.required">
+                                            Current Price is required
+                                        </div>
+                                    </div>
+                                </div>
+                                <label for="pc_lmeExchangerate" class="required col-sm-2 col-form-label pl-0">Exchange
+                                    Rate</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" formControlName="pc_lmeExchangerate"
+                                        [ngClass]="{ 'is-invalid': lmesubmitted && f2.pc_lmeExchangerate.errors }"
+                                        numericwithdecimal decimals="2" beforedecimals="8">
+                                    <div *ngIf="lmesubmitted && f2.pc_lmeExchangerate.errors" class="invalid-feedback">
+                                        <div *ngIf="f2.pc_lmeExchangerate.errors.required">
+                                            Exchange Rate is required
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <button type="button" class="btn btn-orange-s-l"
+                                        (click)="lmesaveclicked()">Save</button>
+                                </div>
+                            </div>
+                        </form>
+                        <hr>
+                        <h5 class="card-title mt-3"><strong>Change History</strong></h5>
+                        <table class="table table-hover table-responsive table-fixed table-scroll">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th class="col-6">Change Date</th>
+                                    <th class="col-3 text-right">Price</th>
+                                    <th class="col-3 text-right">Exchange Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngIf="lmepriceList.length === 0">
+                                    <td colspan="2" style="text-align: center;">
+                                        No Records Found
+                                    </td>
+                                </tr>
+                                <tr *ngFor="let pc_lme of lmepriceList">
+                                    <td class="col-6">{{pc_lme.price_changedate | date:dateFormate}}</td>
+                                    <td class="col-3 text-right">{{pc_lme.price}}</td>
+                                    <td class="col-3 text-right">{{pc_lme.exchange_rate}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

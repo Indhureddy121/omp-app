@@ -1,0 +1,182 @@
+<app-app-header></app-app-header>
+<div class="page-wrapper pb-8">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header [isCancel]="isView || isEdit || isAdd" (cancelClicked)="cancelClicked()">
+            </app-sub-header>
+            <div class="col-12">
+                <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0, ngb-panel-1" [destroyOnHide]="false">
+                    <ngb-panel id="ngb-panel-0" class="pb-0">
+                        <ng-template ngbPanelTitle>Requirements</ng-template>
+                        <ng-template ngbPanelContent>
+                            <form class="ng-invalid ng-touched ng-dirty" [formGroup]="RequirementForm">
+                                <div class="row">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Article No</label>
+                                            <input type="text" formControlName="articleno" class="form-control"
+                                                [attr.disabled]="isAdd || isEdit || isView" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Description</label>
+                                            <input type="text" formControlName="reqdescription" class="form-control"
+                                                [attr.disabled]="isAdd || isEdit || isView" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Attachments</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12 mt-3"
+                                        *ngIf="requirementdocs && requirementdocs.length > 0">
+                                        <div class="row">
+                                            <div *ngFor="let file of requirementdocs;let f=index"
+                                                class="col-md-12 col-lg-6 outer-container-upload-control">
+                                                <div class="upload-control-filetype-container"><img
+                                                        class="table-icon-lg"
+                                                        src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                                </div>
+                                                <div class="upload-control-filename-container dot-views"><a
+                                                        href="javascript:void(0)" *ngIf="isEdit || isView"
+                                                        (click)="downloadFile(file.name,file.id,file.type)">
+                                                        {{file.name}}</a><span *ngIf="isAdd">{{file.name}}</span>
+                                                </div>
+                                                <div class="upload-control-delete-container" *ngIf="isEdit">
+                                                    <button class="btn btn-link p-0" (click)="removeFile(f)">
+                                                        <img class="table-icon"
+                                                            src="../../../../../assets/images/icon-delete1.svg"
+                                                            title="delete image"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </ng-template>
+                    </ngb-panel>
+                    <ngb-panel id="ngb-panel-1" class="pt-0">
+                        <ng-template ngbPanelTitle>Comments</ng-template>
+                        <ng-template ngbPanelContent>
+                            <div class="col-12 text-right" *ngIf="peData && peData.IsActive == 1 && peData.status < 30">
+                                <div class="form-group">
+                                    <button class="btn btn-orange-s" (click)="openCommentModal(CommentModal)"><i
+                                            class="icon-floppy-o"></i>Add Comment</button>
+                                </div>
+                            </div>
+                            <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12" *ngIf="isComment">
+                                <table class="table table-hover table-responsive" id="table-opportunity">
+                                    <tbody>
+                                        <tr *ngFor="let comm of commentdata">
+                                            <td style="width: 15%;">
+                                                <i class="fa fa-user" aria-hidden="true"></i><label
+                                                    class="ml-2">{{comm.fullname}}</label>
+                                                <br>
+                                                <label>{{comm.created_date | date:dateformate}}</label>
+                                            </td>
+                                            <td>
+                                                <label>{{comm.comment}}</label>
+                                                <br>
+                                                <div class="mt-3" *ngIf="comm.files && comm.files.length > 0">
+                                                    <div class="row">
+                                                        <div *ngFor="let file of comm.files;let f=index"
+                                                            class="col-md-12 col-lg-3 outer-container-upload-control">
+                                                            <div class="upload-control-filetype-container">
+                                                                <img class="table-icon-lg"
+                                                                    src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                                            </div>
+                                                            <div class="upload-control-filename-container dot-views">
+                                                                <a href="javascript:void(0)" *ngIf="isEdit || isView"
+                                                                    (click)="downloadFile(file.name,file.id,file.type)">
+                                                                    {{file.name}}</a><span
+                                                                    *ngIf="isAdd">{{file.name}}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </ng-template>
+                    </ngb-panel>
+                </ngb-accordion>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #CommentModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add Comment</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form class="ng-invalid ng-touched ng-dirty" [formGroup]="CommentsForm">
+            <div class="row">
+                <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="form-group">
+                        <div style="float: left;">
+                            <label for="comments" class="required">Comment</label>
+                        </div>
+                        <div style="float: right;">
+                            <span>
+                                <i class="fas fa-exclamation"></i> <i> {{500 - ASMComment?.length}} characters
+                                    left.</i></span>
+                        </div>
+                        <textarea rows=" 3" cols="50" class="form-control" formControlName="comments"
+                            [ngClass]="{ 'is-invalid': submitted && commentsForm.comments.errors }"
+                            [(ngModel)]="ASMComment" maxlength="500"></textarea>
+
+                        <div *ngIf="submitted && commentsForm.comments.errors" class="invalid-feedback">
+                            <div *ngIf="commentsForm.comments.errors.required">
+                                Comment is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label>Attachments</label>
+                        <div><button (click)="fileInput.click()">Select File</button>
+                            <input type="file" id="importFile" style="display: none;"
+                                (change)="CommentsfileChangeListener($event)" #fileInput multiple />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mt-3" *ngIf="CommentsFiles.length > 0">
+                    <div class="row">
+                        <div *ngFor="let file of CommentsFiles;let f=index"
+                            class="col-md-12 col-lg-6 outer-container-upload-control">
+                            <div class="upload-control-filetype-container"><img class="table-icon-lg"
+                                    src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                            </div>
+                            <div class="upload-control-filename-container dot-views"><a href="javascript:void(0)"
+                                    *ngIf="isEdit || isView" (click)="downloadFile(file.name,file.id,file.type)">
+                                    {{file.name}}</a><span *ngIf="isAdd">{{file.name}}</span></div>
+                            <div class="upload-control-delete-container" *ngIf="isEdit">
+                                <button class="btn btn-link p-0" (click)="removeFile(f)">
+                                    <img class="table-icon" src="../../../../../assets/images/icon-delete1.svg"
+                                        title="delete image"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onCommentSaveClick()">Save</button>
+    </div>
+</ng-template>

@@ -1,0 +1,276 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header [isCancel]="isView" (cancelClicked)="cancelClicked()" (backClicked)="backClicked()"
+                [isCreateOffer]="oppo_data && oppo_data.opportunitytype == 10 && offerslist.length == 0 && usertype == 0"
+                (createOfferClicked)="onCreateOfferOrder()"
+                [isCreateOrder]="oppo_data && (oppo_data.opportunitytype == 20 || oppo_data.opportunitytype == 30) && offerslist.length == 0 && usertype >= 10"
+                (createOrderClicked)="onCreateOfferOrder()">
+            </app-sub-header>
+            <div class="col-12">
+                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="OpportunityForm">
+                    <div class="row">
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="opportunityid">Opportunity Id</label>
+                                <input class="form-control" type="text" formControlName="opportunityid">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="lappopportunityid">LAPP Opportunity Id</label>
+                                <input class="form-control" type="text" formControlName="lappopportunityid">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="accountid">Account</label>
+                                <input class="form-control" type="text" formControlName="accountid">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="ownerid">Owner Id</label>
+                                <input class="form-control" type="text" formControlName="ownerid">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="opportunityvalue">Opportunity Value</label>
+                                <input class="form-control" type="text" formControlName="opportunityvalue"
+                                    value="currency:'INR':true:'1.2-4'">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="amount">Amount</label>
+                                <input class="form-control" type="text" formControlName="amount"
+                                    value="currency:'INR':true:'1.2-4'">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="stage">Stage</label>
+                                <input class="form-control" type="text" formControlName="stage">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="createdby">Created By</label>
+                                <input class="form-control" type="text" formControlName="createdby">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="createddate">Created Date</label>
+                                <input class="form-control" type="text" formControlName="createddate">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="closedate">Close Date</label>
+                                <input class="form-control" type="text" formControlName="closedate">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="nacecode">NACE Code</label>
+                                <input class="form-control" type="text" formControlName="nacecode">
+                            </div>
+                        </div>
+                        <!-- <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="nacedescription">Description</label>
+                                <input class="form-control" type="text" formControlName="nacedescription">
+                            </div>
+                        </div> -->
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="nacelevel">Level</label>
+                                <input class="form-control" type="text" formControlName="nacelevel">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="nacemodel">Model</label>
+                                <input class="form-control" type="text" formControlName="nacemodel">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="businessmodel">Business Model</label>
+                                <input class="form-control" type="text" formControlName="businessmodel">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="Business_Segment2">Business Segment 2</label>
+                                <input class="form-control" type="text" formControlName="Business_Segment2">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="Business_Segment3">Business Segment 3</label>
+                                <input class="form-control" type="text" formControlName="Business_Segment3">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 row">
+                        <div class="row mt-3">
+                            <div class="col-12 col-md-12 col-sm-12">
+                                <div class="sub-title">Contacts</div>
+                            </div>
+                        </div>
+                        <hr>
+                        <table class="table table-hover table-responsive">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Designation</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngIf="contactdetail.length == 0">
+                                    <td colspan="5" style="text-align: center;">
+                                        No Records Found
+                                    </td>
+                                </tr>
+                                <tr *ngFor="let cd of contactdetail">
+                                    <td>{{cd.name}}</td>
+                                    <td>{{cd.department}}</td>
+                                    <td>{{cd.designation}}</td>
+                                    <td>{{cd.mobile}}</td>
+                                    <td>{{cd.email}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-12 row">
+                        <div class="row mt-3">
+                            <div class="col-12 col-md-12 col-sm-12">
+                                <div class="sub-title" *ngIf="usertype == 0">Offers</div>
+                                <div class="sub-title" *ngIf="usertype != 0">Orders</div>
+                            </div>
+                        </div>
+                        <hr>
+                        <table class="table table-hover table-responsive">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th width='8%'>Action</th>
+                                    <th width='1%'></th>
+                                    <th width='5%'>Offer No</th>
+                                    <th width='5%'>LAPP Opportunity ID</th>
+                                    <th>Account Name</th>
+                                    <th width='10%'>Owner</th>
+                                    <th width='5%' class="text-right">Offer Value</th>
+                                    <th width='5%' *ngIf="usertype == 0">Valid To</th>
+                                    <th width='10%'>Status</th>
+                                    <th width='20%'>Action required</th>
+                                    <th width='10%'>Reason for Clone</th>
+                                    <th width='10%'>Approval Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngIf="offerslist.length == 0">
+                                    <td colspan="11" style="text-align: center;">
+                                        No Records Found
+                                    </td>
+                                </tr>
+                                <tr *ngFor="let off of offerslist">
+                                    <td>
+                                        <button class="btn btn-link p-0 mr-3"
+                                            (click)="offerviewClicked(off.offerid, off.opportunitytype)"><img
+                                                class="table-icon"
+                                                src="../../../../../assets/images/icon-view.svg"></button>
+                                        <button class="btn btn-link p-0 mr-3"
+                                            *ngIf="off.IsActive == 1 && off.status < 80"
+                                            (click)="offereditClicked(off.offerid, off.opportunitytype)"><img
+                                                class="table-icon"
+                                                src="../../../../../assets/images/icon-edit.svg"></button>
+                                        <button title="Make a Clone" class="btn btn-link p-0 mr-3"
+                                            *ngIf="off.canMakeaClone"
+                                            (click)="offerCloneClicked(off.offerid, off.opportunitytype, off.expiredate)"><img
+                                                class="table-icon"
+                                                src="../../../../../assets/images/icon-plus-6.svg"></button>
+                                    </td>
+                                    <td>
+                                        <span class="dot green" *ngIf="off.IsActive == 1"></span>
+                                        <span class="dot red" *ngIf="off.IsActive == 0"></span>
+                                        <span class="dot orange" *ngIf="off.IsExpired == 1"></span>
+                                    </td>
+                                    <td>{{off.offernumber}}</td>
+                                    <td>{{off.lappopportunityid}}</td>
+                                    <td>{{off.accountname}}</td>
+                                    <td>{{off.ownername}}</td>
+                                    <td class="text-right">{{off.offervalue | currency:'INR'}}</td>
+                                    <td *ngIf="usertype == 0">{{off.validto | date:dateFormate}}</td>
+                                    <td>{{off.showstatus}}</td>
+                                    <td>{{off.actionrequired}}</td>
+                                    <td>{{off.reasonforclone}}</td>
+                                    <td><button class="btn btn-link p-0 mr-3"
+                                            (click)="onShowApprovalCommentsClick(off.offerid, off.opportunitytype)"><img
+                                                class="table-icon" *ngIf="off.status >= 20"
+                                                src="../../../../../assets/images/icon-view.svg"></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style=" float: left;">
+                            <span class="dot green"></span> Active | <span class="dot red"></span> Inactive | <span
+                                class="dot orange"></span> Expired
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<ng-template #ApprovalCommentsModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-title">Approval Comments</h4>
+        <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title"
+            (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body text-center">
+        <table class="table table-hover table-responsive table-sorting">
+            <thead class="thead-inverse">
+                <tr>
+                    <th>Sr No</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Request Datetime</th>
+                    <th>Status</th>
+                    <th>Approve/Reject Date</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let approvalComment of approvalComments; let j=index;">
+                    <td>{{approvalComment.srno}}</td>
+                    <td>{{approvalComment.username}}</td>
+                    <td>{{approvalComment.role}}</td>
+                    <td>{{approvalComment.senddate}}</td>
+                    <td>{{approvalComment.showstatus}}</td>
+                    <td>{{approvalComment.statusdate}}</td>
+                    <td>{{approvalComment.rejectreason}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer text-right">
+        <button type="button" ngbAutofocus class="btn btn-outline-secondary" (click)="modal.dismiss('Cross click')">
+            <i class='icon-x' title='Cancel'></i>Cancel</button>
+    </div>
+</ng-template>

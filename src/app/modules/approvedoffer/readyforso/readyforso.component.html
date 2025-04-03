@@ -1,0 +1,85 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header [isEdit]="isView" [isSave]="isEdit || isAdd" [isCancel]="isView || isEdit || isAdd"
+                (cancelClicked)="cancelClicked()" (saveClicked)="onSubmit()" (editClicked)="onEditClick()">
+            </app-sub-header>
+            <div class="col-12">
+                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="POForm">
+                    <div class="row">
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-4 col-sm-12">
+                            <div class="form-group">
+                                <label for="ponumber" class="required">PO Number</label>
+                                <input type="text" class="form-control" formControlName="ponumber" [OnlyNumber]=true
+                                    [ngClass]="{ 'is-invalid': submitted && poForm.ponumber.errors }"
+                                    [attr.disabled]="isView ? '' : null" />
+                                <div *ngIf="submitted && poForm.ponumber.errors" class="invalid-feedback">
+                                    <div *ngIf="poForm.ponumber.errors.required">
+                                        PO Number is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-4 col-sm-12" *ngIf="isAdd || isEdit">
+                            <div class="form-group">
+                                <label class="required">PO Date</label>
+                                <div class="input-group"
+                                    [ngClass]="{ 'is-invalid': submitted && poForm.podate.errors }">
+                                    <input class="form-control doc-date" formcontrolname="podate" ngbDatepicker
+                                        #podate="ngbDatepicker" [value]="formatter.format(poDate)"
+                                        (dateSelect)="onPODateSelection($event)" readonly
+                                        [ngClass]="{ 'is-invalid': submitted && poForm.podate.errors }" />
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary calendar" (click)="podate.toggle()"
+                                            type="button"></button>
+                                    </div>
+                                </div>
+                                <div *ngIf="submitted && poForm.podate.errors" class="invalid-feedback">
+                                    <div *ngIf="poForm.podate.errors.required">
+                                        PO Date is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-4 col-sm-12" *ngIf="isView">
+                            <label class="required">PO Date</label>
+                            <input class="form-control" type="text" formControlName="podate">
+                        </div>
+                        <div class="col-12 col-xl-1 col-lg-1 col-md-2 col-sm-12" *ngIf="isAdd || isEdit">
+                            <div class="form-group">
+                                <label class="required">Attachments</label>
+                                <div><button (click)="fileInput.click()">Select File</button>
+                                    <input type="file" id="importFile" style="display: none;"
+                                        (change)="fileChangeListener($event)" #fileInput />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-1 col-lg-1 col-md-2 col-sm-12" *ngIf="isView">
+                            <div class="form-group">
+                                <label class="required">Attachments</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                            <div class="row">
+                                <div *ngFor="let filedtl of files;let f=index"
+                                    class="col-md-12 col-lg-6 outer-container-upload-control">
+                                    <div class="upload-control-filetype-container"><img class="table-icon-lg"
+                                            src="../../../../../assets/images/{{setFileTypeIcon(filedtl.type)}}"></div>
+                                    <div class="upload-control-filename-container dot-views"><a
+                                            href="javascript:void(0)" *ngIf="isEdit || isView"
+                                            (click)="downloadFile(filedtl.name,filedtl.id,filedtl.type)">
+                                            {{filedtl.name}}</a><span *ngIf="isAdd">{{filedtl.name}}</span></div>
+                                    <div class="upload-control-delete-container" *ngIf="isEdit">
+                                        <button class="btn btn-link p-0" (click)="removeFile(f)">
+                                            <img class="table-icon" src="../../../../../assets/images/icon-delete1.svg"
+                                                title="delete image"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

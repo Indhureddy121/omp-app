@@ -1,0 +1,77 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isExport]=true (exportClicked)="onExport()"
+            ></app-list-sub-header>
+             <!-- isExporttoPDF=true (exporttopdfClicked)="getData(true)" -->
+
+            <div class="col-12">
+                <div>
+                    <div class="row">
+                        <div class="w-100 row pl-4">
+                            <div class="col-12 col-md-8 col-sm-8 mt-4">
+                                <form [formGroup]="FilterForm">
+                                    <div class="row">
+                                        <div class="col-12 col-md-3 col-sm-3">
+                                            <div class="form-group">
+                                                <ng-select [items]="FinancialYearsList" class="form-control"
+                                                    bindLabel="description" bindValue="code"
+                                                    formControlName="financialyear" (change)="onFilterChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting" id="table-salesgrowthbyph">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th></th>
+                            <th colspan="3" style="text-align: center;">Revenue(TINR)</th>
+                            <th colspan="2" style="text-align: center;">Gross Margin</th>
+                        </tr>
+                        <tr>
+                            <th>PH</th>
+                            <th class="text-right">YTD {{currentmonth}} {{selectedfinancialyear - 1}}</th>
+                            <th class="text-right">YTD {{currentmonth}} {{selectedfinancialyear}}</th>
+                            <th class="text-right">Growth Vs PY</th>
+                            <th class="text-right">YTD {{currentmonth}} {{selectedfinancialyear - 1}}</th>
+                            <th class="text-right">YTD {{currentmonth}} {{selectedfinancialyear}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="sprarticlecreationtatList.length === 0">
+                            <td colspan="6" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let sg of sprarticlecreationtatList">
+                            <td>{{sg.ph}}</td>
+                            <td class="text-right">{{sg.revenuepreviousyear}}</td>
+                            <td class="text-right">{{sg.revenuecurrentyear}}</td>
+                            <td class="text-right"
+                                [ngClass]="{'text-danger': sg.growthvspy < 0, 'text-success': sg.growthvspy > 0, 'text-nochange': sg.growthvspy == 0}">
+                                {{sg.growthvspy | percent:'2.2-2'}}</td>
+                            <td class="text-right">{{sg.gmpreviousyear}}</td>
+                            <td class="text-right">{{sg.gmcurrentyear}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>Total</td>
+                            <td class="text-right">31286</td>
+                            <td class="text-right">23837</td>
+                            <td class="text-right">-24%</td>
+                            <td class="text-right">32%</td>
+                            <td class="text-right">35%</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

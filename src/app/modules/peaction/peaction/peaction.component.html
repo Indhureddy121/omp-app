@@ -1,0 +1,965 @@
+<app-app-header></app-app-header>
+<div class="page-wrapper pb-8">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header [isEdit]="isView && (peData && peData.IsActive == 1 && peData.status < 20)"
+                [isCancel]="isView || isEdit || isAdd" (cancelClicked)="cancelClicked()" (editClicked)="onEditClick()">
+            </app-sub-header>
+            <div class="col-12">
+                <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0, ngb-panel-1" [destroyOnHide]="false">
+                    <ngb-panel id="ngb-panel-0" class="pb-0">
+                        <ng-template ngbPanelTitle>Opportunity Information</ng-template>
+                        <ng-template ngbPanelContent>
+                            <div class="row">
+                                <div class="overflow-auto col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                    <table class="table table-hover table-responsive" id="table-opportunity">
+                                        <thead class="thead-inverse">
+                                            <tr>
+                                                <th>LAPP Opportunity Id</th>
+                                                <th>Opportunity Name</th>
+                                                <th>Account Name</th>
+                                                <th>Owner</th>
+                                                <th>Created Date</th>
+                                                <th>Closed Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngIf="oppoData">
+                                                <td>{{oppoData.lappopportunityid}}</td>
+                                                <td>{{oppoData.opportunity_name}}</td>
+                                                <td>{{oppoData.customername}}</td>
+                                                <td>{{oppoData.fullname}}</td>
+                                                <td>{{oppoData.createddate | date:dateformate}}</td>
+                                                <td>{{oppoData.expiredate | date:dateformate}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ngb-panel>
+                    <ngb-panel id="ngb-panel-1" class="pb-0">
+                        <ng-template ngbPanelTitle>Requirements</ng-template>
+                        <ng-template ngbPanelContent>
+                            <form class="ng-invalid ng-touched ng-dirty" [formGroup]="RequirementForm">
+                                <div class="row">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Offer No</label>
+                                            <input type="text" formControlName="offerno" class="form-control"
+                                                [attr.disabled]="true" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Article No</label>
+                                            <input type="text" formControlName="articleno" class="form-control"
+                                                [attr.disabled]="true" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Description</label>
+                                            <input type="text" formControlName="reqdescription" class="form-control"
+                                                [attr.disabled]="true" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Quanity</label>
+                                            <input type="text" formControlName="reqquanity" class="form-control"
+                                                [attr.disabled]="true" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>SAP ID</label>
+                                            <button class="btn btn-link p-0" style="margin-left: 20px;"
+                                                (click)="open(content)"
+                                                *ngIf="peData && peData.status >= 40 && peData.offerstatus <= 60">Add/Edit</button>
+                                            <input type="text" class="form-control" formControlName="sapno"
+                                                [attr.disabled]="true">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="assignto">Assign To</label>
+                                            <button *ngIf="peData && !peData.assignto && canAssign" class="btn btn-link p-0"
+                                                (click)="openAssigneeModal()">Add
+                                            </button>
+                                            <button *ngIf="peData && peData.assignto && canAssign && peData.status <= 30"
+                                                class="btn btn-link p-0"
+                                                (click)="openAssigneeModal()">Edit
+                                            </button>
+
+                                            <!-- <button *ngIf="canAssign && peData && peData.status <= 30"
+                                                class="btn btn-link p-0" style="margin-left: 20px;"
+                                                (click)="openAssigneeModal()">Add/Edit</button> -->
+
+                                            <input type="text" formControlName="assignto" class="form-control"
+                                                [attr.disabled]="true" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>SPR Detailed Description</label>
+                                            <textarea rows=" 3" cols="50" class="form-control" [attr.disabled]="true"
+                                                formControlName="sprDetailedDescription"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12"
+                                        *ngIf="SPRlengthandfactordata.length > 0">
+                                        <div class="overflow-auto">
+                                            <table class="table table-hover table-responsive"
+                                                id="table-lengthandfactor">
+                                                <thead class="thead-inverse">
+                                                    <tr>
+                                                        <th>Length</th>
+                                                        <th>Factor</th>
+                                                        <th>Quantity</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <ng-container>
+                                                        <tr *ngFor="let lf of SPRlengthandfactordata; let j = index">
+                                                            <td>{{lf.length}}</td>
+                                                            <td>{{lf.factor}}</td>
+                                                            <td>{{lf.qty}}</td>
+                                                        </tr>
+                                                    </ng-container>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </ng-template>
+                    </ngb-panel>
+                    <ngb-panel id="ngb-panel-2" class="pt-0">
+                        <ng-template ngbPanelTitle>SPR Form Fields</ng-template>
+                        <ng-template ngbPanelContent>
+                            <div class="row">
+                                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-4 text-left mb-2"></div>
+                                <div class="col-12 col-xl-8 col-lg-8 col-md-8 col-sm-8 text-right mb-2">
+                                    <button type="button" class="btn btn-orange-s ml-2"
+                                        *ngIf="isEditSection('peSection')" (click)="openDataSheet()">Edit
+                                        Datasheet</button>
+                                </div>
+                            </div>
+                            <app-spr-information-popup [isModelContentView]="false" [dataSheetObj]="dataSheetObj"
+                                [articleNo]="articleNo" [description]="description" [isDpTxtVisible]="false"
+                                (isSavedOrSubmitted)="isSavedOrSubmitted($event)"></app-spr-information-popup>
+                        </ng-template>
+                    </ngb-panel>
+                    <ngb-panel id="ngb-panel-3" class="pb-0">
+                        <ng-template ngbPanelTitle>Article Cost Information</ng-template>
+                        <ng-template ngbPanelContent>
+                            <form class="ng-invalid ng-touched ng-dirty" [formGroup]="PEActionForm">
+                                <div class="row">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="required">Description</label>
+                                            <input type="text" formControlName="description" class="form-control"
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.description.errors }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                            <div *ngIf="submitted && iscomplete && peActionForm.description.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.description.errors.required">
+                                                    Description is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Customer Part No</label>
+                                            <input type="text" formControlName="customerpartno" class="form-control"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="required">Item Type</label>
+                                            <ng-select [items]="itemTypeList" class="form-control"
+                                                placeholder="Please Select" formControlName="itemtype"
+                                                bindLabel="description" bindValue="code"
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.itemtype.errors }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null">
+                                            </ng-select>
+                                            <div *ngIf="submitted && iscomplete && peActionForm.itemtype.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.itemtype.errors.required">
+                                                    Item Type is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="required">Primary Plant</label>
+                                            <ng-select [items]="PrimaryPlantList" class="form-control"
+                                                placeholder="Please Select" formControlName="primaryplant"
+                                                bindLabel="description" bindValue="code"
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.primaryplant.errors }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null">
+                                            </ng-select>
+                                            <div *ngIf="submitted && iscomplete && peActionForm.primaryplant.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.primaryplant.errors.required">
+                                                    Primary Plant is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="required">Currency</label>
+                                            <ng-select [items]="currencyTypeList" class="form-control"
+                                                placeholder="Please Select" formControlName="currency"
+                                                bindLabel="description" bindValue="code"
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.currency.errors }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null">
+                                            </ng-select>
+                                            <div *ngIf="submitted && iscomplete && peActionForm.currency.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.currency.errors.required">
+                                                    Currency is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="required">UOM</label>
+                                            <ng-select [items]="UOMList" class="form-control" formControlName="uom"
+                                                bindLabel="description" bindValue="code" placeholder="Please Select"
+                                                (change)="onUOMChange()"
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.uom.errors }">
+                                            </ng-select>
+                                            <div *ngIf="submitted && iscomplete && peActionForm.uom.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.uom.errors.required">
+                                                    UOM is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Length</label>
+                                            <input type="text" formControlName="length" class="form-control"
+                                                OnlyNumberPipe
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.length.errors }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null"
+                                                placeholder="eg. 100|200|500" />
+                                            <div *ngIf="submitted && iscomplete && peActionForm.length.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.length.errors.required">
+                                                    Length is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="industrystdtext" class="required">Industry Std. Text</label>
+                                            <!-- <input type="text" formControlName="industrystdtext" class="form-control"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" /> -->
+                                            <ng-select [items]="industrystdtextList"
+                                                class="form-control nowrap-dropdown" formControlName="industrystdtext"
+                                                bindLabel="industrystdtext" bindValue="industrystdtext"
+                                                (change)="onIndustryStdTextchange($event)" placeholder="Please Select"
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.industrystdtext.errors }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null">
+                                            </ng-select>
+                                            <div *ngIf="submitted && iscomplete && peActionForm.industrystdtext.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.industrystdtext.errors.required">
+                                                    Industry Std. Text is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="required">PG</label>
+                                            <ng-select [items]="pgList" class="form-control" formControlName="pg"
+                                                bindLabel="pg" bindValue="pg" (change)="onPGchange($event)"
+                                                placeholder="Please Select"
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.pg.errors }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null">
+                                            </ng-select>
+                                            <div *ngIf="submitted && iscomplete && peActionForm.pg.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.pg.errors.required">
+                                                    PG is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="required">PH</label>
+                                            <ng-select [items]="phList" class="form-control" formControlName="ph"
+                                                bindLabel="ph" bindValue="ph" placeholder="Please Select"
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.ph.errors }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null">
+                                            </ng-select>
+                                            <div *ngIf="submitted && iscomplete && peActionForm.ph.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.ph.errors.required">
+                                                    PH is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>PH2</label>
+                                            <input type="text" class="form-control" formControlName="ph2"
+                                                [ngClass]="{ 'is-invalid': submitted && peActionForm.ph2.errors }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null">
+                                            <div *ngIf="submitted && peActionForm.ph2.errors" class="invalid-feedback">
+                                                <div *ngIf="peActionForm.ph2.errors.required">
+                                                    Please Enter PH2
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>PH6</label>
+                                            <input type="text" class="form-control" formControlName="ph6"
+                                                [ngClass]="{ 'is-invalid': submitted && peActionForm.ph6.errors }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null">
+                                            <div *ngIf="submitted && peActionForm.ph6.errors" class="invalid-feedback">
+                                                <div *ngIf="peActionForm.ph6.errors.required">
+                                                    Please Enter PH6
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Lab Text</label>
+                                            <ng-select [items]="labtextList" class="form-control"
+                                                formControlName="labtext" bindLabel="code" bindValue="description"
+                                                placeholder="Please Select"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null">
+                                            </ng-select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Standard Cost</label>
+                                            <input type="text" formControlName="standardcost" class="form-control"
+                                                numericwithdecimal decimals="4" beforedecimals="18"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Copper weight</label>
+                                            <input type="text" formControlName="copperweightorindex"
+                                                class="form-control" numericwithdecimal decimals="4" beforedecimals="18"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                            <!-- 
+                                            [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.copperweightorindex.errors }"
+                                            <div *ngIf="submitted && iscomplete && peActionForm.copperweightorindex.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.copperweightorindex.errors.required">
+                                                    Copper Weight is required
+                                                </div>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Copper Index</label>
+                                            <input type="text" formControlName="copperindex" class="form-control"
+                                                numericwithdecimal decimals="4" beforedecimals="18"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                            <!--
+                                            [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.copperindex.errors }"
+                                            <div *ngIf="submitted && iscomplete && peActionForm.copperindex.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.copperindex.errors.required">
+                                                    Copper Index is required
+                                                </div>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Base Price</label>
+                                            <input type="text" formControlName="baseprice" class="form-control"
+                                                numericwithdecimal decimals="4" beforedecimals="18"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                            <!--
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.baseprice.errors }"
+                                                <div *ngIf="submitted && iscomplete && peActionForm.baseprice.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.baseprice.errors.required">
+                                                    Base Price is required
+                                                </div>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Copper Base Cost</label>
+                                            <input type="text" formControlName="copperbasecost" class="form-control"
+                                                numericwithdecimal decimals="4" beforedecimals="18"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                            <!--
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.copperbasecost.errors }"
+                                                <div *ngIf="submitted && iscomplete && peActionForm.copperbasecost.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.copperbasecost.errors.required">
+                                                    Copper Base Cost is required
+                                                </div>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Other RMC</label>
+                                            <input type="text" formControlName="otherrmc" class="form-control"
+                                                numericwithdecimal decimals="4" beforedecimals="18"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Variable O/H</label>
+                                            <input type="text" formControlName="overheads" class="form-control"
+                                                numericwithdecimal decimals="4" beforedecimals="18"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Fixed O/H</label>
+                                            <input type="text" formControlName="fixedoverheads" class="form-control"
+                                                numericwithdecimal decimals="4" beforedecimals="18"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label>ALP</label>
+                                            <input type="text" formControlName="alp" class="form-control"
+                                                numericwithdecimal decimals="4" beforedecimals="18"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="required">MSQ</label>
+                                            <input type="text" formControlName="msq" class="form-control" OnlyNumber
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.msq.errors || submitted && iscomplete && peActionForm.msq.value <= 0 }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                            <div *ngIf="submitted && iscomplete && peActionForm.msq.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.msq.errors.required">
+                                                    MSQ is required
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && iscomplete && peActionForm.msq.value <= 0 && !peActionForm.msq.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.msq.value <= 0">
+                                                    MSQ must be greater than 0
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="moq" class="required">MOQ</label>
+                                            <input type="text" formControlName="moq" class="form-control" OnlyNumber
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.moq.errors || submitted && iscomplete && peActionForm.moq.value <= 0 }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                            <div *ngIf="submitted && iscomplete && peActionForm.moq.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.moq.errors.required">
+                                                    MOQ is required
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && iscomplete && peActionForm.moq.value <= 0 && !peActionForm.moq.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.moq.value <= 0">
+                                                    MOQ must be greater than 0
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="owf">OWF (%)</label>
+                                            <input type="text" formControlName="owf" class="form-control"
+                                                numericwithdecimal decimals="4" beforedecimals="18"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                        *ngIf="isEditSection('peSection')">
+                                        <div class="form-group">
+                                            <label class="required">Valid From</label>
+                                            <div class="input-group">
+                                                <input class="form-control doc-date" formcontrolname="validfrom"
+                                                    ngbDatepicker #Validfrom="ngbDatepicker"
+                                                    [value]="formatter.format(validfromDate)"
+                                                    (dateSelect)="onOffValidFromDateSelection($event)" readonly
+                                                    [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.validfrom.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="Validfrom.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && iscomplete && peActionForm.validfrom.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.validfrom.errors.required">
+                                                    Valid From is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                        *ngIf="!isEditSection('peSection')">
+                                        <label>Valid From</label>
+                                        <input class="form-control" type="text" formControlName="validfrom">
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                        *ngIf="isEditSection('peSection')">
+                                        <div class="form-group">
+                                            <label class="required">Valid To</label>
+                                            <div class="input-group">
+                                                <input class="form-control doc-date" formcontrolname="validto"
+                                                    ngbDatepicker #ValidTo="ngbDatepicker"
+                                                    [value]="formatter.format(validtoDate)"
+                                                    (dateSelect)="onOffValidToDateSelection($event)" readonly
+                                                    [minDate]="todayMinDate"
+                                                    [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.validto.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="ValidTo.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && iscomplete && peActionForm.validto.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.validto.errors.required">
+                                                    Valid To is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                        *ngIf="!isEditSection('peSection')">
+                                        <label>Valid To</label>
+                                        <input class="form-control" type="text" formControlName="validto">
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="mdq" class="required">MDQ</label>
+                                            <input type="text" formControlName="mdq" class="form-control" OnlyNumber
+                                                [ngClass]="{ 'is-invalid': submitted && iscomplete && peActionForm.mdq.errors || submitted && iscomplete && peActionForm.mdq.value <= 0 }"
+                                                [attr.disabled]="!isEditSection('peSection') ? '' : null" />
+                                            <div *ngIf="submitted && iscomplete && peActionForm.mdq.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.mdq.errors.required">
+                                                    MDQ is required
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && iscomplete && peActionForm.mdq.value <= 0 && !peActionForm.mdq.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="peActionForm.mdq.value <= 0">
+                                                    MDQ must be greater than 0
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <label>Calc. RMC Cost</label>
+                                        <input class="form-control" type="text" formControlName="calrmcccost"
+                                            [attr.disabled]="true">
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <label>Calc. Cost</label>
+                                        <input class="form-control" type="text" formControlName="calccost"
+                                            [attr.disabled]="true">
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <label>Calc. ALP</label>
+                                        <input class="form-control" type="text" formControlName="calcalp"
+                                            [attr.disabled]="true">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <div style="float: left;">
+                                                <label for="remarks">Remarks</label>
+                                            </div>
+                                            <div style="float: right;">
+                                                <span *ngIf="isEditSection('peSection')">
+                                                    <i class="fas fa-exclamation"></i> <i>
+                                                        {{500 - RemarksValue?.length}} characters
+                                                        left.</i></span>
+                                            </div>
+                                            <textarea rows=" 3" cols="50" class="form-control" maxlength="500"
+                                                formControlName="remarks"
+                                                [attr.disabled]="!isEditSection('peSection')  ? '' : null"
+                                                [(ngModel)]="RemarksValue" maxlength="500"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <label>Status</label>
+                                        <input class="form-control" type="text" formControlName="itemstatus"
+                                            [attr.disabled]="true">
+                                    </div>
+                                    <div class="col-12 col-xl-10 col-lg-10 col-md-10 col-sm-12">
+                                        <label>Reject Reason</label>
+                                        <input class="form-control" type="text" formControlName="itemrejectreason"
+                                            [attr.disabled]="true">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                        <div class="form-group" *ngIf="isEditSection('peSection')">
+                                            <label>Attachments</label>
+                                            <div><button (click)="fileInput.click()">Select File</button>
+                                                <input type="file" id="importFile" style="display: none;"
+                                                    (change)="PEfileChangeListener($event)" #fileInput multiple />
+                                            </div>
+                                        </div>
+                                        <div class="form-group" *ngIf="!isEditSection('peSection')">
+                                            <label>Attachments</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12" *ngIf="PEFiles.length > 0">
+                                        <div class="row">
+                                            <div *ngFor="let file of PEFiles;let f=index"
+                                                class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 outer-container-upload-control">
+                                                <div class="upload-control-filetype-container"><img
+                                                        class="table-icon-lg"
+                                                        src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                                </div>
+                                                <div class="upload-control-filename-container dot-views"><a
+                                                        href="javascript:void(0)" *ngIf="file.id"
+                                                        (click)="downloadFile(file.name,file.id,file.type)">
+                                                        {{file.name}}</a><span *ngIf="!file.id">{{file.name}}</span>
+                                                </div>
+                                                <div class="upload-control-delete-container">
+                                                    <button class="btn btn-link p-0" (click)="removePEFile(f)">
+                                                        <img class="table-icon"
+                                                            src="../../../../../assets/images/icon-delete1.svg"
+                                                            title="delete image"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 text-right" *ngIf="isEditSection('peSection')">
+                                    <div class="form-group">
+                                        <button class="btn btn-orange-outline ml-2 key key-m"
+                                            (click)="cancelClicked()"><i class="icon-x"></i>Cancel</button>
+                                        <button class="btn btn-orange-s" (click)="onSaveDraftClick(false)"><i
+                                                class="icon-floppy-o"></i>Save</button>
+                                        <button class="btn btn-orange-s ml-2" (click)="onSaveSubmitClick(true)"><i
+                                                class="icon-floppy-o"></i>Save &
+                                            Submit</button>
+                                        <button class="btn btn-danger ml-2" style="min-width: 80px;"
+                                            (click)="onItemRejectClick()"><i></i>Reject</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </ng-template>
+                    </ngb-panel>
+                    <ngb-panel id="ngb-panel-4" class="pt-0">
+                        <ng-template ngbPanelTitle>Approved Data Sheets</ng-template>
+                        <ng-template ngbPanelContent>
+                            <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                <label>Offer Level</label>
+                                <div class="row">
+                                    <div *ngFor="let file of offerdatasheets;let f=index"
+                                        class="col-md-12 col-lg-2 outer-container-upload-control">
+                                        <div class="upload-control-filetype-container">
+                                            <img class="table-icon-lg"
+                                                src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                        </div>
+                                        <div class="upload-control-filename-container dot-views">
+                                            <a href="javascript:void(0)" *ngIf="isEdit || isView"
+                                                (click)="downloadFile(file.name,file.id,file.type)">
+                                                {{file.name}}</a><span *ngIf="isAdd">{{file.name}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                <label>Item Level</label>
+                                <div class="row">
+                                    <div *ngFor="let file of itemdatasheets;let f=index"
+                                        class="col-md-12 col-lg-2 outer-container-upload-control">
+                                        <div class="upload-control-filetype-container">
+                                            <img class="table-icon-lg"
+                                                src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                        </div>
+                                        <div class="upload-control-filename-container dot-views">
+                                            <a href="javascript:void(0)" *ngIf="isEdit || isView"
+                                                (click)="downloadFile(file.name,file.id,file.type)">
+                                                {{file.name}}</a><span *ngIf="isAdd">{{file.name}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ngb-panel>
+                    <ngb-panel id="ngb-panel-5" class="pt-0">
+                        <ng-template ngbPanelTitle>Comments</ng-template>
+                        <ng-template ngbPanelContent>
+                            <div class="col-12 text-right" *ngIf="peData && peData.IsActive == 1 && peData.status < 40">
+                                <div class="form-group">
+                                    <button class="btn btn-orange-s" (click)="openCommentModal(CommentModal)"><i
+                                            class="icon-floppy-o"></i>Add Comment</button>
+                                </div>
+                            </div>
+                            <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12" *ngIf="isComment">
+                                <table class="table table-hover table-responsive" id="table-opportunity">
+                                    <tbody>
+                                        <tr *ngFor="let comm of commentdata">
+                                            <td style="width: 15%;">
+                                                <i class="fa fa-user" aria-hidden="true"></i><label
+                                                    class="ml-2">{{comm.fullname}}</label>
+                                                <br>
+                                                <label>{{comm.created_date | date:format}}</label>
+                                            </td>
+                                            <td>
+                                                <label>{{comm.comment}}</label>
+                                                <br>
+                                                <div class="mt-3" *ngIf="comm.files && comm.files.length > 0">
+                                                    <div class="row">
+                                                        <div *ngFor="let file of comm.files;let f=index"
+                                                            class="col-md-12 col-lg-3 outer-container-upload-control">
+                                                            <div class="upload-control-filetype-container">
+                                                                <img class="table-icon-lg"
+                                                                    src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                                            </div>
+                                                            <div class="upload-control-filename-container dot-views">
+                                                                <a href="javascript:void(0)" *ngIf="isEdit || isView"
+                                                                    (click)="downloadFile(file.name,file.id,file.type)">
+                                                                    {{file.name}}</a><span
+                                                                    *ngIf="isAdd">{{file.name}}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </ng-template>
+                    </ngb-panel>
+                </ngb-accordion>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+
+<ng-template #CommentModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add Comment</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form class="ng-invalid ng-touched ng-dirty" [formGroup]="CommentsForm">
+            <div class="row">
+                <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="form-group">
+                        <div style="float: left;">
+                            <label for="comments" class="required">Comment</label>
+                        </div>
+                        <div style="float: right;">
+                            <span>
+                                <i class="fas fa-exclamation"></i> <i> {{500 - PEComment?.length}} characters
+                                    left.</i></span>
+                        </div>
+                        <textarea rows=" 3" cols="50" class="form-control" formControlName="comments"
+                            [ngClass]="{ 'is-invalid': cmtsubmitted && commentsForm.comments.errors }"
+                            [(ngModel)]="PEComment" maxlength="500"></textarea>
+                        <div *ngIf="cmtsubmitted && commentsForm.comments.errors" class="invalid-feedback">
+                            <div *ngIf="commentsForm.comments.errors.required">
+                                Comment is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <label>Attachments</label>
+                        <div><button (click)="fileInput.click()">Select File</button>
+                            <input type="file" id="importFile" style="display: none;"
+                                (change)="CommentsfileChangeListener($event)" #fileInput multiple />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mt-3" *ngIf="CommentsFiles.length > 0">
+                    <div class="row">
+                        <div *ngFor="let file of CommentsFiles;let f=index"
+                            class="col-md-12 col-lg-6 outer-container-upload-control">
+                            <div class="upload-control-filetype-container"><img class="table-icon-lg"
+                                    src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                            </div>
+                            <div class="upload-control-filename-container dot-views"><a href="javascript:void(0)"
+                                    *ngIf="isEdit || isView" (click)="downloadFile(file.name,file.id,file.type)">
+                                    {{file.name}}</a><span *ngIf="isAdd">{{file.name}}</span></div>
+                            <div class="upload-control-delete-container" *ngIf="isEdit">
+                                <button class="btn btn-link p-0" (click)="removeFile(f)">
+                                    <img class="table-icon" src="../../../../../assets/images/icon-delete1.svg"
+                                        title="delete image"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onCommentSaveClick()">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit SAP ID</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="SAPModalForm">
+            <div class="form-group">
+                <label for="newSapId" class="required">SAP ID</label>
+                <input class="form-control" formControlName="newSapId" type="text"
+                    [ngClass]="{ 'is-invalid': submitted && sapModalForm.newSapId.errors }">
+                <div *ngIf="submitted && sapModalForm.newSapId.errors" class="invalid-feedback">
+                    <div *ngIf="sapModalForm.newSapId.errors.required">
+                        SAP ID is required
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onSaveSApID()">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #spritemrejectmodel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Item Reject</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="RejectForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <div style="float: left;">
+                            <label for="rejectreason" class='required'>Reason</label>
+                        </div>
+                        <div style="float: right;">
+                            <span><i class="fas fa-exclamation"></i> <i>
+                                    {{500 - RejectReason?.length}}
+                                    characters left </i> </span>
+                        </div>
+                        <textarea rows="3" cols="50" formControlName="rejectreason"
+                            [ngClass]="{ 'is-invalid': submitted && rejectForm.rejectreason.errors }"
+                            [(ngModel)]="RejectReason" maxlength="500"></textarea>
+                        <div *ngIf="submitted && rejectForm.rejectreason.errors" class="invalid-feedback">
+                            <div *ngIf="rejectForm.rejectreason.errors.required">
+                                Reason is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" style="min-width: 50px;"
+            (click)="modal.dismiss('Cross click')">No</button>
+        <button type="button" class="btn btn-danger" style="min-width: 50px;" (click)="onRejectClick()">Yes</button>
+    </div>
+</ng-template>
+
+<ng-template #AssigneeModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit Assign To</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="AssigneeForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row form-group">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="assignto">Assign To</label>
+                                <ng-select [items]="AssignToList" class="form-control" formControlName="assignto"
+                                    bindLabel="description" bindValue="userid" placeholder="Please Select">
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <input type="checkbox" style="margin-right: 5px; margin-top: 3px;"
+                                    formControlName="isassigntoallitem">
+                                <label for="completedlv">Apply to all items of the opportunity.</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer text-right">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onAssignToSaveClick()">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #SPRInformationModel let-modal>
+    <app-spr-information-popup [dataSheetObj]="dataSheetObj" [articleNo]="articleNo" [description]="description"
+        (isSavedOrSubmitted)="isSavedOrSubmitted($event)" [isSaveandSubmitBtnDisplay]="true"
+        [isSubmitBtnDisplay]="false"></app-spr-information-popup>
+</ng-template>

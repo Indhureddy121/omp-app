@@ -1,0 +1,12 @@
+.sub-header-container{
+    display: flex;
+    justify-content: space-between;
+}
+
+@media (max-width: 600px) {
+    .sub-header-container{
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+}

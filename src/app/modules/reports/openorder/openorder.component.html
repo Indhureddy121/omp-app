@@ -1,0 +1,289 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isExport]=true (exportClicked)="onExport()"></app-list-sub-header>
+            <!-- isExporttoPDF=true (exporttopdfClicked)="getData(true)" -->
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12">
+                        <form [formGroup]="FilterForm">
+                            <div class="row">
+                                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12" *ngIf="usertype == 20">
+                                    <div class="form-group">
+                                        <label for="dealer" class="required">Dealer</label>
+                                        <input type="text" formControlName="dealer" class="form-control"
+                                            [attr.disabled]="true" />
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-4 col-lg-4 col-md-3 col-sm-12" *ngIf="usertype != 20">
+                                    <div class="form-group">
+                                        <label for="dealer" class="required">Dealer</label>
+                                        <ng-select [items]="DealersList" class="form-control" formControlName="dealer"
+                                            bindLabel="dealerfullname" bindValue="sapid"
+                                            placeholder="Type 3 char to search" (keyup)="GetDealersList()"
+                                            labelForId="ngSelectDealers"
+                                            [ngClass]="{ 'is-invalid': submitted && filterForm.dealer.errors }">
+                                        </ng-select>
+                                        <div *ngIf="submitted && filterForm.dealer.errors" class="invalid-feedback">
+                                            <div *ngIf="filterForm.dealer.errors.required">
+                                                Dealer is required
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="sono">Sales Order No.</label>
+                                        <input type="text" formControlName="sono" class="form-control" maxlength="6" />
+                                    </div>
+                                </div>
+                                <!-- <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="currentto" class="required">Date To</label>
+                                        <div class="input-group"
+                                            [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }">
+                                            <input class="form-control doc-date" formcontrolname="currentto"
+                                                ngbDatepicker #currentto="ngbDatepicker"
+                                                (dateSelect)="OnCurrentToDateSelection($event)" readonly
+                                                [value]="formatter.format(CurrentToDate)"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }" />
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary calendar"
+                                                    (click)="currentto.toggle()" type="button"></button>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="submitted && filterForm.currentto.errors" class="invalid-feedback">
+                                            <div *ngIf="filterForm.currentto.errors.required">
+                                                Current To is required
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-4">
+                                    <div class="form-group">
+                                        <button class="btn btn-orange-s" (click)="OnGenerateReportClick()"
+                                            appNoDblClick><i class=" icon-floppy-o"></i>Generate Report</button>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12"
+                                    *ngIf="usertype == 20 && lastgenerateddate" style="text-align: right;">
+                                    <div class="form-group mt-4">
+                                        <label>Last Generated: {{lastgenerateddate}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting"
+                    *ngIf="openorderlist && openorderlist.length > 0">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Order No</th>
+                            <th>SO Created Date</th>
+                            <th>PO No</th>
+                            <th>PO Date</th>
+                            <th>Item No</th>
+                            <th>Material No</th>
+                            <th>Description</th>
+                            <th class="text-right">Order Qty</th>
+                            <th class="text-right">Open Qty</th>
+                            <th class="text-right">Dlv Qty</th>
+                            <th>UOM</th>
+                            <th class="text-right">Unit Price</th>
+                            <th class="text-right">Net Value</th>
+                            <th class="text-right">Open Order Value</th>
+                            <th>Curr</th>
+                            <th>Req. Dlv. Date</th>
+                            <th>Est M.A.D</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="openorderlist.length === 0">
+                            <td colspan="17" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let sg of openorderlist">
+                            <td>
+                                <button class="btn btn-link p-0"
+                                    (click)="onOrderDetailClick(sg.Salesord, sg.ItemNo)">{{sg.Salesord}}</button>
+                            </td>
+                            <td>{{sg.Socreated}}</td>
+                            <td>{{sg.Custponumber}}</td>
+                            <td>{{sg.Podate}}</td>
+                            <td>{{sg.ItemNo}}</td>
+                            <td>{{sg.MaterialNo}}</td>
+                            <td>{{sg.MaterialDesc}}</td>
+                            <td class="text-right">{{sg.Orderquantity}}</td>
+                            <td class="text-right">{{sg.Openquantity}}</td>
+                            <td class="text-right">{{sg.Delquantity}}</td>
+                            <td>{{sg.Unit}}</td>
+                            <td class="text-right">{{sg.Unitprice}}</td>
+                            <td class="text-right">{{sg.NetValue}}</td>
+                            <td class="text-right">{{sg.Open_Order_Value}}</td>
+                            <td>{{sg.Currency}}</td>
+                            <td>{{sg.Requstdeldate}}</td>
+                            <td>{{sg.MatavlDate}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td colspan="7"></td>
+                            <td class="text-right">{{Total_Openquantity}}</td>
+                            <td colspan="3"></td>
+                            <td class="text-right">{{Total_NetValue}}</td>
+                            <td class="text-right">{{Total_Open_Order_Value}}</td>
+                            <td colspan="3"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<ng-template #OrderDetailModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Display Order - {{OrderNo}} & Item No - {{ItemNo}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="OrderDetailsForm">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                        <div class="form-group">
+                            <label for="soldtoparty">Sold to Party</label>
+                            <input type="text" formControlName="soldtoparty" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                        <div class="form-group">
+                            <label for="shiptoparty">Ship to Party</label>
+                            <input type="text" formControlName="shiptoparty" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                        <div class="form-group">
+                            <label for="employeeresponsible">Employee Responsible</label>
+                            <input type="text" formControlName="employeeresponsible" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="ponumber">PO Number</label>
+                            <input type="text" formControlName="ponumber" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="podate">PO Date</label>
+                            <input type="text" formControlName="podate" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="socreateddate">SO Created Date</label>
+                            <input type="text" formControlName="socreateddate" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="soitemcreateddate">SO Item Created Date</label>
+                            <input type="text" formControlName="soitemcreateddate" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="reqdlvdate">Req. Dlv. Date</label>
+                            <input type="text" formControlName="reqdlvdate" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="length">Length</label>
+                            <input type="text" formControlName="length" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="factor">Factor</label>
+                            <input type="text" formControlName="factor" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="untol">Underdelv. Tolerance</label>
+                            <input type="text" formControlName="untol" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="ovtol">Overdelv. Tolerance</label>
+                            <input type="text" formControlName="ovtol" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="importby">Import By</label>
+                            <input type="text" formControlName="importby" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="incoterms">Inco Terms</label>
+                            <input type="text" formControlName="incoterms" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="onelot">One Lot</label>
+                            <input type="text" formControlName="onelot" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="orderqty">Order Quantity</label>
+                            <input type="text" formControlName="orderqty" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="openqty">Open Quantity</label>
+                            <input type="text" formControlName="openqty" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="dlvqty">Delivery Quantity</label>
+                            <input type="text" formControlName="dlvqty" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+    </div>
+</ng-template>

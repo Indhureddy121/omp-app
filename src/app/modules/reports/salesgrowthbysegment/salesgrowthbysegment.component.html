@@ -1,0 +1,202 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isExport]=true (exportClicked)="onExport()"></app-list-sub-header>
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="w-100 row pl-4">
+                        <div class="col-12">
+                            <form [formGroup]="FilterForm">
+                                <div class="row">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="currentfrom" class="required">Current From</label>
+                                            <div class="input-group"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.currentfrom.errors }">
+                                                <input class="form-control doc-date" formcontrolname="currentfrom"
+                                                    ngbDatepicker #currentfrom="ngbDatepicker"
+                                                    (dateSelect)="OnCurrentFromDateSelection($event)" readonly
+                                                    [value]="formatter.format(CurrentFromDate)"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.currentfrom.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="currentfrom.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && filterForm.currentfrom.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.currentfrom.errors.required">
+                                                    Current From is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="currentto" class="required">Current To</label>
+                                            <div class="input-group"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }">
+                                                <input class="form-control doc-date" formcontrolname="currentto"
+                                                    ngbDatepicker #currentto="ngbDatepicker"
+                                                    (dateSelect)="OnCurrentToDateSelection($event)" readonly
+                                                    [value]="formatter.format(CurrentToDate)"
+                                                    [minDate]="CurrentToMindate"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="currentto.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && filterForm.currentto.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.currentto.errors.required">
+                                                    Current To is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="previousfrom" class="required">Previous From</label>
+                                            <div class="input-group"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.previousfrom.errors }">
+                                                <input class="form-control doc-date" formcontrolname="previousfrom"
+                                                    ngbDatepicker #previousfrom="ngbDatepicker"
+                                                    (dateSelect)="OnPreviousFromDateSelection($event)" readonly
+                                                    [value]="formatter.format(PreviousFromDate)"
+                                                    [maxDate]="CurrentToMindate"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.previousfrom.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="previousfrom.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && filterForm.previousfrom.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.previousfrom.errors.required">
+                                                    Previous From is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="previousto" class="required">Previous To</label>
+                                            <div class="input-group"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.previousto.errors }">
+                                                <input class="form-control doc-date" formcontrolname="previousto"
+                                                    ngbDatepicker #previousto="ngbDatepicker"
+                                                    (dateSelect)="OnPreviousToDateSelection($event)" readonly
+                                                    [value]="formatter.format(PreviousToDate)"
+                                                    [minDate]="PreviousToMindate"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.previousto.errors }" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary calendar"
+                                                        (click)="previousto.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="submitted && filterForm.previousto.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="filterForm.previousto.errors.required">
+                                                    Previous To is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="ph" class="required">PH</label>
+                                            <ng-select [items]="phList" class="form-control h-auto" bindLabel="ph"
+                                                bindValue="ph" formControlName="ph" multiple="true"
+                                                (add)="onPHAdd($event)" [closeOnSelect]="false"
+                                                placeholder="Please Select"
+                                                [ngClass]="{ 'is-invalid': submitted && phs && phs.length == 0 }">
+                                                <ng-template ng-option-tmp let-item="item" let-item$="item$"
+                                                    let-index="index">
+                                                    <input id="item-{{index}}" type="checkbox"
+                                                        [ngModel]="item$.selected"
+                                                        [ngModelOptions]="{standalone: true}" />
+                                                    {{item.ph}}
+                                                </ng-template>
+                                            </ng-select>
+                                            <div *ngIf="submitted && phs && phs.length == 0" class="invalid-feedback">
+                                                <div *ngIf="phs.length == 0">
+                                                    PH is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-4">
+                                        <div class="form-group">
+                                            <button class="btn btn-orange-s" (click)="OnGenerateReportClick()"
+                                                appNoDblClick><i class=" icon-floppy-o"></i>Generate Report</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row multi-select mb-2">
+                                    <div class="col-12">
+                                        <label *ngFor="let ph of phs; let i=index;">{{ph}} <button class="btn btn-orange-outline ml-2 key key-m" (click)="onPHRemove(i)"><i class="icon-x"></i></button></label>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting"
+                    *ngIf="salesgrowthbysegmentList && salesgrowthbysegmentList.length > 0">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th></th>
+                            <th colspan="3" style="text-align: center;">Revenue(TINR)</th>
+                            <th colspan="2" style="text-align: center;">Gross Margin</th>
+                            <th colspan="2"></th>
+                        </tr>
+                        <tr>
+                            <th>Segment</th>
+                            <th class="text-right">{{filterForm.previousfrom.value}} - {{filterForm.previousto.value}}</th>
+                            <th class="text-right">{{filterForm.currentfrom.value}} - {{filterForm.currentto.value}}</th>
+                            <th class="text-right">Growth Vs PY</th>
+                            <th class="text-right">{{filterForm.previousfrom.value}} - {{filterForm.previousto.value}}</th>
+                            <th class="text-right">{{filterForm.currentfrom.value}} - {{filterForm.currentto.value}}</th>
+                            <th class="text-right">% Contribution</th>
+                            <th>Vertical</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="salesgrowthbysegmentList.length === 0">
+                            <td colspan="8" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let sg of salesgrowthbysegmentList">
+                            <td>{{sg.segment}}</td>
+                            <td class="text-right">{{sg.revenuepreviousyear}}</td>
+                            <td class="text-right">{{sg.revenuecurrentyear}}</td>
+                            <td class="text-right"
+                                [ngClass]="{'text-danger': sg.growthvspy < 0, 'text-success': sg.growthvspy > 0, 'text-nochange': sg.growthvspy == 0}">
+                                <span *ngIf="sg.revenuepreviousyear === 0">More than </span>{{sg.growthvspy | percent:'2.2-2'}}</td>
+                            <td class="text-right">{{sg.gmpreviousyear | percent:'2.2-2'}}</td>
+                            <td class="text-right">{{sg.gmcurrentyear | percent:'2.2-2'}}</td>
+                            <td class="text-right">{{sg.contribution | percent:'2.2-2'}}</td>
+                            <td>{{sg.vertical}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><strong>Grand Total</strong></td>
+                            <td class="text-right"><strong>{{rpreviousyear | number : '1.2-2'}}</strong></td>
+                            <td class="text-right"><strong>{{rcurrentyear | number : '1.2-2'}}</strong></td>
+                            <td class="text-right"><strong>{{growthvspy | percent:'2.2-2'}}</strong></td>
+                            <td class="text-right"><strong>{{gmpreviousyear | percent:'2.2-2'}}</strong></td>
+                            <td class="text-right"><strong>{{gmcurrentyear | percent:'2.2-2'}}</strong></td>
+                            <td class="text-right"><strong>{{contributionper | percent:'2.2-2'}}</strong></td>
+                            <td class="text-right"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

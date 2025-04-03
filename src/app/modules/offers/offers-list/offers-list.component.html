@@ -1,0 +1,263 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isExport]=true (exportClicked)="onExport()"></app-list-sub-header>
+            
+
+            <div class="col-12">
+                <div>
+                    <div class="row">
+                        <div class="w-100 row pl-4">
+                            <div class="col-12 col-md-3 col-lg-3">
+                                <app-appsearch [model]="searchModel" (callBack)="onSearch($event)" ></app-appsearch>
+                            </div>
+                            <div class="col-12 col-md-9 col-sm-9">
+                                <form [formGroup]="FilterForm">
+                                    <div class="row">
+                                        <div class="col-12 col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <ng-select [items]="offerStatusList" class="form-control"
+                                                    bindLabel="description" bindValue="code"
+                                                    formControlName="offerstatus"
+                                                    (change)="onFilterStatusChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-3 col-sm-3">
+                                            <div class="form-group">
+                                                <ng-select [items]="offerDetailStatusList" class="form-control"
+                                                    bindLabel="description" bindValue="code"
+                                                    formControlName="offerdetailstatus"
+                                                    (change)="onFilterDetailStatusChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <input class="form-control doc-date" formcontrolname="Validfrom"
+                                                        ngbDatepicker #Validfrom="ngbDatepicker"
+                                                        [value]="formatter.format(validfromDate)"
+                                                        (dateSelect)="onValidFromDateSelection($event)" readonly
+                                                        [maxDate]="ValidMaxdate" />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="Validfrom.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <input class="form-control doc-date" formcontrolname="Validto"
+                                                        ngbDatepicker #Validto="ngbDatepicker"
+                                                        [value]="formatter.format(validtoDate)"
+                                                        (dateSelect)="onValidToDateSelection($event)" readonly />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="Validto.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12"
+                                            *ngIf="!isReceivedtoOMT">
+                                            <div class="form-group">
+                                                <ng-select [items]="pendingOnList" class="form-control"
+                                                    bindLabel="description" bindValue="code" formControlName="pendingon"
+                                                    (change)="onPendingOnChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12"
+                                            *ngIf="isReceivedtoOMT">
+                                            <div class="form-group">
+                                                <ng-select [items]="OMTpendingOnList" class="form-control"
+                                                    bindLabel="description" bindValue="userid"
+                                                    formControlName="assignto" (change)="onOMTPendingOnChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <!-- <reset-filter [isResetFilter]=true (resetClicked)="ngOnInit()"></reset-filter> -->
+                                        <!-- <button class="btn btn-link p-0" (click)="onResetClick()">Reset Filter</button> -->
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting" id="table-offers">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th></th>
+                            <th (click)="headerClick($event)" id="offernumber">Offer No</th>
+                            <th (click)="headerClick($event)" id="OP.lappopportunityid">LAPP Oppo. ID</th>
+                            <th (click)="headerClick($event)" id="OP.opportunity_name">Opportunity Name</th>
+                            <th (click)="headerClick($event)" id="C.customername">Account Name</th>
+                            <th (click)="headerClick($event)" id="U.fullname">Owner</th>
+                            <th (click)="headerClick($event)" id="O.offervalue" class="text-right">Offer Value</th>
+                            <th (click)="headerClick($event)" id="O.offervalidto">Valid To</th>
+                            <th (click)="headerClick($event)" id="O.Status">Status</th>
+                            <th (click)="headerClick($event)" id="O.ActionRequired">Action Required</th>
+                            <th (click)="headerClick($event)" id="U3.fullname">
+                                Pending On
+                            </th>
+                            <th (click)="headerClick($event)" id="O.total_rmc_grossmargin" align="right"
+                                *ngIf="isShowRGroupMargin">R. GM(%)
+                            </th>
+                            <th (click)="headerClick($event)" id="O.TotalGrossMargin" align="right"
+                                *ngIf="isShowMargin">GM(%)
+                            </th>
+                            <th (click)="headerClick($event)" id="O.TotalTargetGrossMargin" align="right"
+                                *ngIf="isShowMargin">
+                                T. GM(%)</th>
+                            <th (click)="headerClick($event)" name="assigneename" id="assigneename"
+                                *ngIf="isReceivedtoOMT">Assign To
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="offerslist.length == 0">
+                            <td colspan="16" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+
+                        <tr *ngFor="let off of offerslist" (dblclick)="onRowDoubleClick(off.offerid)">
+                            <td>
+                                <button class="btn btn-link p-0 mr-3" (click)="viewClicked(off.offerid)"
+                                    *ngIf="off.IsActive == 0 || off.status == 80"><img class="table-icon"
+                                        src="../../../../../assets/images/icon-view.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="editClicked(off.offerid)"
+                                    *ngIf="off.IsActive == 1 && off.status < 80"><img class="table-icon"
+                                        src="../../../../../assets/images/icon-edit.svg"></button>
+                            </td>
+                            <td>
+                                <span class="dot green" *ngIf="off.IsActive == 1"></span>
+                                <span class="dot red" *ngIf="off.IsActive == 0"></span>
+                                <span class="dot orange" *ngIf="off.IsExpired == 1"></span>
+                            </td>
+                            <td>{{off.offernumber}}
+                                <br><span title="Offer Created Date">{{off.offerCreatedDate | date:dateFormate}}</span>
+                            </td>
+                            <td><button class="btn btn-link p-0"
+                                    (click)="onOpportunityClick(off.opportunityid)">{{off.lappopportunityid}}</button>
+                            </td>
+                            <td>{{off.opportunity_name}}</td>
+                            <td>{{off.accountname}}</td>
+                            <td>{{off.ownername}}</td>
+                            <td class="text-right">{{(off.offervalue - off.TotalDealerCommission) | currency:'INR'}}
+                            </td>
+                            <td>{{off.validto | date:dateFormate : '+0000'}}</td>
+                            <td>{{off.showstatus}}</td>
+                            <td>{{off.actionrequired}}</td>
+                            <td>
+                                {{off.pendingonname}}</td>
+                            <td align="right" *ngIf="isShowRGroupMargin">{{off.TotalRMCGrossMargin | percent:'2.2-2'}}
+                            </td>
+                            <td align="right" *ngIf="isShowMargin">{{off.TotalGrossMargin | percent:'2.2-2'}}</td>
+                            <td align="right" *ngIf="isShowMargin">{{off.TotalTargetGrossMargin | percent:'2.2-2'}}</td>
+                            <td *ngIf="isReceivedtoOMT">
+                                <button
+                                    *ngIf="!off.assignto && userrole && (userrole == 'Admin' || userrole == 'OM_Admin') && off.status > 60"
+                                    class="btn btn-link p-0" (click)="openAssigneeModal(off.offerid)">Add
+                                </button>
+                                <button
+                                    *ngIf="off.assignto && userrole && (userrole == 'Admin' || userrole == 'OM_Admin') && off.status > 60"
+                                    class="btn btn-link p-0" (click)="openAssigneeModal(off.offerid)">Edit
+                                </button>
+                                <i
+                                    *ngIf="!off.assignto && userrole && (userrole == 'Admin' || userrole == 'OM_Admin' || userrole == 'OMT') && off.status == 70 && off.IsActive == 1">
+                                    | </i>
+                                <button
+                                    *ngIf="!off.assignto && userrole && (userrole == 'Admin' || userrole == 'OM_Admin' || userrole == 'OMT') && off.status == 70 && off.IsActive == 1"
+                                    class="btn btn-link p-0" (click)="assigntomeClick(off.offerid)">Assign to Me
+                                </button>
+                                <i *ngIf="off.assignto && userrole && (userrole == 'Admin' || userrole == 'OM_Admin')">
+                                    | </i>
+                                {{ off.assigneename}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="width: 100%;">
+                    <div style=" float: left;">
+                        <span class="dot green"></span> Active | <span class="dot red"></span> Inactive | <span
+                            class="dot orange"></span> Expired
+                    </div>
+                    <div style=" float:right;">
+                        <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                        <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination"
+                            style="margin-top: -10px;">
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                                <ng-template #elseFirst>
+                                    <a (click)="setPage(1)">First</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                                <ng-template #elsePrevious>
+                                    <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                                </ng-template>
+                            </li>
+                            <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                                <a (click)="setPage(page)">{{page}}</a>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                                <ng-template #elseNext>
+                                    <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                                <ng-template #elseLast>
+                                    <a (click)="setPage(pager.totalPages)">Last</a>
+                                </ng-template>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+
+<ng-template #AssigneeModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit Assign To</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="AssigneeForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row form-group">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="assignto">Assign To</label>
+                                <ng-select [items]="AssignToList" class="form-control" formControlName="assignto"
+                                    bindLabel="description" bindValue="userid" placeholder="Please Select">
+                                </ng-select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer text-right">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onAssignToSaveClick()">Save</button>
+    </div>
+</ng-template>

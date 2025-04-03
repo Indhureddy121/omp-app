@@ -1,0 +1,160 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isExport]=true (exportClicked)="onExport()"></app-list-sub-header>
+            <!-- isExporttoPDF=true (exporttopdfClicked)="getData(true)" -->
+
+            <div class="col-12">
+                <div>
+                    <div class="row">
+                        <div class="w-100 row pl-4">
+                            <div class="col-12">
+                                <form [formGroup]="FilterForm">
+                                    <div class="row">
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="currentfrom" class="required">From</label>
+                                                <div class="input-group"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.currentfrom.errors }">
+                                                    <input class="form-control doc-date" formcontrolname="currentfrom"
+                                                        ngbDatepicker #currentfrom="ngbDatepicker"
+                                                        (dateSelect)="OnCurrentFromDateSelection($event)" readonly
+                                                        [value]="formatter.format(CurrentFromDate)"
+                                                        [ngClass]="{ 'is-invalid': submitted && filterForm.currentfrom.errors }" />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="currentfrom.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                                <div *ngIf="submitted && filterForm.currentfrom.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="filterForm.currentfrom.errors.required">
+                                                        Current From is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="currentto" class="required">To</label>
+                                                <div class="input-group"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }">
+                                                    <input class="form-control doc-date" formcontrolname="currentto"
+                                                        ngbDatepicker #currentto="ngbDatepicker"
+                                                        (dateSelect)="OnCurrentToDateSelection($event)" readonly
+                                                        [value]="formatter.format(CurrentToDate)"
+                                                        [minDate]="CurrentToMindate"
+                                                        [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }" />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="currentto.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                                <div *ngIf="submitted && filterForm.currentto.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="filterForm.currentto.errors.required">
+                                                        Current To is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="itemType" class="required">Item Type</label>
+                                                <ng-select [items]="itemTypeList" class="form-control"
+                                                    bindLabel="description" bindValue="code" formControlName="itemType"
+                                                    [ngClass]="{ 'is-invalid': submitted && filterForm.itemType.errors }">
+                                                </ng-select>
+                                                <div *ngIf="submitted && filterForm.itemType.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="filterForm.itemType.errors.required">
+                                                        Item Type is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-4">
+                                            <div class="form-group">
+                                                <button class="btn btn-orange-s" (click)="OnGenerateReportClick()"
+                                                    appNoDblClick><i class=" icon-floppy-o"></i>Generate Report</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table style="display: block;overflow-x: auto;" class="table table-hover table-responsive table-sorting"
+                    *ngIf="openopportunityList && openopportunityList.length > 0">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Business/Segment</th>
+                            <th>Business/Segment1</th>
+                            <th>Opportunity Owner</th>
+                            <th>Lapp Opportunity Id</th>
+                            <th>Opportunity name</th>
+                            <th>Nace Code</th>
+                            <th>Business Model</th>
+                            <th>Account Name</th>
+                            <th class="text-right">Probability % of winning</th>
+                            <th>Business Nature</th>
+                            <th>Stage</th>
+                            <th>Close Date</th>
+                            <th class="text-right">No. of Lines in Offer</th>
+                            <th class="text-right">Days to Make Offer</th>
+                            <th class="text-right">Age of Opps. from Offered Date</th>
+                            <th class="text-right">Age</th>
+                            <th>Opportunity Id</th>
+                            <th class="text-right">Opportunity Value</th>
+                            <th class="text-right">Offered Value (MINR)</th>
+                            <th class="text-right">Quotation Level Margin</th>
+                            <th class="text-right">Segment Level Target</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="openopportunityList.length === 0">
+                            <td colspan="19" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let sg of openopportunityList">
+                            <td>{{sg.vertical}}</td>
+                            <td>{{sg.segment}}</td>
+                            <td>{{sg.opportunityowner}}</td>
+                            <td>{{sg.lappopportunityid}}</td>
+                            <td>{{sg.opportunity_name}}</td>
+                            <td>{{sg.nacecode}}</td>
+                            <td>{{sg.businessmodel}}</td>
+                            <td>{{sg.customername}}</td>
+                            <td class="text-right">{{sg.winningprobabilityper}}</td>
+                            <td>{{sg.businessnature}}</td>
+                            <td>{{sg.stage}}</td>
+                            <td>{{sg.expirydate}}</td>
+                            <td class="text-right">{{sg.nooflines}}</td>
+                            <td class="text-right">{{sg.daystomakeoffer}}</td>
+                            <td class="text-right">{{sg.ageofoppfromoffereddate}}</td>
+                            <td class="text-right">{{sg.age}}</td>
+                            <td>{{sg.opportunity_id}}</td>
+                            <td class="text-right">{{sg.opportunity_value}}</td>
+                            <td class="text-right">{{sg.offervalue}}</td>
+                            <td class="text-right">{{sg.TotalGrossMargin | percent:'2.2-2'}}</td>
+                            <td class="text-right">{{sg.TotalTargetGrossMargin| percent:'2.2-2'}}</td>
+                        </tr>
+                    </tbody>
+                    <!-- <tfoot>
+                        <tr>
+                            <td>Total</td>
+                            <td class="text-right">31286</td>
+                            <td class="text-right">23837</td>
+                            <td class="text-right">-24%</td>
+                            <td class="text-right">32%</td>
+                            <td class="text-right">35%</td>
+                        </tr>
+                    </tfoot> -->
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

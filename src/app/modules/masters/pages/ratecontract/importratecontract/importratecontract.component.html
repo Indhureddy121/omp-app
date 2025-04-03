@@ -1,0 +1,148 @@
+<app-app-header></app-app-header>
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isUpload]=true [isExport]=true [isHistory]=true (historyClicked)="getLog()"
+                (uploadClicked)="open(content)" (exportClicked)="onExport(false)"></app-list-sub-header>
+            <!-- <div class="col-12"></div>
+                <div class="action-bar row">
+                    <div class="col-12 col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                        <ol class="breadcrumb">
+                            <li><a class="breadcrumb-item mr-2" routerLink="/home"><img class="icon-22"
+                                        src="../../../../../assets/images/icon-home-b.svg"></a></li>
+                            <li class="breadcrumb-item"><span>Masters</span></li>
+                            <li class="breadcrumb-item"><span>Import Copper Index</span></li>
+                        </ol>
+                    </div>
+                </div>
+            </div> -->
+            <div class="col-12">
+              
+                    <div class="row">
+                        <div class="col-12  col-md-8 col-sm-12">
+                            <app-appsearch (callBack)="onSearch($event)"></app-appsearch>
+                        </div>
+
+
+                   
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting" id="table-additionalcharges">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th style="display:none;">ID</th>
+                            <th (click)="headerClick($event)" name="contract_code" id="contract_code">Contract Code</th>
+                            <th (click)="headerClick($event)" name="client_code" id="client_code">Client Code</th>
+                            <th (click)="headerClick($event)" name="item_code" id="item_code">Item Code</th>
+                            <th (click)="headerClick($event)" name="contract_type" id="contract_type">Contract Type</th>
+                            <th (click)="headerClick($event)" name="description" id="description">Description</th>
+                            <th (click)="headerClick($event)" name="min_qty" id="min_qty">Quantity</th>
+                            <th (click)="headerClick($event)" name="min_qty" id="min_qty">Remaining Quantity</th>
+                            <th (click)="headerClick($event)" name="min_qty" id="min_qty">Valid From </th>
+                            <th (click)="headerClick($event)" name="min_qty" id="min_qty">Valid To</th>
+                            <th (click)="headerClick($event)" name="price" id="price">Price</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="stditmList.length === 0">
+                            <td colspan="11" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let item  of stditmList">
+
+                            <td style="display:none;">{{item.id}}</td>
+                            <td>{{item.contract_code}}</td>
+                            <td>{{item.client_code}}</td>
+                            <td>{{item.item_code}}</td>
+                            <td>{{item.contract_type}}</td>
+                            <td>{{item.description}}</td>
+                            <td>{{item.min_qty}}</td>
+                            <td>{{item.remaining_qty}}</td>
+                            <td>{{item.valid_from_date | date:'dd/MM/yyyy'}}</td>
+                            <td>{{item.valid_from_date | date:'dd/MM/yyyy'}}</td>
+                            <td>{{item.price}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Manage Rate Contract</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="!isShowDownload">
+            <form [formGroup]="importmodel" enctype="multipart/form-data" method="POST">
+                <div class="form-group" (ngSubmit)="uploadFile($event)">
+                    <input type="file" id="importFile" (change)="uploadedFile($event)" #fileInput />
+                </div>
+
+            </form>
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                    (click)="downloadSample()">here</button> to download sample file.</p>
+
+        </div>
+
+        <div *ngIf="isShowDownload">
+
+            <fieldset class="custom-fieldset">
+                <p class="pl-2 pt-2">Data has been imported successfully</p>
+            </fieldset>
+
+            <p class="pl-2 pt-2">click <button type="link" class="btn-link button-link"
+                    (click)="exportfiles(false)">here</button> to download status.</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="!isShowDownload">
+            <button type="button" class="btn btn-orange-outline-s mr-2"
+                (click)="modal.dismiss('Cross click')">Cancel</button>
+            <button type="button" class="btn btn-orange-s" (click)="onSave()">Save</button>
+        </div>
+        <div *ngIf="isShowDownload">
+            <button type="button" class="btn btn-orange-s" (click)="onDismiss()">Ok</button>
+        </div>
+
+    </div>
+
+</ng-template>

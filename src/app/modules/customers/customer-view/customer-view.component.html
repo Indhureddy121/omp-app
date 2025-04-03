@@ -1,0 +1,270 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header [isCancel]="isView || isEdit || isAdd" (cancelClicked)="cancelClicked()"></app-sub-header>
+            <div class="col-12">
+                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="customerForm">
+                    <div class="row">
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <label for="sfdcid">SFDC ID</label>
+                                <input class="form-control" type="text" formControlName="sfdcid" [attr.disabled]="true">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12" *ngIf="sapExist">
+                            <div class="form-group">
+                                <label for="sapid">SAP ID</label>
+                                <button class="btn btn-link p-0" style="margin-left: 20px;"
+                                    (click)="open(content)">Change</button>
+                                <input type="text" class="form-control" formControlName="sapid" [attr.disabled]="true">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12" *ngIf="!sapExist">
+                            <label for="">SAP ID</label>
+                            <div class="form-group">
+                                <p class="form-text-view">
+                                    <button type="button" class="btn btn-link p-0" (click)="open(content)">Add
+                                        SAPID</button>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <label for="gstno">GST No</label>
+                                <input type="text" class="form-control" formControlName="gstno" [attr.disabled]="true">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                            <div class="form-group switch-inline">
+                                <input type="checkbox" id="canlogin" class="switch" formcontrolname="canlogin"
+                                    [checked]="canloginFlag" (change)="canLoginChange($event)">
+                                <label class="switch-label" for="canlogin">Login</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-12" *ngIf="!isAdd">
+                            <div class="form-group switch-inline" style="margin-right: 3.4rem;">
+                                <input type="checkbox" id="lock" class="switch" formcontrolname="lock"
+                                    [checked]="onLockCheckedFlag" (change)="toggleLock($event)">
+                                <label class="switch-label" for="lock">Lock</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <label for="fullname">Full Name</label>
+                                <input type="text" class="form-control" formControlName="fullname"
+                                    [attr.disabled]="true">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="text" class="form-control" formControlName="email" [attr.disabled]="true">
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <label for="contactno">Contact No</label>
+                                <input type="text" class="form-control" formControlName="contactno"
+                                    [attr.disabled]="true">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <label for="status">Status</label>
+                                <input type="text" class="form-control" formControlName="status" [attr.disabled]="true">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="nacecode">NACE Code</label>
+                                <input type="text" class="form-control" formControlName="nacecode"
+                                    [attr.disabled]="true">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <label for="nacelevel">Level</label>
+                                <input type="text" class="form-control" formControlName="nacelevel"
+                                    [attr.disabled]="true">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <label for="businessmodel">Business Model</label>
+                                <input type="text" class="form-control" formControlName="businessmodel"
+                                    [attr.disabled]="true">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class=" col-12">
+                <div class="row mt-3">
+                    <div class="col-12 col-md-12 col-sm-12">
+                        <div class="sub-title">Billing Address</div>
+                    </div>
+                </div>
+                <hr>
+                <table class="table table-hover table-responsive">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Address 1 </th>
+                            <th>Address 2</th>
+                            <th>City</th>
+                            <th>Pin Code</th>
+                            <th>State</th>
+                            <!-- <th>Is Default</th> -->
+                            <th>Country</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="billingAddress.length == 0">
+                            <td colspan="6" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let billadd of billingAddress">
+                            <td>{{billadd.address1}}</td>
+                            <td>{{billadd.address2 }}</td>
+                            <td>{{billadd.city}}</td>
+                            <td>{{billadd.pincode}}</td>
+                            <td>{{billadd.state}}</td>
+                            <td>{{billadd.country}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12">
+                <div class="row mt-3">
+                    <div class="col-12 col-md-12 col-sm-12">
+                        <div class="sub-title">Shipping Address</div>
+                    </div>
+                </div>
+                <hr>
+                <table class="table table-hover table-responsive">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Address 1 </th>
+                            <th>Address 2</th>
+                            <th>City</th>
+                            <th>Pin Code</th>
+                            <th>State</th>
+                            <!-- <th>Is Default</th> -->
+                            <th>Country</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="shipmentAddress.length == 0">
+                            <td colspan="6" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let shipAdd of shipmentAddress">
+                            <td>{{shipAdd.address1}}</td>
+                            <td>{{shipAdd.address2 }}</td>
+                            <td>{{shipAdd.city}}</td>
+                            <td>{{shipAdd.pincode}}</td>
+                            <td>{{shipAdd.state}}</td>
+                            <td>{{shipAdd.country}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12">
+                <div class="row mt-3">
+                    <div class="col-12 col-md-12 col-sm-12">
+                        <div class="sub-title">Contacts</div>
+                    </div>
+                </div>
+                <hr>
+                <table class="table table-hover table-responsive">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Designation</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="contactdetail.length == 0">
+                            <td colspan="5" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let cd of contactdetail">
+                            <td>{{cd.name}}</td>
+                            <td>{{cd.department}}</td>
+                            <td>{{cd.designation}}</td>
+                            <td>{{cd.mobile}}</td>
+                            <td>{{cd.email}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12">
+                <div class="row mt-3">
+                    <div class="col-12 col-md-12 col-sm-12">
+                        <div class="sub-title">Opportunities</div>
+                    </div>
+                </div>
+                <hr>
+                <table class="table table-hover table-responsive">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Oppo. Id</th>
+                            <th>Opportunity Name</th>
+                            <th>LAPP Opportunity Id</th>
+                            <th>Customer Name</th>
+                            <th>Opportunity Value</th>
+                            <th>Owner</th>
+                            <th>Created Date</th>
+                            <th>Closed Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let opp of opportunity">
+                            <td>{{opp.opportunity_id}}</td>
+                            <td>{{opp.opportunity_name}}</td>
+                            <td>{{opp.lappopportunityid}}</td>
+                            <td>{{opp.customername}}</td>
+                            <td>{{opp.opportunity_value | currency:'INR'}}</td>
+                            <td>{{opp.fullname}}</td>
+                            <td>{{opp.opp_created_date | date:dateFormate}}</td>
+                            <td>{{opp.expire_date | date:dateFormate}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit SAP ID</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="frmsapmodel">
+            <div class="form-group">
+                <label for="newSapId">SAP ID</label>
+                <input class="form-control" formControlName="newSapId" type="text">
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="modal.close('Save click')">Save</button>
+    </div>
+</ng-template>

@@ -1,0 +1,110 @@
+<div class="page-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<app-list-sub-header></app-list-sub-header>
+			<div class="col-12">
+				<div>
+					<div class="row">
+						<div class="col-12">
+							<form class="ng-invalid ng-touched ng-dirty" [formGroup]="screenAssignmentForm">
+								<div class="row">
+									<div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+										<div class="form-group">
+											<label class="required" for="type">Type</label>
+											<ng-select [items]="UserTypeList" class="form-control"
+												bindLabel="description" bindValue="code" placeholder="Select Type"
+												formControlName="type" (change)="onTypeChange($event)"
+												[ngClass]="{ 'is-invalid': submittedsearch && f.type.errors }">
+											</ng-select>
+											<div *ngIf="submittedsearch && f.type.errors" class="invalid-feedback">
+												<div *ngIf="f.type.errors.required">
+													Type is required
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-xl-2 col-lg-2 col-md-6 col-sm-12">
+										<div class="form-group">
+											<label class="required" for="roleCode">Role</label>
+											<ng-select [items]="rolesList" class="form-control" bindLabel="role_name"
+												bindValue="id" placeholder="Select Role" formControlName="roleId"
+												[ngClass]="{ 'is-invalid': submittedsearch && f.roleId.errors }">
+											</ng-select>
+											<div *ngIf="submittedsearch && f.roleId.errors" class="invalid-feedback">
+												<div *ngIf="f.roleId.errors.required">
+													Role is required
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-xl-1 col-lg-1 col-md-6 col-sm-12">
+										<label>&nbsp;</label>
+										<div class="form-group">
+											<button class="btn btn-orange-s ml-3" (click)="onSearchBtnClick()"><i
+													class="icon-search"></i>Search</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-12" style="overflow-x:auto;">
+							<form class="ng-invalid ng-touched ng-dirty" #checkboxForm="ngForm"
+								(submit)="saveScreenDetails()" name="screenForm">
+								<button type="submit" class="btn btn-orange-s" *ngIf="showSaveButton"><i
+										class="icon-plus-1"></i>Assign Screens</button>
+								<table class="table table-hover table-responsive table-sorting"
+									id="table-screen-assignment" border="0">
+									<thead class="thead-inverse" *ngFor="let screen of screensList;let i = index;">
+										<tr *ngIf="i == 0">
+											<th>Action</th>
+											<th>Screen Name</th>
+											<th>Created Date</th>
+										</tr>
+										<tr *ngIf="screen.parent_id == 0">
+											<td>
+												<input type="checkbox" value="{{screen.id}}"
+													[(ngModel)]="screen.selectedscreen" [name]="screen.id"
+													*ngIf="screen.menus.length == 0">
+												<button type="button" class="btn btn-link p-0 mr-3"
+													(click)="showHideChildScreens(i)"
+													*ngIf="screen.menus.length > 0"><img class="table-icon"
+														src="../../../../../assets/images/icon-plus-6.svg"
+														title="Show Child Screen" id="image{{i}}"></button>
+											</td>
+											<td>{{screen.screen_name}}</td>
+											<td>{{screen.created_date | date:'dd-MM-yyyy'}}</td>
+										</tr>
+										<tr *ngIf="screen.menus.length > 0"
+											style="background-color:blanchedalmond;display: none;" id="screen{{i}}">
+											<td colspan="3" cellpadding=0 cellspacing=0>
+												<table class="table table-hover table-responsive table-sorting">
+													<thead class="thead-inverse">
+														<tr>
+															<th>Action</th>
+															<th>Screen Name</th>
+															<th>Created Date</th>
+														</tr>
+														<tr *ngFor="let childscreen of screen.menus">
+															<td><input type="checkbox" value="{{childscreen.id}}"
+																	[(ngModel)]="childscreen.selectedscreen"
+																	[name]="childscreen.id"></td>
+															<td>{{childscreen.screen_name}}</td>
+															<td>{{childscreen.created_date | date:'dd-MM-yyyy'}}</td>
+														</tr>
+													</thead>
+												</table>
+											</td>
+										</tr>
+									</thead>
+								</table>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

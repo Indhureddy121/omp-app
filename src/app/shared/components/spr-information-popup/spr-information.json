@@ -1,0 +1,593 @@
+[
+    {
+        "code": "voltgrade",
+        "title": "Voltage Grade",
+        "type": "text",
+        "options": [],
+        "seq": 1,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "refstandard",
+        "title": "Reference Standard",
+        "type": "text",
+        "options": [],
+        "seq": 2,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "ratedtemp",
+        "title": "Rated Temperature & Ambient Temperature",
+        "type": "text",
+        "options": [],
+        "seq": 3,
+        "value": "",
+        "isrequired": false
+    },
+    {
+        "code": "construction",
+        "title": "Construction",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "Core"
+            },
+            {
+                "code": "Pair"
+            },
+            {
+                "code": "Triad"
+            },
+            {
+                "code": "Quad"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 4,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "reqcores",
+        "title": "Required Cores/Pairs/Traid/Quad",
+        "type": "number",
+        "options": [],
+        "seq": 5,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "crosssec",
+        "title": "Cross Section",
+        "type": "number",
+        "options": [],
+        "seq": 6,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "conducttype",
+        "title": "Conductor type",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "ABC"
+            },
+            {
+                "code": "ATC"
+            },
+            {
+                "code": "MICA ABC"
+            },
+            {
+                "code": "MICA ATC"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 7,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "conductlass",
+        "title": "Conductor Class",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "CLASS 1"
+            },
+            {
+                "code": "CLASS 2"
+            },
+            {
+                "code": "CLASS 5"
+            },
+            {
+                "code": "CLASS 6"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 8,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "insulatiomat",
+        "title": "Insulation Material",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "PVC 105 DEG"
+            },
+            {
+                "code": "PVC FR"
+            },
+            {
+                "code": "PVC TI3"
+            },
+            {
+                "code": "PVC TYPE A"
+            },
+            {
+                "code": "PVC TYPE C"
+            },
+            {
+                "code": "XLPE"
+            },
+            {
+                "code": "XLPO"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 9,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "corecolour",
+        "title": "Core colours",
+        "type": "text",
+        "options": [],
+        "seq": 10,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "indishieldtype",
+        "title": "Individual Shielded Type",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "Al-Mylar Tape"
+            },
+            {
+                "code": "Copper Tape"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 11,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "thickofshield",
+        "title": "Thickness of Shield",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "30"
+            },
+            {
+                "code": "50"
+            },
+            {
+                "code": "75"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 12,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "drainwiresize",
+        "title": "Drain Wire Size",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "0.5 Sqmm ATC - 16/0.2mm"
+            },
+            {
+                "code": "0.5 Sqmm ATC - 7/0.3mm"
+            },
+            {
+                "code": "0.2 Sqmm ATC - 7/0.2mm"
+            },
+            {
+                "code": "1 Sqmm ATC - 32/0.2mm"
+            },
+            {
+                "code": "0.75 Sqmm ATC - 24/0.2mm"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 13,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "ovshitype",
+        "title": "Overall Shielded Type",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "Al-Mylar Tape"
+            },
+            {
+                "code": "Copper Tape"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 14,
+        "value":"",
+        "isrequired": true
+    },
+    {
+        "code": "thickshield",
+        "title": "Thickness of Shield",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "30"
+            },
+            {
+                "code": "50"
+            },
+            {
+                "code": "75"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 15,
+        "isrequired": true,
+        "value":""
+    },
+    {
+        "code": "overalldrainwiresize",
+        "title": "Drain Wire Size",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "0.5 Sqmm ATC - 16/0.2mm"
+            },
+            {
+                "code": "0.5 Sqmm ATC - 7/0.3mm"
+            },
+            {
+                "code": "0.2 Sqmm ATC - 7/0.2mm"
+            },
+            {
+                "code": "1 Sqmm ATC - 32/0.2mm"
+            },
+            {
+                "code": "0.75 Sqmm ATC - 24/0.2mm"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 16,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "innersheath1mat",
+        "title": "Inner Sheath1 Material",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "PVC COMPOUND FR-LSH ST1 SHEATHING"
+            },
+            {
+                "code": "PVC TM53 FR-LSH UV SHEATHING"
+            },
+            {
+                "code": "PVC COMPOUND ST2 SHEATHING"
+            },
+            {
+                "code": "PVC COMPOUND FR-LSH ST2 SHEATHING"
+            },
+            {
+                "code": "LSZH"
+            },
+            {
+                "code": "PVC COMPOUND FR ST2 SHEATHING"
+            },
+            {
+                "code": "POLYURETHANE"
+            },
+            {
+                "code": "PVC RoHS - UL APPROVED"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 17,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "colofinnsheal",
+        "title": "Colour of Inner Sheath",
+        "type": "text",
+        "options": [],
+        "seq": 18,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "protection1",
+        "title": "Protection1",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "Copper Braiding"
+            },
+            {
+                "code": "Steel Braiding"
+            },
+            {
+                "code": "Steel Wire Armored"
+            },
+            {
+                "code": "Steel Strip Armored"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 19,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "innersheal2mat",
+        "title": "Inner Sheath2 Material",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "PVC COMPOUND ST1 SHEATHING"
+            },
+            {
+                "code": "PVC TM53 FR-LSH UV SHEATHING"
+            },
+            {
+                "code": "PVC COMPOUND ST2 SHEATHING"
+            },
+            {
+                "code": "PVC COMPOUND FR-LSH ST2 SHEATHING"
+            },
+            {
+                "code": "PVC COMPOUND FR-LSH ST2 SHEATHING"
+            },
+            {
+                "code": "LSZH"
+            },
+            {
+                "code": "PVC COMPOUND FR ST2 SHEATHING"
+            },
+            {
+                "code": "POLYURETHANE"
+            },
+            {
+                "code": "PVC RoHS - UL APPROVED"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 21,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "colofinnshe",
+        "title": "Colour of Inner Sheath",
+        "type": "text",
+        "options": [],
+        "seq": 22,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "protection2",
+        "title": "Protection2",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "Copper Braiding"
+            },
+            {
+                "code": "Steel Braiding"
+            },
+            {
+                "code": "Steel Wire Armored"
+            },
+            {
+                "code": "Steel Strip Armored"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 23,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "outshemat",
+        "title": "Outer Sheath Material",
+        "type": "dpdown",
+        "options": [
+            {
+                "code": "PVC COMPOUND ST1 SHEATHING"
+            },
+            {
+                "code": "PVC TM53 FR-LSH UV SHEATHING"
+            },
+            {
+                "code": "PVC COMPOUND ST2 SHEATHING"
+            },
+            {
+                "code": "PVC COMPOUND FR-LSH ST2 SHEATHING"
+            },
+            {
+                "code": "LSZH"
+            },
+            {
+                "code": "PVC COMPOUND FR ST2 SHEATHING"
+            },
+            {
+                "code": "POLYURETHANE"
+            },
+            {
+                "code": "PVC RoHS - UL APPROVED"
+            },
+            {
+                "code": "N/A"
+            },
+            {
+                "code": "Other"
+            }
+        ],
+        "seq": 24,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "colofoutershe",
+        "title": "Colour of Outer Sheath",
+        "type": "text",
+        "options": [],
+        "seq": 25,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "otherprop",
+        "title": "Other Properties",
+        "type": "text",
+        "options": [],
+        "seq": 26,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "ripcord",
+        "title": "Rip Cord",
+        "type": "text",
+        "options": [],
+        "seq": 27,
+        "value": "",
+        "isrequired": false
+    },
+    {
+        "code": "packinglen",
+        "title": "Packing Length",
+        "type": "text",
+        "options": [],
+        "seq": 28,
+        "value": "",
+        "isrequired": true
+    },
+    {
+        "code": "application",
+        "title": "Application",
+        "type": "text",
+        "options": [],
+        "seq": 29,
+        "value": "",
+        "isrequired": false
+    },
+    {
+        "code": "quantity",
+        "title": "Quantity",
+        "type": "text",
+        "options": [],
+        "seq": 30,
+        "value": "",
+        "isrequired": false
+    },
+    {
+        "code": "remarks",
+        "title": "Remarks",
+        "type": "text",
+        "options": [],
+        "seq": 31,
+        "value": "",
+        "isrequired": false
+    }
+]

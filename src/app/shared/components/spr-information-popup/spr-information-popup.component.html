@@ -1,0 +1,132 @@
+<!-- *ngIf="isEditSection('offerInformation')" -->
+<!-- <ng-container *ngIf="filterFields.length>0"> -->
+<div class="modal-header" *ngIf="isModelContentView">
+  <h4 class="modal-title" id="modal-basic-title">Datasheet - SPR Information</h4>
+</div>
+<div style="max-height: 75vh; overflow-y: auto;overflow-x: hidden;" [ngClass]="{'modal-body': isModelContentView}">
+  <!-- <div class="container-fluid"> -->
+  <!-- <div class="row"> -->
+  <!-- *ngIf="isEditOrView" -->
+  <!-- <div class="col-12"> -->
+  <div class="row" *ngIf="isModelContentView">
+    <div class="col-6 col-xl-3 col-lg-3 col-md-3 col-sm-3">
+      <label>Article No</label>
+      <input type="text" value="{{articleNo}}" class="form-control" [attr.disabled]="true" />
+    </div>
+    <div class="col-6 col-xl-6 col-lg-6 col-md-6 col-sm-6">
+      <div>
+        <label>Description</label>
+        <input type="text" class="form-control" [attr.disabled]="true" value="{{description}}" />
+      </div>
+    </div>
+  </div>
+  <!-- </div> -->
+  <!-- </div> -->
+
+  <div class="row">
+    <div class="col-12 ">
+      <form [formGroup]="filterForm">
+        <div class="row ">
+          <ng-container *ngFor="let item of filterFields; let i = index;">
+            <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-6 mt-4" *ngIf="item.type==='number'">
+              <label [ngClass]="{required: item.isrequired}">{{item.title}}</label>
+              <input [readonly]="!isModelContentView" type="number" class="form-control" [formControlName]="item.code"
+                [ngClass]="{ 'is-invalid': submitted && isValid(item.code)}" />
+              <div *ngIf="submitted && isFieldError(item.code)" class="invalid-feedback mt-2 mb-2">
+                <div *ngIf="isFieldRequired(item.code)">
+                  {{item.title}} is required
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-6 mt-4" *ngIf="item.type==='text'">
+              <label [ngClass]="{required: item.isrequired}">{{item.title}}</label>
+              <input [readonly]="!isModelContentView" type="text" class="form-control" name="{{item.code}}"
+                [formControlName]="item.code" [ngClass]="{ 'is-invalid': submitted && isValid(item.code)}" />
+              <div *ngIf="submitted && isFieldError(item.code)" class="invalid-feedback mt-2 mb-2">
+                <div *ngIf="isFieldRequired(item.code)">
+                  {{item.title}} is required
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-6 mt-4" *ngIf="item.type==='date'">
+              <div>
+                <label [ngClass]="{required: item.isrequired}">{{item.title}}</label>
+                <input [readonly]="!isModelContentView" type="date" class="form-control" name="{{item.code}}"
+                  [formControlName]="item.code" [ngClass]="{ 'is-invalid': submitted && isValid(item.code)}" />
+                <div *ngIf="submitted && isFieldError(item.code)" class="invalid-feedback mt-2 mb-2">
+                  <div *ngIf="isFieldRequired(item.code)">
+                    {{item.title}} is required
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-6 mt-4" *ngIf="item.type==='dpdown' && isDpTxtVisible">
+              <label [ngClass]="{required: item.isrequired}">{{item.title}}</label>
+              <ng-select [items]="item.options" class="form-control" bindLabel="code" bindValue="code"
+                [readonly]="!isModelContentView" [formControlName]="item.code"
+                [ngClass]="{ 'is-invalid': submitted && isValid(item.code)}" (change)="onChange($event, item, i)">
+              </ng-select>
+
+              <div *ngIf="submitted && !item.issubcode && isFieldError(item.code)" class="invalid-feedback mt-2 mb-2">
+                <div *ngIf="isFieldRequired(item.code)">
+                  {{item.title}} is required
+                </div>
+              </div>
+
+
+              <!-- <div *ngIf="item.issubcode">
+                <input [readonly]="!isModelContentView" type="text" class="form-control"
+                  name="{{item.code+'_'+item.subcode+i}}" [formControlName]="item.code+'_'+item.subcode + i"
+                  [ngClass]="{ 'is-invalid': submitted && isSubValid(item.code+'_'+item.subcode+i)}" />
+
+                <div *ngIf="submitted && isSubFieldError(item.code+'_'+item.subcode+i)" class="invalid-feedback mt-2 mb-2">
+                  <div *ngIf="isSubFieldRequired(item.code+'_'+item.subcode+i)">
+                    required
+                  </div>
+                </div>
+              </div> -->
+
+              <div *ngIf="item.issubcode">
+                <input [readonly]="!isModelContentView" type="text" class="form-control mt-2"
+                  (input)="dptxtvalueInput($event,item)"
+                  [ngClass]="{ 'is-invalid': submitted && (dptxtValueData[item.code]==='' || dptxtValueData[item.code]===undefined)}"
+                  value="{{dptxtValueData[item.code]}}" />
+                <div *ngIf="submitted && (dptxtValueData[item.code]==='' ||  dptxtValueData[item.code]===undefined)"
+                  class="invalid-feedback mt-2 mb-2">
+                  required
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-6 mt-4"
+              *ngIf="item.type==='dpdown' && !isDpTxtVisible && item.issubcode">
+              <label [ngClass]="{required: item.isrequired}">{{item.title}}</label>
+              <input [readonly]="!isModelContentView" type="text" class="form-control" [attr.disabled]="true"
+                value="{{dptxtValueData[item.code]}}" [ngClass]="{ 'is-invalid': submitted && isValid(item.code)}" />
+            </div>
+            <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-6 mt-4"
+              *ngIf="item.type==='dpdown' && !isDpTxtVisible && !item.issubcode">
+              <label [ngClass]="{required: item.isrequired}">{{item.title}}</label>
+              <input [readonly]="!isModelContentView" type="text" class="form-control" [formControlName]="item.code"
+                [ngClass]="{ 'is-invalid': submitted && isValid(item.code)}" />
+            </div>
+          </ng-container>
+
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- </div> -->
+</div>
+<div class="modal-footer" *ngIf="isModelContentView">
+  <button type="button" class="btn btn-orange-outline-s ml-2" (click)="cancel()">Cancel</button>
+  <!-- *ngIf="isEditSection('headersection')" -->
+  <!-- -->
+  <button *ngIf="!isReadOnlyForm && isSaveBtnDisplay && !isSavedValidation" type="button" class="btn btn-orange-s "
+    (click)="save()">Save</button>
+  <button type="button" class="btn btn-success" style="width: 100px;" (click)="submitForSPRInformation(false)"
+    *ngIf="!isReadOnlyForm && isSubmitBtnDisplay">Submit</button>
+  <button type="button" class="btn btn-success" *ngIf="isSaveandSubmitBtnDisplay"
+    (click)="submitForSPRInformation(true)">Save & Submit</button>
+</div>
+
+<!-- </ng-container> -->

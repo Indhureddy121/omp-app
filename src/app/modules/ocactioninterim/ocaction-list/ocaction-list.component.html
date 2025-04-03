@@ -1,0 +1,81 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header>
+            </app-list-sub-header>
+
+            <div class="col-12">
+                <div>
+                    <div class="row">
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <app-appsearch [model]="searchModel" (callBack)="onSearch($event)"></app-appsearch>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-hover table-responsive table-sorting" id="table-ocaction">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th (click)="headerClick($event)" id="pg">Offer NO</th>
+                            <th (click)="headerClick($event)" id="pg">Lapp Oppo ID</th>
+                            <th (click)="headerClick($event)" id="pg">Opportunity Name</th>
+                            <th (click)="headerClick($event)" id="pg">Owner</th>
+                            <th (click)="headerClick($event)" id="pg">Valid to</th>
+                            <th (click)="headerClick($event)" id="pg">Action Required</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="OcActionlist.length == 0">
+                            <td colspan="10" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let list of OcActionlist">
+                            <td>
+                                <button class="btn btn-link p-0 mr-3" (click)="viewClicked(list.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                            </td>
+                            <td>{{list.offerno}}</td>
+                            <td>{{list.lappopportunityid}}</td>
+                            <td>{{list.opportunity_name}}</td>
+                            <td>{{list.fullname}}</td>
+                            <td>{{list.offervalidto | date:dateFormate : '+0000'}}</td>
+                            <td>{{list.ActionRequired}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

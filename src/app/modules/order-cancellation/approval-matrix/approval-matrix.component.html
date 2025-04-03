@@ -1,0 +1,33 @@
+<div class="page-wrapper">
+  <div class="container-fluid">
+    <div class="row">
+      <app-list-sub-header
+        [isRefresh]="true"
+        (refreshClicked)="onRefreshClick()"
+        [isExport]="true"
+        (exportClicked)="onExport()"
+      ></app-list-sub-header>
+      <div class="col-12">
+        <table class="table table-hover table-responsive table-sorting">
+          <tfoot></tfoot>
+          <thead class="thead-inverse">
+            <tr>
+              <th>Region</th>
+              <th>Business Segment</th>
+              <th>Order Value (in INR)</th>
+              <th>Approvers</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let list of approvalList">
+              <td>{{ list.region }}</td>
+              <td>{{ list.division }}</td>
+              <td>{{ list.order_value_range }}</td>
+              <td>{{ list.approvers }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

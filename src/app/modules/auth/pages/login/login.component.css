@@ -1,0 +1,76 @@
+.login-outer{display:table; width:100%; height:100%}
+/* .login-img{display:table-cell; width:50%; vertical-align:middle; background-image:url(../../../../../assets/images/login-bg.png), linear-gradient(to bottom, #ff7100 0%, #ff7100 100%); background-position:center right; background-repeat:no-repeat} */
+.login-img {
+    display: table-cell;
+    width: 70%;
+    vertical-align: middle;
+    background-color: #ebac78; /* LAPP Orange background color */
+    position: relative;
+    overflow: hidden;
+}
+
+.login-img::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url(../../../../../assets/images/sign-in-bg.jpg);
+    background-position: left top;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 4; /* Adjust this value to control the transparency */
+    mix-blend-mode:multiply; /* This will blend the image with the background color */
+}
+.login-rgt{display:table-cell; width:50%; vertical-align:middle}
+.login-cnt{width:330px; position:relative}
+
+@media (max-width: 1199px) {}
+@media (max-width: 991px) {
+    .login-img{width:50%;}
+}
+@media (max-width: 767px) {
+    .login-img{display: none;}
+    
+.pwa-icon{
+    font-size: 30px;
+    margin: 10px;
+}
+
+.spinner-border-sm {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-width: 0.15em;
+    margin-right: 5px;
+    vertical-align: -3px;
+  }
+}
+
+/* floating message start  */
+.moving-text {
+    font-size: 2rem;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: bold;
+    color: #6825dc;  
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+  }
+  
+  .moving-text span {
+    display: inline-block;
+    animation: scroll-text 10s linear infinite;
+  }
+  
+  @keyframes scroll-text {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  /* floating message end  */
+  

@@ -1,0 +1,76 @@
+<app-app-header></app-app-header>
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isCancel]="true" (cancelClicked)="cancelClicked()"></app-list-sub-header>
+
+            <div class="col-12">
+                <table class="table table-hover table-responsive table-sorting" id="table-margin">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th style="display:none;">ID</th>
+                            <th (click)="headerClick($event)" name="Imported On" id="imported_on">Imported On</th>
+                            <th (click)="headerClick($event)" name="Imported By" id="imported_by">Imported By</th>
+                            <th (click)="headerClick($event)" name="Imported File" id="imported_file_name">Imported Source
+                            </th>
+                            <th (click)="headerClick($event)" name="Status File" id="status_file_name">Status File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="historyList.length === 0">
+                            <td colspan="5" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let ci of historyList">
+                            <td style="display:none;">{{ci.id}}</td>
+                            <td>{{ci.imported_on}}</td>
+                            <td> {{ci.importedbyname}}</td>
+                            <td *ngIf="ci.imported_file_name == 'EntryForm'">
+                                {{ci.imported_file_name}}
+                            </td>
+                            <td *ngIf="ci.imported_file_name != 'EntryForm'">
+                                <button class="btn btn-link p-0" (click)="downloadFile(ci.imported_file_name,false)">
+                                    File: {{ci.imported_file_name}}</button>
+                            </td>
+                            <td><button class="btn btn-link p-0"
+                                    (click)="downloadFile(ci.status_file_name,true)">{{ci.status_file_name}}</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

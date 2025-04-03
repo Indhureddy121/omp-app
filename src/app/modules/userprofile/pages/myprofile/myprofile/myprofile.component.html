@@ -1,0 +1,207 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header [isCancel]="true" (cancelClicked)="oncancelClick()"></app-sub-header>
+            <div class="col-12">
+                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="usersForm">
+                    <div class="row">
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="userEmail" class="required">Email</label>
+                                <input type="email" class="form-control" formControlName="userEmail" maxlength="100">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label class="required">Password</label>
+                                <button class="btn btn-link p-0" style="margin-left: 20px;"
+                                    (click)="onChangePassword()">Change</button>
+                                <input type="password" class="form-control" formControlName="userPassword"
+                                    [attr.disabled]="isView ? '' : null" maxlength="16">
+
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="fullName" class="required">Full Name</label>
+                                <input type="text" class="form-control" formControlName="fullName" maxlength="60"
+                                    AllowAlphaNumericSpace=true>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="managerId">Manager</label>
+                                <ng-select [items]="managerList" class="form-control" bindLabel="fullname"
+                                    bindValue="id" placeholder="Select Manager" formControlName="managerId">
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="roleId" class="required">Role (Level)</label>
+                                <ng-select [items]="rolesList" class="form-control" bindLabel="role_name"
+                                    bindValue="role_code" placeholder="Select Role" formControlName="roleId">
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group switch-inline">
+                                <input type="checkbox" id="userStatus" class="switch" formcontrolname="userStatus"
+                                    [checked]="userStatusFlag" [disabled]="disableUserStatus">
+                                <label class="switch-label" for="userStatus">Status</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="vertical" class="required">Vertical</label>
+                                <ng-select [items]="varticalsList" class="form-control" bindLabel="code"
+                                    bindValue="code" placeholder="Select Vertical" formControlName="vertical">
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="segment" class="required">Segment</label>
+                                <ng-select [items]="segmentList" class="form-control" bindLabel="code" bindValue="code"
+                                    placeholder="Select Segment" formControlName="segment">
+                                </ng-select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12" *ngIf="isView">
+                            <div class="form-group">
+                                <label for="sfdcid" class="required">SFDC ID</label>
+                                <input type="text" class="form-control" formControlName="sfdcid" [attr.disabled]="true"
+                                    maxlength="16" AllowAlphaNumeric="true">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="employeeSapId">Employee SAP ID</label>
+                                <input type="text" class="form-control" formControlName="employeeSapId" maxlength="16"
+                                    AllowAlphaNumeric="true">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12" *ngIf="ShowOnLeaveButton">
+                            <div class="form-group switch-inline">
+                                <input type="checkbox" id="onleave" class="switch" formcontrolname="onleave"
+                                    [checked]="onleaveFlag" (change)="setonleaveFlag($event)">
+                                <label class="switch-label" for="onleave">On Leave</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- models -->
+<ng-template #changepasswordmodal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Change Password</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="ChangePasswordForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="oldpassword" class='required'>Current Password</label>
+                        <input type="password" class="form-control" formControlName="oldpassword"
+                            [ngClass]="{ 'is-invalid': submitted && changePasswordForm.oldpassword.errors }">
+                        <div *ngIf="submitted && changePasswordForm.oldpassword.errors" class="invalid-feedback">
+                            <div *ngIf="changePasswordForm.oldpassword.errors.required">
+                                Current password is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="newpassword" class='required'>New Password</label>
+                        <input type="password" class="form-control mb-2" formControlName="newpassword"
+                            [ngClass]="{ 'is-invalid': submitted && changePasswordForm.newpassword.errors }">
+
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-6 pl-1 p2-1">
+                                        <img class="table-icon mr-1"
+                                            src="{{ changePasswordForm.newpassword.errors && !changePasswordForm.newpassword.errors.minLengthPasswordValidator ? './assets/images/icon-false.svg' : './assets/images/icon-true.svg' }}">Min
+                                        8 characters
+                                    </div>
+                                    <div class="col-md-6 pl-1 p2-1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 pl-1 p2-1">
+                                        <img class="table-icon mr-1"
+                                            src="{{ changePasswordForm.newpassword.errors && !changePasswordForm.newpassword.errors.uppercaseInPasswordValidator  ? './assets/images/icon-false.svg' : './assets/images/icon-true.svg' }}">Uppercase
+    
+                                    </div>
+                                    <div class="col-md-6 pl-1 p2-1">
+                                        <img class="table-icon mr-1"
+                                            src="{{ changePasswordForm.newpassword.errors && !changePasswordForm.newpassword.errors.lowercaseInPasswordValidator ? './assets/images/icon-false.svg' : './assets/images/icon-true.svg' }}">Lowercase
+    
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 pl-1 p2-1">
+                                        <img class="table-icon mr-1"
+                                            src="{{ changePasswordForm.newpassword.errors && !changePasswordForm.newpassword.errors.numberInPasswordValidator ? '../assets/images/icon-false.svg' : './assets/images/icon-true.svg' }}">Number
+    
+                                    </div>
+                                    <div class="col-md-6 pl-1 p2-1">
+                                        <img class="table-icon mr-1"
+                                            src="{{ changePasswordForm.newpassword.errors && !changePasswordForm.newpassword.errors.specialCharacterInPasswordValidator ? './assets/images/icon-false.svg' : './assets/images/icon-true.svg' }}">Special
+                                        character
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- <span><img class="table-icon" src="{{ changePasswordForm.newpassword.errors && !changePasswordForm.newpassword.errors.minLengthPasswordValidator ? '../../../../../assets/images/icon-plus-2.svg' : '../../../../../assets/images/icon-minus.svg' }}">Min 8 characters  </span>
+                            <span><img class="table-icon" src="{{ changePasswordForm.newpassword.errors && !changePasswordForm.newpassword.errors.uppercaseInPasswordValidator ? '../../../../../assets/images/icon-plus-2.svg' : '../../../../../assets/images/icon-minus.svg' }}">Uppercase  </span>
+                            <span><img class="table-icon" src="{{ changePasswordForm.newpassword.errors && !changePasswordForm.newpassword.errors.lowercaseInPasswordValidator ? '../../../../../assets/images/icon-plus-2.svg' : '../../../../../assets/images/icon-minus.svg' }}">Lowercase  </span>
+                            <span><img class="table-icon" src="{{ changePasswordForm.newpassword.errors && !changePasswordForm.newpassword.errors.numberInPasswordValidator ? '../../../../../assets/images/icon-plus-2.svg' : '../../../../../assets/images/icon-minus.svg' }}">Number  </span>
+                            <span><img class="table-icon" src="{{ changePasswordForm.newpassword.errors && !changePasswordForm.newpassword.errors.specialCharacterInPasswordValidator ? '../../../../../assets/images/icon-plus-2.svg' : '../../../../../assets/images/icon-minus.svg' }}">Special character  </span>  -->
+                            
+                            
+                        <!-- <div *ngIf="submitted && changePasswordForm.newpassword.errors" class="invalid-feedback">
+                            <div *ngIf="changePasswordForm.newpassword.errors.required">
+                                New password is required
+                            </div>
+                            <div *ngIf="!changePasswordForm.newpassword.errors.minLengthPasswordValidator">
+                                Password must be minimum 8 character in length
+                            </div>
+                            <div *ngIf="!changePasswordForm.newpassword.errors.newPasswordAllowed" >
+                                Password must be alpha numeric with a special character
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="confirmpassword" class='required'>Confirm Password</label>
+                        <input type="password" class="form-control" formControlName="confirmpassword"
+                            [ngClass]="{ 'is-invalid': submitted && changePasswordForm.confirmpassword.errors }">
+                        <div *ngIf="submitted && changePasswordForm.confirmpassword.errors" class="invalid-feedback">
+                            <div *ngIf="changePasswordForm.confirmpassword.errors.required">
+                                Confirm password is required
+                            </div>
+                            <div *ngIf="changePasswordForm.confirmpassword.errors.confirmedValidator">Password and
+                                Confirm Password must be match.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onChangePasswordSave()">Save</button>
+    </div>
+</ng-template>

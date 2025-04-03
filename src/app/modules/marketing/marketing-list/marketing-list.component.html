@@ -1,0 +1,227 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+			<app-list-sub-header [isAdd]=true (addClicked)="onAddClick(content1)"></app-list-sub-header>
+            <div class="col-12">
+                <div class="w-50">
+                  <div class="row">
+                    <!-- <app-appsearch class="col-12 col-xl-8 col-lg-8 col-md-6 col-sm-12"
+                        (callBack)="onSearch($event)"></app-appsearch> -->
+                </div>
+				</div>
+				<ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+					<ngb-panel id="ngb-panel-0">
+						<ng-template ngbPanelTitle let-opened="opened">Products</ng-template>
+						<ng-template ngbPanelContent>
+							<table class="table table-hover table-responsive table-sorting" id="table-users">
+								<thead class="thead-inverse">
+									<tr>
+										<th>Action</th>
+										<th>Name</th>
+										<th>Size</th>
+										<th>Changed On</th>
+										<!-- <th (click)="headerClick($event)" id="userid">User Id</th>
+										<th (click)="headerClick($event)" id="fullname">Full Name</th>
+										<th (click)="headerClick($event)" id="employee_sap_id">SAP ID</th>
+										<th (click)="headerClick($event)" id="role_code">Role</th>
+										<th (click)="headerClick($event)" id="region_name">Region</th>
+										<th (click)="headerClick($event)" id="status">Status</th> -->
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="productList.length == 0">
+									  <td colspan="7" style="text-align: center;">
+										  No Records Found
+									  </td>
+									</tr>
+									<tr *ngFor="let product of productList">
+										<td><a class="mr-3" (click)="delMarketingMaterial(product.id,product.file_id)"><img class="table-icon" src="../../../../../assets/images/icon-delete.svg"></a></td>
+										<td><img class="table-icon" src="../../../../../assets/images/{{setFileTypeIcon(product.mimetype)}}">&nbsp;<a rel="noopener noreferrer" href="javascript:void(0)" (click)="downloadFile(product.file_name,product.file_id,product.mimetype)">{{product.file_name}}</a></td>
+										<td>{{product.file_size | fileSize}}</td>
+										<td>{{product.created_date  | date:'dd-MM-yyyy'}}</td>
+									</tr>
+									<!-- <tr>
+										<td><a routerLink="#">ALP w.e.f. from 24-07-2017</a></td>
+										<td>2.2 MB</td>
+										<td>&nbsp;</td>
+										<td>23/07/17 19:03:22</td>
+									</tr> -->
+								</tbody>
+							</table>
+						</ng-template>
+					</ngb-panel>
+					<ngb-panel id="ngb-panel-1">
+						<ng-template ngbPanelTitle let-opened="closed">Services</ng-template>
+						<ng-template ngbPanelContent>
+							<table class="table table-hover table-responsive table-sorting" id="table-users">
+								<thead class="thead-inverse">
+									<tr>
+										<th>Action</th>
+										<th>Name</th>
+										<th>Size</th>
+										<th>Changed On</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="servicesList.length == 0">
+									  <td colspan="7" style="text-align: center;">
+										  No Records Found
+									  </td>
+									</tr>
+									<tr *ngFor="let service of servicesList">
+										<td><a class="mr-3" (click)="delMarketingMaterial(service.id,service.file_id)"><img class="table-icon" src="../../../../../assets/images/icon-delete.svg"></a></td>
+										<td><img class="table-icon" src="../../../../../assets/images/{{setFileTypeIcon(service.mimetype)}}">&nbsp;<a rel="noopener noreferrer" href="javascript:void(0)" (click)="downloadFile(service.file_name,service.file_id,service.mimetype)">{{service.file_name}}</a></td>
+										<td>{{service.file_size | fileSize}}</td>
+										<td>{{service.created_date  | date:'dd-MM-yyyy'}}</td>
+									</tr>
+									<!-- <tr>
+										<td><a href="#">Services.txt</a></td>
+										<td>15 Bytes</td>
+										<td>&nbsp;</td>
+										<td>21/02/11 16:58:55</td>
+									</tr> -->
+								</tbody>
+							</table>
+						</ng-template>
+					</ngb-panel>
+					<ngb-panel id="ngb-panel-2">
+						<ng-template ngbPanelTitle let-opened="closed">Spare Parts</ng-template>
+						<ng-template ngbPanelContent>
+							<table class="table table-hover table-responsive table-sorting" id="table-users">
+								<thead class="thead-inverse">
+									<tr>
+										<th>Action</th>
+										<th>Name</th>
+										<th>Size</th>
+										<th>Changed On</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="sparepartsList.length == 0">
+									  <td colspan="7" style="text-align: center;">
+										  No Records Found
+									  </td>
+									</tr>
+									<tr *ngFor="let sparepart of sparepartsList">
+										<td><a class="mr-3" (click)="delMarketingMaterial(sparepart.id,sparepart.file_id)"><img class="table-icon" src="../../../../../assets/images/icon-delete.svg"></a></td>
+										<td><img class="table-icon" src="../../../../../assets/images/{{setFileTypeIcon(sparepart.mimetype)}}">&nbsp;<a rel="noopener noreferrer" href="javascript:void(0)" (click)="downloadFile(sparepart.file_name,sparepart.file_id,sparepart.mimetype)">{{sparepart.file_name}}</a></td>
+										<td>{{sparepart.file_size | fileSize}}</td>
+										<td>{{sparepart.created_date  | date:'dd-MM-yyyy'}}</td>
+									</tr>
+									<!-- <tr>
+										<td><a href="#">ALP w.e.f. from 24-07-2017</a></td>
+										<td>2.2 MB</td>
+										<td>&nbsp;</td>
+										<td>23/07/17 19:03:22</td>
+									</tr> -->
+								</tbody>
+							</table>
+						</ng-template>
+					</ngb-panel>
+					<ngb-panel id="ngb-panel-3">
+						<ng-template ngbPanelTitle let-opened="closed">Collateral</ng-template>
+						<ng-template ngbPanelContent>
+							<table class="table table-hover table-responsive table-sorting" id="table-users">
+								<thead class="thead-inverse">
+									<tr>
+										<th>Action</th>
+										<th>Name</th>
+										<th>Size</th>
+										<th>Changed On</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="collateralsList.length == 0">
+									  <td colspan="7" style="text-align: center;">
+										  No Records Found
+									  </td>
+									</tr>
+									<tr *ngFor="let collateral of collateralsList">
+										<td><a class="mr-3" (click)="delMarketingMaterial(collateral.id,collateral.file_id)"><img class="table-icon" src="../../../../../assets/images/icon-delete.svg"></a></td>
+										<td><img class="table-icon" src="../../../../../assets/images/{{setFileTypeIcon(collateral.mimetype)}}">&nbsp;<a rel="noopener noreferrer" href="javascript:void(0)" (click)="downloadFile(collateral.file_name,collateral.file_id,collateral.mimetype)">{{collateral.file_name}}</a></td>
+										<td>{{collateral.file_size | fileSize}}</td>
+										<td>{{collateral.created_date | date:'dd-MM-yyyy'}}</td>
+									</tr>
+									<!-- <tr>
+										<td><a href="#">Services.txt</a></td>
+										<td>15 Bytes</td>
+										<td>&nbsp;</td>
+										<td>21/02/11 16:58:55</td>
+									</tr> -->
+								</tbody>
+							</table>
+						</ng-template>
+					</ngb-panel>
+				</ngb-accordion>
+                    
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #content1 let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title" *ngIf="isAdd">Add Marketing Material</h4>
+		<h4 class="modal-title" id="modal-basic-title"  *ngIf="isEdit">Edit Marketing Material</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+	</div>
+	<div class="modal-body">
+		<form class="ng-invalid ng-touched ng-dirty" [formGroup]="marketingMaterialForm" enctype="multipart/form-data" method="POST">
+			<div class="row">
+				<div class="form-group col-md-6">
+					<label class="required">Material Category</label>
+					<ng-select [items]="categoryList" class="form-control" bindLabel="category" bindValue="code" formControlName="marketingMaterialCategory" placeholder="Select " 
+					[ngClass]="{ 'is-invalid': submitted && f.marketingMaterialCategory.errors }">
+					</ng-select>
+					<div *ngIf="submitted && f.marketingMaterialCategory.errors" class="invalid-feedback">
+						<div *ngIf="f.marketingMaterialCategory.errors.required">
+							Material Category is required
+						</div>
+					</div>
+				</div>
+			</div>	
+			<div class="row">
+				<div class="form-group col-md-6">
+					<label class="required">Upload Marketing Material</label><br/>
+					<button (click)="fileInput.click()">Select File</button>
+					<input type="file" id="importFile" (change)="fileChangeListener($event)" multiple style="display: none;" #fileInput/>
+					<div *ngIf="submitted && files.length == 0">
+						<span style="color:red;"><i>Material file is required</i></span>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="row">
+					<div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+						<div class="row">
+							<div *ngFor="let filedtl of files;let f=index" class="col-md-6 col-lg-3 outer-container-upload-control">
+								<div class="upload-control-filetype-container"><img class="table-icon-lg" src="../../../../../assets/images/{{setFileTypeIcon(filedtl.type)}}"></div>
+								<div class="upload-control-filename-container dot-views"><a download="{{filedtl.name}}" *ngIf="isEdit || isView">{{filedtl.name}}</a><span *ngIf="isAdd">{{filedtl.name}}</span></div>
+								<div class="upload-control-delete-container"><button class="btn btn-link p-0" (click)="removeFile(f)">
+									<img class="table-icon" src="../../../../../assets/images/icon-delete1.svg" title="delete image"></button>
+								</div>
+							</div>
+
+						</div>
+						<!-- <table class="table table-hover table-responsive">
+							<tr>
+								<td>{{setFileTypeIcon(filedtl.type)}}</td>
+								<td>{{filedtl.name}}</td>
+								<td> <button class="btn btn-link p-0 mr-3" (click)="removeFile(f)"><img class="table-icon"
+											src="../../../../../assets/images/icon-delete.svg"
+											title="delete image"></button></td>
+							</tr>
+						</table> -->
+					</div>
+					
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+        <!-- stdItemSave($event) -->
+        <button type="button" class="btn btn-orange-outline-s mr-2" (click)="modal.dismiss('Cross click')">Cancel</button>            
+        <button type="button" class="btn btn-orange-s" (click)="onSaveClick()">Save</button>
+    </div>
+</ng-template>

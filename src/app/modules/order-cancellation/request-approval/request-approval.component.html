@@ -1,0 +1,231 @@
+<div class="page-wrapper">
+  <div class="container-fluid">
+    <div class="row">
+      <app-list-sub-header
+        [isRefresh]="true"
+        (refreshClicked)="onRefreshClick()"
+      ></app-list-sub-header>
+      <div class="col-12">
+        <table class="table table-hover table-responsive table-sorting">
+          <tfoot></tfoot>
+          <thead class="thead-inverse">
+            <tr>
+              <th>Action</th>
+              <th>SO Number</th>
+              <th>Line Item</th>
+              <th>Sold To</th>
+              <th>Order Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="approvalList?.length === 0">
+              <td colspan="5" style="text-align: center">No Records Found</td>
+            </tr>
+            <tr *ngFor="let list of approvalList">
+              <td>
+                <button
+                  class="btn btn-default"
+                  (click)="openActionModel(list.approval_history_id)"
+                >
+                  <img
+                    _ngcontent-ggf-c17=""
+                    class="table-icon"
+                    src="../../../../../assets/images/icon-view.svg"
+                  />
+                </button>
+              </td>
+              <td>{{ list.metatada.Salesorder }}</td>
+              <td>{{ list.metatada.Salesitem }}</td>
+              <td>{{ list.metatada.Soldtoname }}</td>
+              <td>{{ list.metatada.Ordervalue }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+
+<ng-template #ApprovalRequestModel let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">
+      SO Cancellation Approval Request of SO - {{approvalLineItem.so_number}}, Item No - {{approvalLineItem.item_number}}
+    </h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+            <div class="form-group">
+              <label for="material">Material</label>
+              <input
+                type="text"
+                [value]="approvalLineItem.metatada.MaterialDesc"
+                class="form-control"
+                [attr.disabled]="true"
+              />
+            </div>
+          </div>
+          <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+            <div class="form-group">
+              <label for="quantity">Quantity</label>
+              <input
+                type="text"
+                [value]="approvalLineItem.metatada.Quantity"
+                class="form-control"
+                [attr.disabled]="true"
+              />
+            </div>
+          </div>
+          <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+            <div class="form-group">
+              <label for="uom">Unit</label>
+              <input
+                type="text"
+                [value]="approvalLineItem.metatada.Unit"
+                class="form-control"
+                [attr.disabled]="true"
+              />
+            </div>
+          </div>
+          <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+            <div class="form-group">
+              <label for="status">Unit Price</label>
+              <input
+                type="text"
+                [value]="approvalLineItem.metatada.Unitprice"
+                class="form-control"
+                [attr.disabled]="true"
+              />
+            </div>
+          </div>
+          <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+            <div class="form-group">
+              <label for="status">Order Value</label>
+              <input
+                type="text"
+                [value]="approvalLineItem.metatada.Ordervalue"
+                class="form-control"
+                [attr.disabled]="true"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+            <div class="form-group">
+              <label for="material">Sold To</label>
+              <input
+                type="text"
+                [value]="approvalLineItem.metatada.Soldtoname"
+                class="form-control"
+                [attr.disabled]="true"
+              />
+            </div>
+          </div>
+          <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+            <div class="form-group">
+              <label for="quantity">Order type</label>
+              <input
+                type="text"
+                [value]="approvalLineItem.metatada.Ordertypedesc"
+                class="form-control"
+                [attr.disabled]="true"
+              />
+            </div>
+          </div>
+          <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+            <div class="form-group">
+              <label for="uom">Delivery Date</label>
+              <input
+                type="text"
+                [value]="approvalLineItem.metatada.DeliveryDate"
+                class="form-control"
+                [attr.disabled]="true"
+              />
+            </div>
+          </div>
+          <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+            <div class="form-group">
+              <label for="status">Material No</label>
+              <input
+                type="text"
+                [value]="approvalLineItem.metatada.Materialno"
+                class="form-control"
+                [attr.disabled]="true"
+              />
+            </div>
+          </div>
+          <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+            <div class="form-group">
+              <label for="status">Cancellation Reason</label>
+              <input
+                type="text"
+                [value]="approvalLineItem.metatada.cancellationReason.reason"
+                class="form-control"
+                [attr.disabled]="true"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-12">
+            <label for="material">Add your comment(s)</label>
+            <textarea
+              rows="3"
+              class="form-control"
+              [(ngModel)]="actionComment"
+              [ngModelOptions]="{ standalone: true }"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-orange-outline-s mr-2"
+      (click)="modal.dismiss('Cross click')"
+    >
+      Cancel
+    </button>
+    <button
+      class="btn btn-danger"
+      (click)="
+        takeAction(
+          approvalLineItem.approval_history_id,
+          approvalLineItem.cancellation_id,
+          'REJECTED'
+        );
+        modal.dismiss('Cross click')
+      "
+    >
+      Reject
+    </button>
+    <button
+      class="btn btn-success mr-2"
+      (click)="
+        takeAction(
+          approvalLineItem.approval_history_id,
+          approvalLineItem.cancellation_id,
+          'APPROVED'
+        );
+        modal.dismiss('Cross click')
+      "
+    >
+      Approve
+    </button>
+  </div>
+</ng-template>

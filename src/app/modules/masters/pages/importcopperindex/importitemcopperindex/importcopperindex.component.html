@@ -1,0 +1,141 @@
+<app-app-header></app-app-header>
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isUpload]=true [isExport]=true [isHistory]=true (historyClicked)="getLog()" (uploadClicked)="open(content)"
+            (exportClicked)="onExport()"></app-list-sub-header>
+            <!-- <div class="col-12"></div>
+                <div class="action-bar row">
+                    <div class="col-12 col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                        <ol class="breadcrumb">
+                            <li><a class="breadcrumb-item mr-2" routerLink="/home"><img class="icon-22"
+                                        src="../../../../../assets/images/icon-home-b.svg"></a></li>
+                            <li class="breadcrumb-item"><span>Masters</span></li>
+                            <li class="breadcrumb-item"><span>Import Copper Index</span></li>
+                        </ol>
+                    </div>
+                </div>
+            </div> -->
+            <div class="col-12">
+                
+                    <div class="row">
+                        <div class="col-12  col-md-8 col-sm-12">
+                            <app-appsearch (callBack)="onSearch($event)"></app-appsearch>
+                        </div>
+
+
+                    
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting" id="table-additionalcharges">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th style="display:none;">ID</th>
+                            <th (click)="headerClick($event)" name="Material_No" id="Material_No" >Material No.</th>
+                            <th (click)="headerClick($event)" name="Description" id="Description" >Description</th>
+                            <th (click)="headerClick($event)" name="Copper_Index" id="Copper_Index" >Copper Index</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="indexList.length === 0">
+                            <td colspan="4" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let ci of indexList">
+                            <!-- <td>
+                                <button class="btn btn-link p-0 mr-3" (click)="viewClicked(ac.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-view.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="editClicked(ac.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                            </td> -->
+                            <td style="display:none;">{{ci.id}}</td>
+                            <td>{{ci.Material_No}}</td>
+                            <td>{{ci.Description}}</td>
+                            <td>{{ci.Copper_Index}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Import Copper Index</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="!isShowDownload">
+            <form [formGroup]="importmodel" enctype="multipart/form-data" method="POST"  >
+                <div class="form-group"  (ngSubmit)="onSubmit($event)" >
+                    <input type="file" id="importFile"  (change)="uploadedFile($event)"  #fileInput accept=".csv"   />
+                </div>
+                
+            </form>
+            <p class="pl-2 pt-2">click <button type="link" class="btn-link button-link px-1" 
+                (click)="exportfiles(true)">Here</button> To Download Sample File</p>
+
+        </div>
+
+        <div *ngIf="isShowDownload">
+
+            <fieldset class="custom-fieldset">
+                <p class="pl-2 pt-2">Data has been imported successfully</p>
+            </fieldset>
+
+            <p class="pl-2 pt-2">click <button type="link" class="btn-link button-link" 
+                    (click)="exportfiles(false)">here</button> to Download status</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="!isShowDownload">
+            <button type="button" class="btn btn-orange-outline-s mr-2"
+                (click)="modal.dismiss('Cross click')">Cancel</button>
+            <button type="button" class="btn btn-orange-s" (click)="onSave()">Save</button>
+        </div>
+        <div *ngIf="isShowDownload">
+            <button type="button" class="btn btn-orange-s" (click)="onDismiss()">Ok</button>
+        </div>
+
+    </div>
+
+</ng-template>

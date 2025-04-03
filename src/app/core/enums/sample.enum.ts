@@ -1,0 +1,20 @@
+export enum SampleEnum {
+    productmaster = 'ProductMaster.xlsx',
+    alpmaster = 'ALPMaster.xlsx',
+    freightfactor = 'FreightFactorMaster.xlsx',
+    stdcostmaster = 'CostMaster_STD.xlsx',
+    trdcostmaster = 'CostMaster_TRD.xlsx',
+    hsnmaster = 'HSNMaster.xlsx',
+    rateContract = 'ratecontract_sample.csv',
+    margin = 'Margin.xlsx',
+    importitem = 'ImportItem.xlsx',
+    importspritem = 'ImportSPRItem.xlsx',
+    importsprform = 'ImportSPRForm.xlsx',
+    productfinder = 'product finder.xlsx',
+    importspritempe = 'ImportSPRItemPE.xlsx',
+    orderimportitem = 'OrderImportItem.xlsx',
+    rcimportitem = 'RCImportItem.xlsx',
+    petmaster = 'PETMaster.xlsx',
+    rcorderimportitem = 'RCOrderImportItem.xlsx',
+    MOqitem = 'Moqmaster.xlsx'
+}

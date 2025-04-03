@@ -1,0 +1,224 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isUpload]="!viewOnly" [isExport]=true [isHistory]="!viewOnly" [isAdd]="!viewOnly"
+                (historyClicked)="getLog()" (uploadClicked)="open(content)" (exportClicked)="onExport()"
+                (addClicked)="OpenAddEditMarginPopup(undefined)">
+            </app-list-sub-header>
+            <div class="col-12">
+                
+                    <div class="row">
+                        <div class="col-12  col-md-8 col-sm-12">
+                            <app-appsearch [model]="searchModel" (callBack)="onSearch($event)"></app-appsearch>
+                        </div>
+                    
+                </div>
+                <table class="table table-hover table-responsive table-sorting" id="table-margin">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th (click)="headerClick($event)" id="pg">PG</th>
+                            <th (click)="headerClick($event)" id="ph">PH</th>
+                            <th (click)="headerClick($event)" id="maxdiscount">Max Discount(%)</th>
+                            <th (click)="headerClick($event)" id="gm">Group Margin(%)</th>
+                            <th (click)="headerClick($event)" id="industrystdtext">Industry STD Text</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="marginlist.length == 0">
+                            <td colspan="6" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let mr of marginlist">
+                            <td *ngIf="!viewOnly">
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenAddEditMarginPopup(mr.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenDeletePopup(mr.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-delete.svg"></button>
+                            </td>
+                            <td *ngIf="viewOnly"></td>
+                            <td>{{mr.pg}}</td>
+                            <td>{{mr.ph}}</td>
+                            <td>{{mr.maxdiscount}}</td>
+                            <td>{{mr.gm}}</td>
+                            <td>{{mr.industrystdtext}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Models -->
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Margin</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="!isShowDownload">
+            <form [formGroup]="importmodel" enctype="multipart/form-data" method="POST">
+                <div class="form-group" (ngSubmit)="uploadFile($event)">
+                    <input type="file" id="importFile" (change)="uploadedFile($event)" #fileInput
+                        accept=".xlsx, .xls" />
+                </div>
+
+            </form>
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                    (click)="downloadSample()">here</button> to download sample file.</p>
+        </div>
+
+        <div *ngIf="isShowDownload">
+            <fieldset class="custom-fieldset">
+                <p class="pl-2 pt-2">Data has been imported successfully.</p>
+            </fieldset>
+
+            <p class="pl-2 pt-2">click <button type="link" class="btn-link button-link"
+                    (click)="exportfiles(savedResult.status_file_name)">here</button> to download status.</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="!isShowDownload">
+            <button type="button" class="btn btn-orange-outline-s mr-2"
+                (click)="modal.dismiss('Cross click')">Cancel</button>
+            <button type="button" class="btn btn-orange-s" (click)="onSave()">Save</button>
+        </div>
+        <div *ngIf="isShowDownload">
+            <button type="button" class="btn btn-orange-s" (click)="onDismiss()">Ok</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #DeleteConfirmationModal let-modal>
+    <app-delete-confirmation [model]="deleteConfirmModel" (ondelete)="onMarginDelete($event)"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #AddEditItemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit Margin</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="MarginForm">
+            <div class="row">
+                <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                    <div class="form-group">
+                        <label for="pg" class="required">PG</label>
+                        <input type="text" class="form-control" formControlName="pg"
+                            [ngClass]="{ 'is-invalid': submitted && marginForm.pg.errors }">
+                        <div *ngIf="submitted && marginForm.pg.errors" class="invalid-feedback">
+                            <div *ngIf="marginForm.pg.errors.required">
+                                Please Enter PG
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                    <div class="form-group">
+                        <label for="ph" class="required">PH</label>
+                        <input type="text" class="form-control" formControlName="ph"
+                            [ngClass]="{ 'is-invalid': submitted && marginForm.ph.errors }">
+                        <div *ngIf="submitted && marginForm.ph.errors" class="invalid-feedback">
+                            <div *ngIf="marginForm.ph.errors.required">
+                                Please Enter PH
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                    <div class="form-group">
+                        <label for="maxdiscount" class="required">Max Discount</label>
+                        <input class="form-control" type="text" formControlName="maxdiscount" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && marginForm.maxdiscount.errors || submitted && marginForm.maxdiscount.value > 0.99 }">
+                        <div *ngIf="submitted && marginForm.maxdiscount.errors" class="invalid-feedback">
+                            <div *ngIf="marginForm.maxdiscount.errors.required">
+                                Please Enter Max Discount
+                            </div>
+                        </div>
+                        <div *ngIf="submitted && marginForm.maxdiscount.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="marginForm.maxdiscount.value > 0.99">
+                                Max Discount can not be more than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                    <div class="form-group">
+                        <label for="groupmargin" class="required">Group Margin</label>
+                        <input class="form-control" type="text" formControlName="groupmargin" numericwithdecimal
+                            decimals="2" beforedecimals="2"
+                            [ngClass]="{ 'is-invalid': submitted && marginForm.groupmargin.errors || submitted && marginForm.groupmargin.value > 0.99 }">
+                        <div *ngIf="submitted && marginForm.groupmargin.errors" class="invalid-feedback">
+                            <div *ngIf="marginForm.groupmargin.errors.required">
+                                Please Enter Group Margin
+                            </div>
+                        </div>
+                        <div *ngIf="submitted && marginForm.groupmargin.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="marginForm.groupmargin.value > 0.99">
+                                Group Margin can not be more than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                    <div class="form-group">
+                        <label for="industrystdtext" class="required">Industry STD Text</label>
+                        <input class="form-control" type="text" formControlName="industrystdtext"
+                            [ngClass]="{ 'is-invalid': submitted && marginForm.industrystdtext.errors }">
+                        <div *ngIf="submitted && marginForm.industrystdtext.errors" class="invalid-feedback">
+                            <div *ngIf="marginForm.industrystdtext.errors.required">
+                                Please Enter Industry STD Text
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onMarginSaveClick()">Save</button>
+    </div>
+</ng-template>

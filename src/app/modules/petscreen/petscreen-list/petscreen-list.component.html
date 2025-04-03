@@ -1,0 +1,312 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isUpload]="isAcccessible | petscreenbtn" [isExport]=true
+                [isHistory]="isAcccessible | petscreenbtn" [isAdd]="isAcccessible | petscreenbtn"
+                (historyClicked)="getLog()" (uploadClicked)="open(content)" (exportClicked)="onExport()"
+                (addClicked)="OpenAddEditPETMasterPopup(undefined)">
+            </app-list-sub-header>
+            <div class="col-12">
+                <div>
+                    <div class="row">
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                            <app-appsearch [model]="searchModel" (callBack)="onSearch($event)"></app-appsearch>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                            <div class="form-group">
+                                <ng-select [items]="petTypes" class="form-control" bindLabel="description"
+                                    bindValue="code" (change)="onPETTypeChange($event)" [(ngModel)]="petType">
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12" *ngIf="!isDealer">
+                            <div class="form-group">
+                                <ng-select [items]="DealersList" class="form-control" bindLabel="dealerfullname"
+                                    bindValue="sapid" placeholder="Type 3 char to search dealer"
+                                    (keyup)="GetDealersList()" labelForId="ngSelectDealers" (change)="onDealerChange()"
+                                    [(ngModel)]="Dealer">
+                                </ng-select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-hover table-responsive table-sorting" id="table-petmaster">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th >Action</th>
+                            <th  (click)="headerClick($event)" id="pettype">PET Type</th>
+                            <th *ngIf="!isDealer" (click)="headerClick($event)" id="customername">Dealer</th>
+                            <th (click)="headerClick($event)" id="name">Name</th>
+                            <th (click)="headerClick($event)" id="gst">GST</th>
+                            <th (click)="headerClick($event)" id="email">Email</th>
+                            <th (click)="headerClick($event)" id="phone">Phone</th>
+                            <th (click)="headerClick($event)" id="lappname">LAPP Article No.</th>
+                            <th (click)="headerClick($event)" id="qty">Quantity</th>
+                            <th (click)="headerClick($event)" id="qty">Net Price</th>
+                            <th (click)="headerClick($event)" id="date">Customer Created Date</th>
+                            <th (click)="headerClick($event)" id="sono">SO No</th>
+                            <th (click)="headerClick($event)" id="sodate">SO Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="petmasterlist.length == 0">
+                            <td colspan="10" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let pet of petmasterlist">
+                            <td *ngIf="showActionColumn(pet.pettype)">
+                                <button class="btn btn-link p-0 mr-3"
+                                    (click)="OpenAddEditPETMasterPopup(pet.offerid)"><img class="table-icon"
+                                        src="../../../../../assets/images/icon-edit.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenDeletePopup(pet.offerid)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-delete.svg"></button>
+                            </td>
+                            <td *ngIf="!showActionColumn(pet.pettype)"></td>
+                            <td>{{getPETType(pet.pettype)}}</td>
+                            <td *ngIf="!isDealer">{{pet.dealername}}</td>
+                            <td>{{pet.customername}}</td>
+                            <td>{{pet.gstno}}</td>
+                            <td>{{pet.email}}</td>
+                            <td>{{pet.phone}}</td>
+                            <td>{{pet.lapparticleno}}</td>
+                            <td>{{pet.quantity}}</td>
+                            <td>{{pet.netprice}}</td>
+                            <td>{{displayDateinFormat(pet.date)}}</td>
+                            <td>{{pet.sono}}</td>
+                            <td>{{pet.sodate | date:'dd-MM-yyyy'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">PET Screen</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="!isShowDownload">
+            <form [formGroup]="importmodel" enctype="multipart/form-data" method="POST">
+                <div class="form-group" (ngSubmit)="uploadFile($event)">
+                    <input type="file" id="importFile" (change)="uploadedFile($event)" #fileInput
+                        accept=".xlsx, .xls" />
+                </div>
+
+            </form>
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                    (click)="downloadSample()">here</button> to download sample file.</p>
+        </div>
+
+        <div *ngIf="isShowDownload">
+            <fieldset class="custom-fieldset">
+                <p class="pl-2 pt-2">Data has been imported successfully.</p>
+            </fieldset>
+
+            <p class="pl-2 pt-2">click <button type="link" class="btn-link button-link"
+                    (click)="exportfiles(savedResult.status_file_name)">here</button> to download status.</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="!isShowDownload">
+            <button type="button" class="btn btn-orange-outline-s mr-2"
+                (click)="modal.dismiss('Cross click')">Cancel</button>
+            <button type="button" class="btn btn-orange-s" (click)="onSave()">Save</button>
+        </div>
+        <div *ngIf="isShowDownload">
+            <button type="button" class="btn btn-orange-s" (click)="onDismiss()">Ok</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #DeleteConfirmationModal let-modal>
+    <app-delete-confirmation [model]="deleteConfirmModel" (ondelete)="onPETMasterDelete($event)"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #AddEditItemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit PET Master</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="PETMasterForm">
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="name" class="required">Name</label>
+                        <input type="text" class="form-control" formControlName="name"
+                            [ngClass]="{ 'is-invalid': submitted && petMasterForm.name.errors }">
+                        <div *ngIf="submitted && petMasterForm.name.errors" class="invalid-feedback">
+                            <div *ngIf="petMasterForm.name.errors.required">
+                                Please Enter Name
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="gst" class="required">GST</label>
+                        <input type="text" class="form-control" formControlName="gst"
+                            [ngClass]="{ 'is-invalid': submitted && petMasterForm.gst.errors }">
+                        <div *ngIf="submitted && petMasterForm.gst.errors" class="invalid-feedback">
+                            <div *ngIf="petMasterForm.gst.errors.required">
+                                Please Enter GST
+                            </div>
+                            <div *ngIf="petMasterForm.gst.errors.pattern">
+                                Invalid GST Pattern
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="email" class="required">Email</label>
+                        <input class="form-control" type="text" formControlName="email"
+                            [ngClass]="{ 'is-invalid': submitted && petMasterForm.email.errors }">
+                        <div *ngIf="submitted && petMasterForm.email.errors" class="invalid-feedback">
+                            <div *ngIf="petMasterForm.email.errors.required">
+                                Please Enter Email
+                            </div>
+                            <div *ngIf="petMasterForm.email.errors.pattern">Please Enter Valid Email</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="phone" class="required">Phone</label>
+                        <input class="form-control" type="text" maxlength="10" [OnlyNumber]=true formControlName="phone"
+                            [ngClass]="{ 'is-invalid': submitted && petMasterForm.phone.errors }">
+                        <div *ngIf="submitted && petMasterForm.phone.errors" class="invalid-feedback">
+                            <div *ngIf="petMasterForm.phone.errors.required">
+                                Please Enter Phone
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="lapparticleno" class="required">LAPP Article No.</label>
+                        <input type="text" class="form-control" formControlName="lapparticleno"
+                            [ngClass]="{ 'is-invalid': submitted && petMasterForm.lapparticleno.errors}">
+                        <div *ngIf="submitted && petMasterForm.lapparticleno.errors" class="invalid-feedback">
+                            <div *ngIf="petMasterForm.lapparticleno.errors.required">
+                                Please Enter Lapp article no.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="qty" class="required">Quantity</label>
+                        <input type="text" class="form-control" formControlName="qty" [OnlyNumber]=true
+                            [ngClass]="{ 'is-invalid': submitted && petMasterForm.qty.errors }">
+                        <div *ngIf="submitted && petMasterForm.qty.errors" class="invalid-feedback">
+                            <div *ngIf="petMasterForm.qty.errors.required">
+                                Please Enter Quantity
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="netprice" class="required">Net PRICE</label>
+                        <input type="text" class="form-control" formControlName="netprice" numericwithdecimal
+                            decimals="4" beforedecimals="8"
+                            [ngClass]="{ 'is-invalid': submitted && petMasterForm.netprice.errors }">
+                        <div *ngIf="submitted && petMasterForm.netprice.errors" class="invalid-feedback">
+                            <div *ngIf="petMasterForm.netprice.errors.required">
+                                Please Enter Net PRICE
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <label>Customer Creation Date</label>
+                    <div class="input-group">
+                        <input class="form-control doc-date" ngbDatepicker #dateFrom="ngbDatepicker"
+                            formControlName="date" [value]="formatter.format(validfromDate)" readonly />
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary calendar" (click)="dateFrom.toggle()"
+                                type="button"></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="sono" class="required">SO No</label>
+                        <input type="text" class="form-control" formControlName="sono" [OnlyNumber]=true maxlength="6"
+                            [ngClass]="{ 'is-invalid': submitted && petMasterForm.sono.errors }">
+                        <div *ngIf="submitted && petMasterForm.sono.errors" class="invalid-feedback">
+                            <div *ngIf="petMasterForm.sono.errors.required">
+                                Please Enter SO No.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <label class="required">SO Date</label>
+                    <div class="input-group" [ngClass]="{ 'is-invalid': submitted && petMasterForm.sodate.errors }">
+                        <input class="form-control doc-date" ngbDatepicker #sodate="ngbDatepicker"
+                            formControlName="sodate"
+                            [ngClass]="{ 'is-invalid': submitted && petMasterForm.sodate.errors}"
+                            [value]="formatter.format(soDate)" readonly />
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary calendar" (click)="sodate.toggle()" type="button">
+                            </button>
+                        </div>
+                    </div>
+                    <div *ngIf="submitted && petMasterForm.sodate.errors" class="invalid-feedback">
+                        <div *ngIf="petMasterForm.sodate.errors.required">
+                            SO Date is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onPETMasterSaveClick()">Save</button>
+    </div>
+</ng-template>

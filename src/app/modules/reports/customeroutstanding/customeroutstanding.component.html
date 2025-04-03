@@ -1,0 +1,224 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isExport]=true (exportClicked)="onExport()"></app-list-sub-header>
+            <!-- isExporttoPDF=true (exporttopdfClicked)="getData(true)" -->
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12">
+                        <form [formGroup]="FilterForm">
+                            <div class="row">
+                                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12" *ngIf="usertype == 20">
+                                    <div class="form-group">
+                                        <label for="dealer" class="required">Dealer</label>
+                                        <input type="text" formControlName="dealer" class="form-control"
+                                            [attr.disabled]="true" />
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-4 col-lg-4 col-md-3 col-sm-12" *ngIf="usertype != 20">
+                                    <div class="form-group">
+                                        <label for="dealer" class="required">Customer</label>
+                                        <ng-select [items]="DealersList" class="form-control" formControlName="dealer"
+                                            bindLabel="dealerfullname" bindValue="sapid"
+                                            placeholder="Type 3 char to search" (keyup)="GetDealersList()"
+                                            labelForId="ngSelectDealers"
+                                            [ngClass]="{ 'is-invalid': submitted && filterForm.dealer.errors }">
+                                        </ng-select>
+                                        <div *ngIf="submitted && filterForm.dealer.errors" class="invalid-feedback">
+                                            <div *ngIf="filterForm.dealer.errors.required">
+                                                Dealer is required
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-4">
+                                    <div class="form-group">
+                                        <button class="btn btn-orange-s" (click)="OnGenerateReportClick()"
+                                            appNoDblClick><i class=" icon-floppy-o"></i>Generate Report</button>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12"
+                                    *ngIf="usertype == 20 && lastgenerateddate" style="text-align: right;">
+                                    <div class="form-group mt-4">
+                                        <label>Last Generated: {{lastgenerateddate}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting"
+                    *ngIf="customeroutstandingheader && customeroutstandingheader.length > 0">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Customer</th>
+                            <th>Company Code</th>
+                            <th class="text-right">Current Value</th>
+                            <th class="text-right">Days 0-45</th>
+                            <th class="text-right">Days 46-90</th>
+                            <th class="text-right">Days 91-180</th>
+                            <th class="text-right">Over 180 Days</th>
+                            <th class="text-right">Not Due</th>
+                            <th class="text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="customeroutstandingheader.length === 0">
+                            <td colspan="9" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let sg of customeroutstandingheader">
+                            <!-- <td>
+                                <button class="btn btn-link p-0"
+                                    (click)="onCustomerDetailClick(sg.Customer)">{{sg.Customer}}</button>
+                            </td> -->
+                            <td>{{sg.Customer}}</td>
+                            <td>{{sg.Companycode}}</td>
+                            <td class="text-right">{{sg.CurrentValue}}</td>
+                            <td class="text-right">{{sg.Days045}}</td>
+                            <td class="text-right">{{sg.Days4690}}</td>
+                            <td class="text-right">{{sg.Days91180}}</td>
+                            <td class="text-right">{{sg.Over180Days}}</td>
+                            <td class="text-right">{{sg.NotDue}}</td>
+                            <td class="text-right">{{sg.Total}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- <div class="row" *ngIf="customeroutstandingitemdetail && customeroutstandingitemdetail.length > 0">
+                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                        <div class="form-group">
+                            <label for="dealer" class="required">Customer</label>
+                            <input type="text" class="form-control" [attr.disabled]="true" value="{{Customer}}" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="dealer" class="required">Company Code</label>
+                            <input type="text" class="form-control" [attr.disabled]="true" value="{{CompanyCode}}" />
+                        </div>
+                    </div>
+                </div> -->
+
+                <table class="table table-hover table-responsive table-sorting"
+                    *ngIf="customeroutstandingitemdetail && customeroutstandingitemdetail.length > 0">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Bill Doc</th>
+                            <th>PO No</th>
+                            <th>Billing Date</th>
+                            <th>Due Date</th>
+                            <th>Curr.</th>
+                            <th>Acc. Doc. No</th>
+                            <th>Fiscal Year</th>
+                            <th>Invoice No</th>
+                            <th>Doc. Type</th>
+                            <th>Posting Date</th>
+                            <th>Sales Org</th>
+                            <th class="text-right">Invoice Amt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="customeroutstandingitemdetail.length === 0">
+                            <td colspan="11" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let sg of customeroutstandingitemdetail">
+                            <td>{{sg.BillDoc}}</td>
+                            <td>{{sg.BstkdM}}</td>
+                            <td>{{sg.BlineDate}}</td>
+                            <td>{{sg.DueDate}}</td>
+                            <td>{{sg.Currency}}</td>
+                            <td>{{sg.DocumentNo}}</td>
+                            <td>{{sg.Gjahr}}</td>
+                            <td>{{sg.ReferenceDocNo}}</td>
+                            <td>{{sg.Blart}} - {{sg.DocumentType}}</td>
+                            <td>{{sg.PostingDate}}</td>
+                            <td>{{sg.Salesorg}}</td>
+                            <td class="text-right">{{sg.Balance}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+
+<ng-template #ItemDetailModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Item Detail</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <table class="table table-hover table-responsive table-sorting"
+            *ngIf="customeroutstandingitemdetail && customeroutstandingitemdetail.length > 0">
+            <thead class="thead-inverse">
+                <tr>
+                    <th>Customer</th>
+                    <th>Company Code</th>
+                    <th>Name</th>
+                    <th>Bill Doc</th>
+                    <th>VBELV</th>
+                    <th>BSTKD_M</th>
+                    <th>BLine Date</th>
+                    <th>Due Date</th>
+                    <th>Amount Output</th>
+                    <th>Currency</th>
+                    <th>Document No</th>
+                    <th>GJAHR</th>
+                    <th>Ref. Doc. No</th>
+                    <th>Document Type</th>
+                    <th>Posting Date</th>
+                    <th>Sales Org</th>
+                    <th>Dist Chan</th>
+                    <th>Division</th>
+                    <th>Balance</th>
+                    <th>AUGBL</th>
+                    <th>BLART</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="customeroutstandingitemdetail.length === 0">
+                    <td colspan="21" style="text-align: center;">
+                        No Records Found
+                    </td>
+                </tr>
+                <tr *ngFor="let sg of customeroutstandingitemdetail">
+                    <td>{{sg.Customer}}</td>
+                    <td>{{sg.CompanyCode}}</td>
+                    <td>{{sg.Name}}</td>
+                    <td>{{sg.BillDoc}}</td>
+                    <td>{{sg.Vbelv}}</td>
+                    <td>{{sg.BstkdM}}</td>
+                    <td>{{sg.BlineDate}}</td>
+                    <td>{{sg.DueDate}}</td>
+                    <td>{{sg.AmountOutput}}</td>
+                    <td>{{sg.Currency}}</td>
+                    <td>{{sg.DocumentNo}}</td>
+                    <td>{{sg.Gjahr}}</td>
+                    <td>{{sg.ReferenceDocNo}}</td>
+                    <td>{{sg.DocumentType}}</td>
+                    <td>{{sg.PostingDate}}</td>
+                    <td>{{sg.Salesorg}}</td>
+                    <td>{{sg.Distchan}}</td>
+                    <td>{{sg.Division}}</td>
+                    <td>{{sg.Balance}}</td>
+                    <td>{{sg.Augbl}}</td>
+                    <td>{{sg.Blart}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+    </div>
+</ng-template>

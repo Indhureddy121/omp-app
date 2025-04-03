@@ -1,0 +1,429 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isExport]=true (exportClicked)="onExport()"></app-list-sub-header>
+            <!-- isExporttoPDF=true (exporttopdfClicked)="getData(true)" -->
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12">
+                        <form [formGroup]="FilterForm">
+                            <div class="row">
+                                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12" *ngIf="usertype == 20">
+                                    <div class="form-group">
+                                        <label for="dealer" class="required">Dealer</label>
+                                        <input type="text" formControlName="dealer" class="form-control"
+                                            [attr.disabled]="true" />
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-4 col-lg-4 col-md-3 col-sm-12" *ngIf="usertype != 20">
+                                    <div class="form-group">
+                                        <label for="dealer" class="required">Dealer</label>
+                                        <ng-select [items]="DealersList" class="form-control" formControlName="dealer"
+                                            bindLabel="dealerfullname" bindValue="sapid"
+                                            placeholder="Type 3 char to search" (keyup)="GetDealersList()"
+                                            labelForId="ngSelectDealers"
+                                            [ngClass]="{ 'is-invalid': submitted && filterForm.dealer.errors }">
+                                        </ng-select>
+                                        <div *ngIf="submitted && filterForm.dealer.errors" class="invalid-feedback">
+                                            <div *ngIf="filterForm.dealer.errors.required">
+                                                Dealer is required
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="currentfrom" class="required">Invoice From Date</label>
+                                        <div class="input-group"
+                                            [ngClass]="{ 'is-invalid': submitted && filterForm.currentfrom.errors }">
+                                            <input class="form-control doc-date" formcontrolname="currentfrom"
+                                                ngbDatepicker #currentfrom="ngbDatepicker"
+                                                (dateSelect)="OnCurrentFromDateSelection($event)" readonly
+                                                [value]="formatter.format(CurrentFromDate)"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.currentfrom.errors }" />
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary calendar"
+                                                    (click)="currentfrom.toggle()" type="button"></button>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="submitted && filterForm.currentfrom.errors"
+                                            class="invalid-feedback">
+                                            <div *ngIf="filterForm.currentfrom.errors.required">
+                                                Invoice From Date is required
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="currentto" class="required">Invoice To Date</label>
+                                        <div class="input-group"
+                                            [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }">
+                                            <input class="form-control doc-date" formcontrolname="currentto"
+                                                ngbDatepicker #currentto="ngbDatepicker"
+                                                (dateSelect)="OnCurrentToDateSelection($event)" readonly
+                                                [value]="formatter.format(CurrentToDate)" [minDate]="CurrentToMindate"
+                                                [maxDate]="CurrentToMaxdate"
+                                                [ngClass]="{ 'is-invalid': submitted && filterForm.currentto.errors }" />
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary calendar"
+                                                    (click)="currentto.toggle()" type="button"></button>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="submitted && filterForm.currentto.errors" class="invalid-feedback">
+                                            <div *ngIf="filterForm.currentto.errors.required">
+                                                Invoice To Date is required
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="sono">Sales Order No.</label>
+                                        <input type="text" formControlName="sono" class="form-control" maxlength="6" />
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-4">
+                                    <div class="form-group">
+                                        <button class="btn btn-orange-s" (click)="OnGenerateReportClick()"
+                                            appNoDblClick><i class=" icon-floppy-o"></i>Generate Report</button>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 p-0"
+                                    *ngIf="usertype == 20 && lastgenerateddate">
+                                    <div class="form-group mt-4">
+                                        <label>Last Generated: {{lastgenerateddate}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting"
+                    *ngIf="invoicelist && invoicelist.length > 0">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th class="text-right">Int. Invoice No</th>
+                            <th class="text-right">GST Invoice No</th>
+                            <th>Invoice Date</th>
+                            <th class="text-right">SO No</th>
+                            <th class="text-right">Delivery No</th>
+                            <th>Material No</th>
+                            <th>Material Desc</th>
+                            <th class="text-right">Qty</th>
+                            <th class="text-right">Cust PO No</th>
+                            <th class="text-right">Item Total Amt</th>
+                            <th>Curr.</th>
+                            <th class="text-right">Net Value Amt</th>
+                            <th>Foreign Cur</th>
+                            <th>Due Date</th>
+                            <th>LR No</th>
+                            <th>LR Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="invoicelist.length === 0">
+                            <td colspan="16" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let sg of invoicelist">
+                            <td class="text-right">
+                                <button class="btn btn-link p-0"
+                                    (click)="onOrderDetailClick(sg.InvoiceNo, sg.InvoiceItem)">{{sg.InvoiceNo}}</button>
+                            </td>
+                            <td class="text-right">{{sg.GstInvNo}}</td>
+                            <td>{{sg.InvoiceDate}}</td>
+                            <td class="text-right">{{sg.Salesord}}</td>
+                            <td class="text-right">{{sg.DeliveryNo}}</td>
+                            <td>{{sg.Matnr}}</td>
+                            <td>{{sg.Maktx}}</td>
+                            <td class="text-right">{{sg.Quantity}}</td>
+                            <td class="text-right">{{sg.Custponumber}}</td>
+                            <td class="text-right">{{sg.TotalItemAmt}}</td>
+                            <td>{{sg.Currency}}</td>
+                            <td class="text-right">{{sg.ForeignAmount}}</td>
+                            <td>{{sg.ForeignCurrency}}</td>
+                            <td>{{sg.DueDate}}</td>
+                            <td>{{sg.Lrno}}</td>
+                            <td>{{sg.Lrdate}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td colspan="6"></td>
+                            <td class="text-right">{{Total_Quantity}}</td>
+                            <td></td>
+                            <td class="text-right">{{Total_Amount}}</td>
+                            <td></td>
+                            <td class="text-right">{{Total_Net_Value_Amount}}</td>
+                            <td colspan="4"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+
+<ng-template #OrderDetailModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Display Invoice - {{OrderNo}} & Item No - {{ItemNo}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="OrderDetailsForm">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                        <div class="form-group">
+                            <label for="material">Material</label>
+                            <input type="text" formControlName="material" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="quantity">Quantity</label>
+                            <input type="text" formControlName="quantity" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="uom">UOM</label>
+                            <input type="text" formControlName="uom" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <input type="text" formControlName="status" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="invoicestatus">Invoice Status</label>
+                            <input type="text" formControlName="invoicestatus" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                        <div class="form-group">
+                            <label for="soldtoparty">Sold to Party</label>
+                            <input type="text" formControlName="soldtoparty" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                        <div class="form-group">
+                            <label for="shiptoparty">Ship to Party</label>
+                            <input type="text" formControlName="shiptoparty" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                        <div class="form-group">
+                            <label for="employeeresponsible">Employee Responsible</label>
+                            <input type="text" formControlName="employeeresponsible" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="ponumber">PO Number</label>
+                            <input type="text" formControlName="ponumber" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="podate">PO Date</label>
+                            <input type="text" formControlName="podate" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="invoicetype">Invoice Type</label>
+                            <input type="text" formControlName="invoicetype" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <!-- <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="freight">Freight</label>
+                            <input type="text" formControlName="freight" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div> -->
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="incoterms">Inco Terms</label>
+                            <input type="text" formControlName="incoterms" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                        <div class="form-group">
+                            <label for="paymentterm">Payment Term</label>
+                            <input type="text" formControlName="paymentterm" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <!-- <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="onelot">One Lot</label>
+                            <input type="text" formControlName="onelot" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div> -->
+                </div>
+                <div class="row">
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="netitemamount">Net Item Amount (INR)</label>
+                            <input type="text" formControlName="netitemamount" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="inspectioncharges">Inspection Charges</label>
+                            <input type="text" formControlName="inspectioncharges" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="packingcharges">Packing Charges</label>
+                            <input type="text" formControlName="packingcharges" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="cuttingcharges">Cutting Charges</label>
+                            <input type="text" formControlName="cuttingcharges" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="cuttingcharges">Freight Charges</label>
+                            <input type="text" formControlName="cuttingcharges" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="cgstrate">CGST Rate</label>
+                            <input type="text" formControlName="cgstrate" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="cgstamount">CGST Amount</label>
+                            <input type="text" formControlName="cgstamount" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="sgstrate">SGST Rate</label>
+                            <input type="text" formControlName="sgstrate" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="sgstamount">SGST Amount</label>
+                            <input type="text" formControlName="sgstamount" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="igstrate">IGST Rate</label>
+                            <input type="text" formControlName="igstrate" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="igstamount">IGST Amount</label>
+                            <input type="text" formControlName="igstamount" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="tcsrate">TCS Rate</label>
+                            <input type="text" formControlName="tcsrate" class="form-control" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="tcsamount">TCS Amount</label>
+                            <input type="text" formControlName="tcsamount" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="lappgstno">LAPP GST No</label>
+                            <input type="text" formControlName="lappgstno" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="payergstno">Payer GST No</label>
+                            <input type="text" formControlName="payergstno" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                        <div class="form-group">
+                            <label for="transport">Transport</label>
+                            <input type="text" formControlName="transport" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="totalitemamount">Total Item Amont</label>
+                            <input type="text" formControlName="totalitemamount" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label for="totalinvoiceamount">Total Invoice Amount</label>
+                            <input type="text" formControlName="totalinvoiceamount" class="form-control"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary mr-2" (click)="printOrder(OrderNo)">Print</button>
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+    </div>
+</ng-template>

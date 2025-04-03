@@ -1,0 +1,108 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header></app-list-sub-header>
+            <div class="col-12">
+                <div>
+                    <div class="row">
+                        <div class="w-100 row pl-4">
+                            <div class="col-12 col-md-3 col-lg-3">
+                                <app-appsearch [model]="searchModel" (callBack)="onSearch($event)">
+                                </app-appsearch>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-hover table-responsive table-sorting" id="table-articlecreation">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th (click)="headerClick($event)" id="offerno">Offer No</th>
+                            <th (click)="headerClick($event)" id="lappopportunityid">LAPP Opp. ID</th>
+                            <th (click)="headerClick($event)" id="articleno">Artical No.</th>
+                            <th (click)="headerClick($event)" id="description">Description</th>
+                            <th (click)="headerClick($event)" id="sapid">SAP ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="articleCreations.length == 0">
+                            <td colspan="5" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let pe of articleCreations">
+                            <td>{{pe.offerno}} </td>
+                            <td>{{pe.lappopportunityid}}</td>
+                            <td>{{pe.articleno}}</td>
+                            <td>{{pe.description}}</td>
+                            <td *ngIf="pe.sapid">{{pe.sapid}}</td>
+                            <td *ngIf="!pe.sapid">
+                                <button class="btn btn-link p-0" (click)="addSAPId(pe.offerid, pe.articleno)">
+                                    Add SAP Id
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="width: 100%;">
+                    <div style=" float:right;">
+                        <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                        <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                                <ng-template #elseFirst>
+                                    <a (click)="setPage(1)">First</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                                <ng-template #elsePrevious>
+                                    <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                                </ng-template>
+                            </li>
+                            <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                                <a (click)="setPage(page)">{{page}}</a>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                                <ng-template #elseNext>
+                                    <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                                <ng-template #elseLast>
+                                    <a (click)="setPage(pager.totalPages)">Last</a>
+                                </ng-template>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<ng-template #sapidModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add SAP ID</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="newSapId" class="required">SAP ID</label>
+            <input class="form-control" type="text" [(ngModel)]="articleSAPId" AllowAlphaNumeric="true"
+                [ngClass]="{ 'is-invalid': submitted && articleSAPId.length == 0 }">
+            <div *ngIf="submitted && articleSAPId.length == 0" class="invalid-feedback">
+                SAP ID is required
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onSaveSApID()">Save</button>
+    </div>
+</ng-template>

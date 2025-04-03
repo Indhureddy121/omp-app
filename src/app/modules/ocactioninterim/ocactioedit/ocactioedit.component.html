@@ -1,0 +1,164 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-sub-header [isCancel]="true" (cancelClicked)="oncancelClick()">
+            </app-sub-header>
+
+            <div class="col-12">
+                <h5 *ngIf="offerdata && offerdata.IsActive != 1" class="text-danger font-weight-bold"> {{
+                    offerInactiveText }} </h5>
+                <div class="row">
+                    <div class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1">
+                        <label>Offer No </label>
+                        <input type="text" class="form-control" value="{{offerNo}}" [attr.disabled]="true" />
+                    </div>
+
+                    <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                        <div *ngIf="offerdata && offerdata.Status < 80">
+                            <label>Action Required</label>
+                            <input type="text" class="form-control" value="{{offerdata.ActionRequired}}"
+                                [attr.disabled]="true" />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+
+                    <div class="row">
+                        <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 text-right pr-0">
+                            <button type="button" class="btn btn-orange-outline ml-2" (click)="acc.expandAll()">Expand
+                                All</button>
+                            <button type="button" class="btn btn-orange-outline ml-2"
+                                (click)="acc.collapseAll()">Collapse
+                                All</button>
+                        </div>
+
+                        <ngb-accordion #acc="ngbAccordion" [destroyOnHide]="false" activeIds="ngb-panel-0, ngb-panel-1">
+                            <div class="col-12">
+                                <ngb-panel id="ngb-panel-0">
+                                    <ng-template ngbPanelTitle let-opened="opened">Opportunity</ng-template>
+                                    <ng-template ngbPanelContent>
+
+                                        <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                            <div class="overflow-auto">
+                                                <table class="table table-hover table-responsive"
+                                                    id="table-opportunity">
+                                                    <thead class="thead-inverse">
+                                                        <tr>
+                                                            <th>LAPP Opportunity Id</th>
+                                                            <th>Opportunity Name</th>
+                                                            <th>Account Name</th>
+                                                            <th>Owner</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngIf="oppoData">
+                                                            <td>{{oppoData.lappopportunityid}}</td>
+                                                            <td>{{oppoData.opportunity_name}}</td>
+                                                            <td>{{oppoData.customername}}</td>
+                                                            <td>{{oppoData.fullname}}</td>
+
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                    </ng-template>
+
+                                </ngb-panel>
+
+                                <ngb-panel id="ngb-panel-1">
+                                    <ng-template ngbPanelTitle>Attachments</ng-template>
+                                    <ng-template ngbPanelContent>
+
+                                        <form class="ng-invalid ng-touched ng-dirty" [formGroup]="ItemsForm">
+                                            <div class="row">
+                                                <div class="col-12 mt-3" *ngIf="OfferFiles.length > 0">
+                                                    <div class="row">
+                                                        <div *ngFor="let file of OfferFiles;let f=index"
+                                                            class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 outer-container-upload-control">
+                                                            <div class="upload-control-filetype-container"><img
+                                                                    class="table-icon-lg"
+                                                                    src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                                            </div>
+                                                            <div class="upload-control-filename-container dot-views"><a
+                                                                    href="javascript:void(0)" *ngIf="file.id"
+                                                                    (click)="downloadFile(file.name,file.id,file.type)">
+                                                                    {{file.name}}</a><span
+                                                                    *ngIf="!file.id">{{file.name}}</span></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3" >
+                                                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                    <div class="form-group">
+                                                        <!-- <label>Attachments</label> -->
+                                                        <div><button (click)="fileInput.click()">Select File</button>
+                                                            <input type="file" id="importFile" style="display: none;"
+                                                                (change)="OfferfileChangeListener($event)" #fileInput
+                                                                multiple />
+                                                        </div>
+                                                    </div>
+                                                    <div *ngIf="!OfferFiles" class="form-group">
+                                                        <label>Attachments</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row ">
+
+                                                <div class="col-12 ">
+                                                    <div class="row">
+                                                        <div *ngFor="let file of filesidlist;let f=index"
+                                                            class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 outer-container-upload-control">
+                                                            <div class="upload-control-filetype-container"><img
+                                                                    class="table-icon-lg"
+                                                                    src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                                            </div>
+                                                            <div class="upload-control-filename-container dot-views"><a
+                                                                    href="javascript:void(0)" *ngIf="file.id"
+                                                                    (click)="downloadFile(file.name,file.id,file.type)">
+                                                                    {{file.name}}</a><span
+                                                                    *ngIf="!file.id">{{file.name}}</span></div>
+                                                            <div class="upload-control-delete-container">
+                                                                <button class="btn btn-link p-0"
+                                                                    (click)="OfferFileRemove(f)">
+                                                                    <img class="table-icon"
+                                                                        src="../../../../../assets/images/icon-delete1.svg"
+                                                                        title="delete image"></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </form>
+
+                                    </ng-template>
+                                </ngb-panel>
+
+                            </div>
+                        </ngb-accordion>
+
+                        <div class="col-12 text-right" style="margin-top: 10px;">
+                            <div class="form-group">
+                                <button class="btn btn-orange-outline ml-2 key key-m" (click)="oncancelClick()"
+                                    #cancelbutton><i class="icon-x"></i>Cancel</button>
+                                <button class="btn btn-orange-s" (click)="onSave()" appNoDblClick><i
+                                        class="icon-floppy-o"></i>Save & Submit</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

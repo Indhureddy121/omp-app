@@ -1,0 +1,182 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header></app-list-sub-header>
+            <div class="col-12">
+                
+                    <div class="row">
+                        <app-appsearch class="col-12 col-xl-8 col-lg-8 col-md-6 col-sm-12"
+                            (callBack)="onSearch($event)"></app-appsearch>
+                    
+                </div>
+                <table class="table table-hover table-responsive table-sorting" id="table-offers">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th style="display: none;">ID</th>
+                            <th>Action</th>
+                            <th (click)="headerClick($event)" name="OFF.id" id="OFF.id">Offer Id</th>
+                            <th (click)="headerClick($event)" name="OPP.opportunity_id" id="OPP.opportunity_id">
+                                Opportunity Id</th>
+                            <th (click)="headerClick($event)" name="OPP.customer_name" id="OPP.customer_name">Account Name
+                            </th>
+                            <th (click)="headerClick($event)" name="USR.fullname" id="USR.fullname">Owner</th>
+                            <th (click)="headerClick($event)" name="OFF.offervalue" id="OFF.offervalue"
+                                class="text-right">Offer Value</th>
+                            <th (click)="headerClick($event)" name="OFF.offervalidto" id="OFF.offervalidto">Valid To
+                            </th>
+                            <th (click)="headerClick($event)" name="OFFPO.po_number" id="OFFPO.po_number">PO Number
+                            </th>
+                            <th (click)="headerClick($event)" name="OFFPO.po_date" id="OFFPO.po_date">PO Date</th>
+                            <th (click)="headerClick($event)" name="FR.file_name" id="FR.file_name">Attachment
+                            </th>
+                            <th (click)="headerClick($event)" name="status" id="status">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="this.readyforsolist.length == 0">
+                            <td colspan="11" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let so of readyforsolist" (dblclick)="onRowDoubleClick(so.poid)">
+                            <td style="display:none;">{{so.id}}</td>
+                            <td>
+                                <button class="btn btn-link p-0 mr-3" *ngIf="so.poid" (click)="viewClicked(so.poid)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-view.svg"
+                                        title="View PO"></button>
+                                <button class="btn btn-link p-0 mr-3" *ngIf="!so.poid" (click)="addpoclicked(so.offerID)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-plus-6.svg"
+                                        title="Add PO"></button>
+                                <button class="btn btn-link p-0 mr-3" *ngIf="so.poid" (click)="editClicked(so.poid)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-edit.svg"
+                                        title="Edit PO"></button>
+                            </td>
+                            <td>{{so.offerID}}</td>
+                            <td>{{so.oppID}}</td>
+                            <td>{{so.accountname}}</td>
+                            <td>{{so.ownername}}</td>
+                            <td class="text-right">{{so.offervalue | currency:'INR'}}</td>
+                            <td>{{so.offervalidto | date:dateFormate}}</td>
+                            <td>{{so.PONumber}}</td>
+                            <td>{{so.PODate | date:dateFormate}}</td>
+                            <td>{{so.filename}}</td>
+                            <td>{{so.status}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #AddEditPO let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit PO</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="POForm">
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="ponumber" class="required">PO Number</label>
+                        <input type="text" class="form-control" formControlName="ponumber" [OnlyNumber]=true
+                            [ngClass]="{ 'is-invalid': submitted && poForm.ponumber.errors }" />
+                        <div *ngIf="submitted && poForm.ponumber.errors" class="invalid-feedback">
+                            <div *ngIf="poForm.ponumber.errors.required">
+                                PO Number is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label class="required">PO Date</label>
+                        <div class="input-group" [ngClass]="{ 'is-invalid': submitted && poForm.podate.errors }">
+                            <input class="form-control doc-date" formcontrolname="podate" ngbDatepicker
+                                #podate="ngbDatepicker" [value]="formatter.format(PODate)"
+                                (dateSelect)="onPODateSelection($event)" readonly
+                                [ngClass]="{ 'is-invalid': submitted && poForm.podate.errors }" />
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary calendar" (click)="podate.toggle()"
+                                    type="button"></button>
+                            </div>
+                        </div>
+                        <div *ngIf="submitted && poForm.podate.errors" class="invalid-feedback">
+                            <div *ngIf="poForm.podate.errors.required">
+                                PO Date is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label>Attachments</label>
+                        <div><button (click)="fileInput.click()">Select File</button>
+                            <input type="file" id="importFile" style="display: none;"
+                                (change)="fileChangeListener($event)" #fileInput />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="row">
+                        <div *ngFor="let filedtl of files;let f=index"
+                            class="col-md-6 col-lg-3 outer-container-upload-control">
+                            <div class="upload-control-filetype-container"><img class="table-icon-lg"
+                                    src="../../../../../assets/images/{{setFileTypeIcon(filedtl.type)}}"></div>
+                            <div class="upload-control-filename-container dot-views"><a href="javascript:void(0)"
+                                    (click)="downloadFile(filedtl.name,filedtl.id,filedtl.type)">{{filedtl.name}}</a>
+                            </div>
+                            <div class="upload-control-delete-container"><button class="btn btn-link p-0"
+                                    (click)="removeFile(f)">
+                                    <img class="table-icon" src="../../../../../assets/images/icon-delete1.svg"
+                                        title="delete image"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <!-- onLengthandFactorSave() -->
+        <button type="button" class="btn btn-orange-s" (click)="posave()">Save</button>
+    </div>
+</ng-template>

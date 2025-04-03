@@ -1,0 +1,337 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isUpload]="!viewOnly" [isExport]=true [isHistory]="!viewOnly" [isAdd]="!viewOnly" [isDownload]=true
+                (historyClicked)="getLog()" (uploadClicked)="open(content)" (exportClicked)="onExport()" (downloadClicked)="getDownload()"
+                (addClicked)="OpenAddEditHSNMasterPopup(undefined)">
+            </app-list-sub-header>
+            <div class="col-12">
+                
+                    <div class="row">
+                        <div class="col-12  col-md-8 col-sm-12">
+                            <app-appsearch [model]="searchModel" (callBack)="onSearch($event)"></app-appsearch>
+                        </div>
+                    
+                </div>
+                <table class="table table-hover table-responsive table-sorting" id="table-hsnmaster">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th (click)="headerClick($event)" id="articleno">Article No.</th>
+                            <th (click)="headerClick($event)" id="hsncode">HSN Code</th>
+                            <th (click)="headerClick($event)" id="bcd">BCD</th>
+                            <th (click)="headerClick($event)" id="freightandinsurance">Freight and Insurance</th>
+                            <th (click)="headerClick($event)" id="landingcharges">Landing Charges</th>
+                            <th (click)="headerClick($event)" id="clearingcharges">Clearing Charges</th>
+                            <th (click)="headerClick($event)" id="inlandfreight">Inland Freight</th>
+                            <th (click)="headerClick($event)" id="cess1">CESS1</th>
+                            <th (click)="headerClick($event)" id="cess2">CESS2</th>
+                            <th (click)="headerClick($event)" id="cess3">CESS3</th>
+                            <th (click)="headerClick($event)" id="cess4">CESS4</th>
+                            <th (click)="headerClick($event)" id="othercharges">Other Charges</th>
+                            <th (click)="headerClick($event)" id="fbd">FBD</th>
+                            <th (click)="headerClick($event)" id="total">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="hsnmasterlist.length == 0">
+                            <td colspan="15" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let hsnm of hsnmasterlist">
+                            <td *ngIf="!viewOnly">
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenAddEditHSNMasterPopup(hsnm.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenDeletePopup(hsnm.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-delete.svg"></button>
+                            </td>
+                            <td *ngIf="viewOnly"></td>
+                            <td>{{hsnm.articleno}}</td>
+                            <td>{{hsnm.hsncode}}</td>
+                            <td>{{hsnm.bcd}}</td>
+                            <td>{{hsnm.freightandinsurance}}</td>
+                            <td>{{hsnm.landingcharges}}</td>
+                            <td>{{hsnm.clearingcharges}}</td>
+                            <td>{{hsnm.inlandfreight}}</td>
+                            <td>{{hsnm.cess1}}</td>
+                            <td>{{hsnm.cess2}}</td>
+                            <td>{{hsnm.cess3}}</td>
+                            <td>{{hsnm.cess4}}</td>
+                            <td>{{hsnm.othercharges}}</td>
+                            <td>{{hsnm.fbd}}</td>
+                            <td>{{hsnm.total}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">HSN Master</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="!isShowDownload">
+            <form [formGroup]="importmodel" enctype="multipart/form-data" method="POST">
+                <div class="form-group" (ngSubmit)="uploadFile($event)">
+                    <input type="file" id="importFile" (change)="uploadedFile($event)" #fileInput
+                        accept=".xlsx, .xls" />
+                </div>
+
+            </form>
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                    (click)="downloadSample()">here</button> to download sample file.</p>
+        </div>
+
+        <div *ngIf="isShowDownload">
+            <fieldset class="custom-fieldset">
+                <p class="pl-2 pt-2">Data has been imported successfully.</p>
+            </fieldset>
+
+            <p class="pl-2 pt-2">click <button type="link" class="btn-link button-link"
+                    (click)="exportfiles(savedResult.status_file_name)">here</button> to download status.</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="!isShowDownload">
+            <button type="button" class="btn btn-orange-outline-s mr-2"
+                (click)="modal.dismiss('Cross click')">Cancel</button>
+            <button type="button" class="btn btn-orange-s" (click)="onSave()">Save</button>
+        </div>
+        <div *ngIf="isShowDownload">
+            <button type="button" class="btn btn-orange-s" (click)="onDismiss()">Ok</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #DeleteConfirmationModal let-modal>
+    <app-delete-confirmation [model]="deleteConfirmModel" (ondelete)="onHSNMasterDelete($event)"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #AddEditItemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit HSN Master</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="HSNMasterForm">
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="articleno" class="required">Article Number</label>
+                        <input type="text" class="form-control" formControlName="articleno"
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.articleno.errors }">
+                        <div *ngIf="submitted && hsnMasterForm.articleno.errors" class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.articleno.errors.required">
+                                Please Enter Article Number
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="hsncode" class="required">HSN Code</label>
+                        <input type="text" class="form-control" formControlName="hsncode" OnlyNumber
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.hsncode.errors }">
+                        <div *ngIf="submitted && hsnMasterForm.hsncode.errors" class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.hsncode.errors.required">
+                                Please Enter HSN Code
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="bcd">BCD</label>
+                        <input class="form-control" type="text" formControlName="bcd" numericwithdecimal decimals="2"
+                            beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.bcd.value > 0.99 }">
+                        <div *ngIf="submitted && hsnMasterForm.bcd.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.bcd.value > 0.99">
+                                BCD must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="freightandinsurance">Freight and Insurance</label>
+                        <input class="form-control" type="text" formControlName="freightandinsurance" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.freightandinsurance.value > 0.99 }">
+                        <div *ngIf="submitted && hsnMasterForm.freightandinsurance.value > 0.99"
+                            class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.freightandinsurance.value > 0.99">
+                                Freight and Insurance must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="landingcharges">Landing Charges</label>
+                        <input type="text" class="form-control" formControlName="landingcharges" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.landingcharges.value > 0.99 }">
+                        <div *ngIf="submitted && hsnMasterForm.landingcharges.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.landingcharges.value > 0.99">
+                                Landing Charges must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="clearingcharges">Clearing Charges</label>
+                        <input type="text" class="form-control" formControlName="clearingcharges" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.clearingcharges.value > 0.99 }">
+                        <div *ngIf="submitted && hsnMasterForm.clearingcharges.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.clearingcharges.value > 0.99">
+                                Clearing Charges must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="inlandfreight">Inland Freight</label>
+                        <input type="text" class="form-control" formControlName="inlandfreight" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.inlandfreight.value > 0.99 }">
+                        <div *ngIf="submitted && hsnMasterForm.inlandfreight.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.inlandfreight.value > 0.99">
+                                Inland Freight must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="cess1">CESS1</label>
+                        <input type="text" class="form-control" formControlName="cess1" numericwithdecimal decimals="2"
+                            beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.cess1.value > 0.99 }">
+                        <div *ngIf="submitted && hsnMasterForm.cess1.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.cess1.value > 0.99">
+                                CESS1 must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="cess2">CESS2</label>
+                        <input type="text" class="form-control" formControlName="cess2" numericwithdecimal decimals="2"
+                            beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.cess2.value > 0.99 }">
+                        <div *ngIf="submitted && hsnMasterForm.cess2.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.cess2.value > 0.99">
+                                CESS2 must be less than 0.99
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="cess3">CESS3</label>
+                        <input type="text" class="form-control" formControlName="cess3" numericwithdecimal decimals="2"
+                            beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.cess3.value > 0.99 }">
+                        <div *ngIf="submitted && hsnMasterForm.cess3.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.cess3.value > 0.99">
+                                CESS3 must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="cess4">CESS4</label>
+                        <input type="text" class="form-control" formControlName="cess4" numericwithdecimal decimals="2"
+                            beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.cess4.value > 0.99 }">
+                        <div *ngIf="submitted && hsnMasterForm.cess4.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.cess4.value > 0.99">
+                                CESS4 must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="othercharges">Other Charges</label>
+                        <input type="text" class="form-control" formControlName="othercharges" numericwithdecimal
+                            decimals="2" beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.othercharges.value > 0.99 }">
+                        <div *ngIf="submitted && hsnMasterForm.othercharges.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.othercharges.value > 0.99">
+                                Other Charges must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="fbd">FBD</label>
+                        <input type="text" class="form-control" formControlName="fbd" numericwithdecimal decimals="2"
+                            beforedecimals="1"
+                            [ngClass]="{ 'is-invalid': submitted && hsnMasterForm.fbd.value > 0.99 }">
+                        <div *ngIf="submitted && hsnMasterForm.fbd.value > 0.99" class="invalid-feedback">
+                            <div *ngIf="hsnMasterForm.fbd.value > 0.99">
+                                FBD must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onHSNMasterSaveClick()">Save</button>
+    </div>
+</ng-template>

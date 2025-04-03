@@ -1,0 +1,398 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isUpload]="!viewOnly" [isExport]=true [isHistory]="!viewOnly" [isAdd]="!viewOnly"
+                (historyClicked)="getLog()" (uploadClicked)="open(content)" (exportClicked)="onExport()"
+                (addClicked)="OpenAddEditALPMasterPopup(undefined)">
+            </app-list-sub-header>
+
+            <div class="col-12">
+                <div>
+                    <div class="row">
+                        <div class="w-100 row pl-4 mb-5" *ngIf="delCurrent && lmeCurrent">
+                            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                                <label>LCP (Euro) Current Price</label>
+                                <input type="text" class="form-control"
+                                    value="{{delCurrent.price}} ({{delCurrent.created_date | date:dateFormate}})"
+                                    [attr.disabled]="true" />
+                            </div>
+                            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                                <label>LCP (Euro) Exchange Rate</label>
+                                <input type="text" class="form-control" value="{{delCurrent.exchange_rate}}"
+                                    [attr.disabled]="true" />
+                            </div>
+                            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                                <label>LCP (Dollar) Current Price</label>
+                                <input type="text" class="form-control"
+                                    value="{{lmeCurrent.price}} ({{delCurrent.created_date | date:dateFormate}})"
+                                    [attr.disabled]="true" />
+                            </div>
+                            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                                <label>LCP (Dollar) Exchange Price</label>
+                                <input type="text" class="form-control" value="{{lmeCurrent.exchange_rate}}"
+                                    [attr.disabled]="true" />
+                            </div>
+                        </div>
+
+                        <div class="w-100 row pl-4">
+                            <div class="col-12 col-md-3 col-lg-3">
+                                <app-appsearch [model]="searchModel" (callBack)="onSearch($event)"></app-appsearch>
+                            </div>
+
+                            <div class="col-12 col-md-5 col-sm-5">
+                                <form [formGroup]="FilterForm">
+                                    <div class="row">
+                                        <div class="col-12 col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <ng-select [items]="ALPTypeList" class="form-control"
+                                                    bindLabel="description" bindValue="code" formControlName="alptype"
+                                                    (change)="onFilterALPTypeChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <ng-select [items]="ALPErrorTypeList" class="form-control"
+                                                    bindLabel="description" bindValue="code" formControlName="alperror"
+                                                    (change)="onFilterALPErrorTypeChange($event)">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-12 col-md-4 col-sm-4 text-right pr-0">
+                                <button type="button" class="btn btn-orange-s mr-2"
+                                    (click)="onCalculateClick()">Calculate</button>
+                                <button type="button" class="btn btn-orange-s"
+                                    (click)="onReleaseClick()">Release</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-sorting" id="table-alpmaster">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th (click)="headerClick($event)" id="articleno">Article No.</th>
+                            <th (click)="headerClick($event)" id="description">Description</th>
+                            <th (click)="headerClick($event)" id="alp" class="text-right">ALP</th>
+                            <th (click)="headerClick($event)" id="msq" class="text-right">MSQ</th>
+                            <th (click)="headerClick($event)" id="isfixedalp">Is Fixed ALP</th>
+                            <th (click)="headerClick($event)" id="costfrom">Cost From</th>
+                            <th (click)="headerClick($event)" id="alpchangeper" class="text-right">ALP Correction Factor
+                                (%)
+                            </th>
+                            <th (click)="headerClick($event)" id="fixedalp_c" class="text-right">Fixed ALP (C)</th>
+                            <th (click)="headerClick($event)" id="validfrom">Valid From</th>
+                            <th (click)="headerClick($event)" id="validto">Valid To</th>
+                            <th (click)="headerClick($event)" id="fixedalpcalerror" style="width: 20%;">Fixed ALP Error
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="alpmasterlist.length == 0">
+                            <td colspan="12" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let alpm of alpmasterlist">
+                            <td *ngIf="!viewOnly">
+                                <button class="btn btn-link p-0 mr-1" (click)="OpenAddEditALPMasterPopup(alpm.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                                <button class="btn btn-link p-0 mr-1" (click)="OpenDeletePopup(alpm.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-delete.svg"></button>
+                            </td>
+                            <td *ngIf="viewOnly"></td>
+                            <td>{{alpm.articleno}}</td>
+                            <td>{{alpm.description}}</td>
+                            <td class="text-right">{{alpm.alp}}</td>
+                            <td class="text-right">{{alpm.msq}}</td>
+                            <td class="text-center">{{alpm.isfixedalp}}</td>
+                            <td>{{alpm.costfrom}}</td>
+                            <td class="text-right">{{alpm.alpchangeper}}</td>
+                            <td class="text-right">{{alpm.fixedalp_c}}</td>
+                            <td>{{alpm.validfrom | date:dateFormate}}</td>
+                            <td>{{alpm.validto | date:dateFormate}}</td>
+                            <td>{{alpm.fixedalpcalerror}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">ALP Master</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="!isShowDownload">
+            <form [formGroup]="importmodel" enctype="multipart/form-data" method="POST">
+                <div class="form-group" (ngSubmit)="uploadFile($event)">
+                    <input type="file" id="importFile" (change)="uploadedFile($event)" #fileInput
+                        accept=".xlsx, .xls" />
+                </div>
+
+            </form>
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                    (click)="downloadSample()">here</button> to download sample file.</p>
+        </div>
+
+        <div *ngIf="isShowDownload">
+            <fieldset class="custom-fieldset">
+                <p class="pl-2 pt-2">Data has been imported successfully.</p>
+            </fieldset>
+
+            <p class="pl-2 pt-2">click <button type="link" class="btn-link button-link"
+                    (click)="exportfiles(savedResult.status_file_name)">here</button> to download status.</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="!isShowDownload">
+            <button type="button" class="btn btn-orange-outline-s mr-2"
+                (click)="modal.dismiss('Cross click')">Cancel</button>
+            <button type="button" class="btn btn-orange-s" (click)="onSave()">Save</button>
+        </div>
+        <div *ngIf="isShowDownload">
+            <button type="button" class="btn btn-orange-s" (click)="onDismiss()">Ok</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #DeleteConfirmationModal let-modal>
+    <app-delete-confirmation [model]="deleteConfirmModel" (ondelete)="onALPMasterDelete($event)"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #AddEditItemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit ALP Master</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="ALPMasterForm">
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="articleno" class="required">Article Number</label>
+                        <input type="text" class="form-control" formControlName="articleno"
+                            [ngClass]="{ 'is-invalid': submitted && alpMasterForm.articleno.errors }">
+                        <div *ngIf="submitted && alpMasterForm.articleno.errors" class="invalid-feedback">
+                            <div *ngIf="alpMasterForm.articleno.errors.required">
+                                Please enter Article Number
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="alp" [ngClass]="{required: !ShowFixedALPField}">ALP</label>
+                        <input class="form-control" type="text" formControlName="alp" numericwithdecimal decimals="3"
+                            beforedecimals="8" [ngClass]="{ 'is-invalid': submitted && alpMasterForm.alp.errors }">
+                        <div *ngIf="submitted && alpMasterForm.alp.errors" class="invalid-feedback">
+                            <div *ngIf="alpMasterForm.alp.errors.required">
+                                Please enter ALP
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="msq" class="required">MSQ</label>
+                        <input type="text" class="form-control" formControlName="msq" OnlyNumber
+                            [ngClass]="{ 'is-invalid': submitted && alpMasterForm.msq.errors }">
+                        <div *ngIf="submitted && alpMasterForm.msq.errors" class="invalid-feedback">
+                            <div *ngIf="alpMasterForm.msq.errors.required">
+                                Please enter MSQ
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group switch-inline">
+                        <input type="checkbox" id="fixedalp" class="switch" formcontrolname="fixedalp"
+                            [checked]="IsFixedALPFlag" (change)="onIsFixedALPChange($event.target.checked)">
+                        <label class="switch-label" for="fixedalp">Is Fixed ALP</label>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12" *ngIf="ShowFixedALPField">
+                    <div class="form-group">
+                        <label for="costfrom" class="required">Cost From</label>
+                        <ng-select [items]="CostFromList" class="form-control" bindLabel="description" bindValue="code"
+                            formControlName="costfrom"
+                            [ngClass]="{ 'is-invalid': submitted && alpMasterForm.costfrom.errors }">
+                        </ng-select>
+                        <!-- <input type="text" class="form-control" formControlName="costfrom" UpperCaseInput maxlength="1"
+                            [ngClass]="{ 'is-invalid': submitted && (alpMasterForm.costfrom.errors || iscostfromerror) }"> -->
+                        <div *ngIf="submitted && alpMasterForm.costfrom.errors" class="invalid-feedback">
+                            <div *ngIf="alpMasterForm.costfrom.errors.required">
+                                Please enter Cost From
+                            </div>
+                        </div>
+                        <!-- <div *ngIf="submitted && !alpMasterForm.costfrom.errors && iscostfromerror"
+                            class="invalid-feedback">
+                            <div *ngIf="iscostfromerror">
+                                Must be M or T
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12" *ngIf="ShowFixedALPField">
+                    <div class="form-group">
+                        <label for="alpchangeper" class="required">ALP Correction Factor(%)</label>
+                        <input type="text" class="form-control" formControlName="alpchangeper" numericwithdecimal
+                            decimals="2" beforedecimals="1" placeholder="ex. 0.05"
+                            [ngClass]="{ 'is-invalid': submitted && (alpMasterForm.alpchangeper.errors || alpMasterForm.alpchangeper.value > 0.99)}">
+                        <div *ngIf="submitted && (alpMasterForm.alpchangeper.errors || alpMasterForm.alpchangeper.value > 0.99)"
+                            class="invalid-feedback">
+                            <div
+                                *ngIf="alpMasterForm.alpchangeper.errors && alpMasterForm.alpchangeper.errors.required">
+                                Required
+                            </div>
+                            <div *ngIf="!alpMasterForm.alpchangeper.errors && alpMasterForm.alpchangeper.value > 0.99">
+                                Correction Factor must be less than 0.99
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label class="required">Valid From</label>
+                        <div class="input-group"
+                            [ngClass]="{ 'is-invalid': submitted && alpMasterForm.validfrom.errors }">
+                            <input class="form-control doc-date" formcontrolname="validfrom" ngbDatepicker
+                                #validfrom="ngbDatepicker" [value]="formatter.format(validfromDate)"
+                                (dateSelect)="onValidFromDateSelection($event)" readonly [minDate]="todayMinDate"
+                                [ngClass]="{ 'is-invalid': submitted && alpMasterForm.validfrom.errors }" />
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary calendar" (click)="validfrom.toggle()"
+                                    type="button"></button>
+                            </div>
+                        </div>
+                        <div *ngIf="submitted && alpMasterForm.validfrom.errors" class="invalid-feedback">
+                            <div *ngIf="alpMasterForm.validfrom.errors.required">
+                                Valid From is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label class="required">Valid To</label>
+                        <div class="input-group"
+                            [ngClass]="{ 'is-invalid': submitted && alpMasterForm.validto.errors }">
+                            <input class="form-control doc-date" formcontrolname="validto" ngbDatepicker
+                                #validto="ngbDatepicker" [value]="formatter.format(validtoDate)"
+                                (dateSelect)="onValidToDateSelection($event)" readonly
+                                [ngClass]="{ 'is-invalid': submitted && alpMasterForm.validto.errors }"
+                                [minDate]="ValidMindate" />
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary calendar" (click)="validto.toggle()"
+                                    type="button"></button>
+                            </div>
+                        </div>
+                        <div *ngIf="submitted && alpMasterForm.validto.errors" class="invalid-feedback">
+                            <div *ngIf="alpMasterForm.validto.errors.required">
+                                Valid To is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onALPMasterSaveClick()">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #ExportOptiontemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Export List</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="ExportItemsForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="mr-2">
+                            <input type="radio" formControlName="exportoption" (click)="onExportOptionChange($event)"
+                                value="0" class="mr-1" [checked]='dwnldforImportALP'>For import ALP (Excel)
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="radio" formControlName="exportoption" (click)="onExportOptionChange($event)"
+                                value="1" class="mr-1" [checked]='dwnldCurrentList'>Current List view (Excel)
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="radio" formControlName="exportoption" (click)="onExportOptionChange($event)"
+                                value="2" class="mr-1" [checked]='dwnldReleasedALPListExcel'>Released ALP (Excel)
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="radio" formControlName="exportoption" (click)="onExportOptionChange($event)"
+                                value="3" class="mr-1" [checked]='dwnldReleasedALPListPDF'>Released ALP (PDF)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onExportClick()">Export</button>
+    </div>
+</ng-template>

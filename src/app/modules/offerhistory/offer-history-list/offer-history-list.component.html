@@ -1,0 +1,148 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- <div class="col-12">
+                <div class="action-bar row">
+                    <div class="col-12 col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                        <ol class="breadcrumb">
+                            <li><a class="breadcrumb-item mr-2" href="/home"><img class="icon-22" src="../../../../../assets/images/icon-home-b.svg"></a></li>
+                            <li class="breadcrumb-item"><span>Offers</span></li>
+                        </ol>
+                    </div>
+                </div>
+            </div> -->
+            <app-list-sub-header></app-list-sub-header>
+            <div class="col-12">
+                
+                    <div class="row">
+                        <app-appsearch class="col-12 col-xl-8 col-lg-8 col-md-6 col-sm-12"
+                            (callBack)="onSearch($event)"></app-appsearch>
+                    </div>
+                    <!-- <div class="grid-search">
+                        <form class="ng-untouched ng-pristine ng-valid">
+                            <input class="grid-search-input" formcontrolname="searchValue" maxlength="100"
+                                placeholder="Search Item">
+                        </form>
+                    </div> -->
+                
+                <table class="table table-hover table-responsive table-sorting" id="table-offers">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th style="display: none;">ID</th>
+                            <th>Action</th>
+                            <th (click)="headerClick($event)" name="opportunity_id" id="opportunity_id">Opportunity Id
+                            </th>
+                            <th (click)="headerClick($event)" name="customer_name" id="customer_name">SAP ID</th>
+                            <th (click)="headerClick($event)" name="opportunities_id" id="opportunities_id">Offer Value
+                            </th>
+                            <th (click)="headerClick($event)" name="expire_date" id="expire_date">Created Date</th>
+                            <th (click)="headerClick($event)" name="status" id="status">Status</th>
+                            <th>View Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let off of offerslist" (dblclick)="onRowDoubleClick(off.offer_id)">
+                            <td>
+                                <button class="btn btn-link p-0 mr-3" (click)="viewClicked(off.offer_id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-view.svg"></button>
+
+                            </td>
+                            <td style="display:none;">{{off.offer_id}}</td>
+                            <td>{{off.opportunityid}}</td>
+                            <td>{{off.sap_id}}</td>
+                            <td>{{off.offervalue | currency:'INR':true:'1.2-4'}}</td>
+                            <td>{{off.created_date | date:dateFormate}}</td>
+                            <td>{{off.status}}</td>
+                            <td><button class="btn btn-link p-0 mr-3" (click)="open(orderStatus,off.offer_id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-view.svg"></button>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+                <!-- <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-end">
+                        <li class="page-item disabled">
+                            <a class="page-link" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link">1</a></li>
+                        <li class="page-item"><a class="page-link">2</a></li>
+                        <li class="page-item"><a class="page-link">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link">Next</a>
+                        </li>
+                    </ul>
+                </nav> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #orderStatus let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Orders ( {{offerStatus[0].sap_id}})</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div>
+            <!-- <div class="row col-12">
+                <h5><strong>Orders </strong></h5>
+            </div> -->
+            <table class="table table-hover table-responsive" id="table-approval">
+                <thead class="thead-inverse">
+                    <tr>
+                        <th name="status" id="status">Status</th>
+                        <th name="status" id="status">Notes</th>
+                        <th name="senddate" id="senddate">Send Date</th>
+                        <!-- <th name="senddate" id="ofrid">Offer Id</th> -->
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let approvedata of offerStatus">
+                        <td>{{approvedata.status}}</td>
+                        <td>{{approvedata.notes}}</td>
+                        <td>{{approvedata.created_date | date:dateFormate}}</td>
+                        <!-- <td>{{approvedata.offer_id}}</td> -->
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</ng-template>

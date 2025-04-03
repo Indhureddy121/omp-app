@@ -1,0 +1,18 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-title">{{boxtitle}}</h4>
+  <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body text-center">
+  <h5 class="font-weight-normal my-4">{{messageText}}</h5>
+</div>
+<div class="modal-footer text-right">
+  <button type="button" ngbAutofocus class="btn btn-outline-secondary" (click)="onClose()">
+    <i class='icon-x' title='Cancel'></i> Cancel
+  </button>
+  <button type="button" class="btn btn-danger" (click)="onDelete()">
+    <i class='icon-delete-garbage-streamline' title='Delete'></i> 
+    {{deleteText}}
+  </button>
+</div>

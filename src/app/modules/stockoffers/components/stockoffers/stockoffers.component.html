@@ -1,0 +1,2615 @@
+<div class="row">
+    <app-sub-header *ngIf="isShowSection('offerInformation')"
+        [isEdit]="offerInformation == 2 && !isEditSection('offerInformation')" [isCancel]="true"
+        (cancelClicked)="oncancelClick()" (editClicked)="onEditClick()" (reviewClicked)="onReview()">
+    </app-sub-header>
+
+    <!-- [isReview]="StockOfferType == 30" -->
+
+    <div class="col-12" *ngIf="isView || isEdit">
+        <div class="row">
+            <div class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1">
+                <label>Offer No</label>
+                <input type="text" class="form-control" value="{{offerNo}}" [attr.disabled]="true" />
+            </div>
+            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                <div *ngIf="sonumber != ''">
+                    <label>SO Number</label>
+                    <input type="text" class="form-control" value="{{sonumber}}" [attr.disabled]="true" />
+                </div>
+            </div>
+            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                <label>Status</label>
+                <input type="text" class="form-control" value="{{offerApprovalStatus}}" [attr.disabled]="true" />
+            </div>
+            <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                <div *ngIf="offerdata && offerdata.Status < 80">
+                    <label>Action Required</label>
+                    <input type="text" class="form-control" value="{{offerdata.ActionRequired}}"
+                        [attr.disabled]="true" />
+                </div>
+            </div>
+            <!-- <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-4 text-right mt-2"
+                        *ngIf="isShowSection('managepo')">
+                        <div class="form-group">
+                            <button class="btn btn-info" (click)="onGenerateOfferPDFClick('indirect')"
+                                *ngIf="isOfferInderect"><i></i>{{offerindirectpdf}}</button> &nbsp;
+                            <button class="btn btn-info"
+                                (click)="onGenerateOfferPDFClick('direct')"><i></i>{{offerdirectpdf}}</button>
+                        </div>
+                    </div> -->
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+            <div class="row">
+                <div class="row col-12">
+                    <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-6 pl-0 mt-2">
+                        <!-- <div class="row">
+                            <div class="form-group col-3" *ngIf="StockOfferType == 20">
+                                <label class="mr-2">
+                                    <input type="radio" (click)="onOrderOptionChange()" class="mr-1"
+                                        [checked]='optStockOrder'
+                                        [attr.disabled]="!isEditSection('offerInformation') ? '' : null">
+                                    Stock Order
+                                </label>
+                            </div>
+                            <div class="form-group col-3" *ngIf="StockOfferType == 30">
+                                <label class="mr-2">
+                                    <input type="radio" (click)="onOrderOptionChange()" class="mr-1"
+                                        [checked]='optCPOOrder'
+                                        [attr.disabled]="!isEditSection('offerInformation') ? '' : null">
+                                    CPO Order
+                                </label>
+                            </div>
+                        </div> -->
+                    </div>
+                    <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-6 text-right pr-0">
+                        <button type="button" class="btn btn-orange-outline ml-2" (click)="acc.expandAll()">Expand All</button>
+                        <button type="button" class="btn btn-orange-outline ml-2" (click)="acc.collapseAll()">Collapse All</button>
+                    </div>
+                </div>
+                <ngb-accordion #acc="ngbAccordion" [destroyOnHide]="false" activeIds="ngb-panel-0, ngb-panel-1">
+                    <div class="col-12" *ngIf="isShowSection('offerInformation')">
+                        <ngb-panel id="ngb-panel-0">
+                            <ng-template ngbPanelTitle let-opened="opened">Order Information</ng-template>
+                            <ng-template ngbPanelContent>
+                                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="OfferInformationForm">
+                                    <div class="row" *ngIf="isRefrenceOffer || (offerdata && offerdata.RefOfferId)">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <div style="float: left;">
+                                                    <label for="reasonforclone" class="required">Reason for
+                                                        Clone</label>
+                                                </div>
+                                                <div style="float: right;">
+                                                    <span *ngIf="isAdd">
+                                                        <i class="fas fa-exclamation"></i> <i>
+                                                            {{500 - ReasonforClone?.length}} characters left.</i></span>
+                                                </div>
+                                                <textarea rows=" 3" cols="50" class="form-control" maxlength="512"
+                                                    formControlName="reasonforclone"
+                                                    [attr.disabled]="!isAdd  ? '' : null"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.reasonforclone.errors }"
+                                                    [(ngModel)]="ReasonforClone" maxlength="500"></textarea>
+                                                <div *ngIf="submitted && offerInformationForm.reasonforclone.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="offerInformationForm.reasonforclone.errors.required">
+                                                        Reason for Clone is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h5>Opportunity</h5>
+                                        </div>
+                                        <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                            <div class="overflow-auto">
+                                                <table class="table table-hover table-responsive"
+                                                    id="table-opportunity">
+                                                    <thead class="thead-inverse">
+                                                        <tr>
+                                                            <th>LAPP Opportunity Id</th>
+                                                            <th>Opportunity Name</th>
+                                                            <th>Account Name</th>
+                                                            <th class="text-right">Opportunity Value</th>
+                                                            <th class="text-right">Offer Value</th>
+                                                            <th>Owner</th>
+                                                            <th>Created Date</th>
+                                                            <th>Closed Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngIf="oppoData">
+                                                            <td>{{oppoData.lappopportunityid}}</td>
+                                                            <td>{{oppoData.opportunity_name}}</td>
+                                                            <td>{{oppoData.customername}}</td>
+                                                            <td class="text-right">
+                                                                {{oppoData.oppValue | currency:'INR'}}
+                                                            </td>
+                                                            <td class="text-right">
+                                                                {{(totalnetvalue -
+                                                                (totalnetvalue * DealerCommisionPer / 100)) |
+                                                                number: '1.2-2'}}
+                                                            </td>
+                                                            <td>{{oppoData.fullname}}</td>
+                                                            <td>{{oppoData.createddate | date:dateformate}}</td>
+                                                            <td>{{oppoData.expiredate | date:dateformate}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="soldtoparty" class="required">Sold to Party</label>
+                                                <ng-select [items]="soldtopartySearchList" class="form-control"
+                                                    formControlName="soldtoparty" bindLabel="fullname"
+                                                    bindValue="partner" placeholder="Please Select"
+                                                    (change)="GetSoldtoPartyDetail($event)"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.soldtoparty.errors }">
+                                                </ng-select>
+                                                <div *ngIf="submitted && offerInformationForm.soldtoparty.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="offerInformationForm.soldtoparty.errors.required">
+                                                        Sold to Party is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="soldtopartyname">Sold to Party Name</label>
+                                                <input class="form-control" type="text"
+                                                    formControlName="soldtopartyname"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="soldstreet1">Sold Street1</label>
+                                                <input class="form-control" type="text" formControlName="soldstreet1"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="soldstreet2">Sold Street2</label>
+                                                <input class="form-control" type="text" formControlName="soldstreet2"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="solddistrict">Sold District</label>
+                                                <input class="form-control" type="text" formControlName="solddistrict"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="soldcity">Sold City</label>
+                                                <input class="form-control" type="text" formControlName="soldcity"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="soldpostalcode">Sold Postal Code</label>
+                                                <input class="form-control" type="text" formControlName="soldpostalcode"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="soldregion">Sold Region</label>
+                                                <input class="form-control" type="text" formControlName="soldregion"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="shiptoparty" class="required">Ship to Party</label>
+                                                <ng-select [items]="shiptopartySearchList" class="form-control"
+                                                    formControlName="shiptoparty" bindLabel="fullname"
+                                                    bindValue="partner" placeholder="Please Select"
+                                                    (change)="GetShiptoPartyDetail($event)"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.shiptoparty.errors }">
+                                                </ng-select>
+                                                <div *ngIf="submitted && offerInformationForm.shiptoparty.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="offerInformationForm.shiptoparty.errors.required">
+                                                        Ship to Party is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="shiptopartyname">Ship to Party Name</label>
+                                                <input class="form-control" type="text"
+                                                    formControlName="shiptopartyname"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="shipstreet1">Ship Street1</label>
+                                                <input class="form-control" type="text" formControlName="shipstreet1"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="shipstreet2">Ship Street2</label>
+                                                <input class="form-control" type="text" formControlName="shipstreet2"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="shipdistrict">Ship District</label>
+                                                <input class="form-control" type="text" formControlName="shipdistrict"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="shipcity">Ship City</label>
+                                                <input class="form-control" type="text" formControlName="shipcity" 
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="shippostalcode">Ship Postal Code</label>
+                                                <input class="form-control" type="text" formControlName="shippostalcode"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="shipregion">Ship Region</label>
+                                                <input class="form-control" type="text" formControlName="shipregion"
+                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12"
+                                            *ngIf="isEditSection('offerInformation')">
+                                            <div class="form-group">
+                                                <label for="employeeresponsible" class="required">Employee
+                                                    Responsible</label>
+                                                <ng-select [items]="EmployeeResponsibleList" class="form-control"
+                                                    formControlName="employeeresponsible" bindLabel="employeefullname"
+                                                    bindValue="Empno" placeholder="Please Select"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.employeeresponsible.errors }">
+                                                </ng-select>
+                                                <div *ngIf="submitted && offerInformationForm.employeeresponsible.errors"
+                                                    class="invalid-feedback">
+                                                    <div
+                                                        *ngIf="offerInformationForm.employeeresponsible.errors.required">
+                                                        Employee Responsible is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12"
+                                            *ngIf="!isEditSection('offerInformation')">
+                                            <div class="form-group">
+                                                <label for="employeeresponsible" class="required">Employee
+                                                    Responsible</label>
+                                                <!-- <ng-select [items]="EmployeeResponsibleList" class="form-control"
+                                                    formControlName="employeeresponsible" bindLabel="employeefullname"
+                                                    bindValue="Empno" placeholder="Please Select"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.employeeresponsible.errors }">
+                                                </ng-select> -->
+
+                                                <input type="text" formControlName="employeeresponsible"
+                                                    class="form-control" [attr.disabled]="true" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="importby">Import By</label>
+                                                <ng-select [items]="importbyList" class="form-control"
+                                                    placeholder="Please Select" formControlName="importby"
+                                                    bindLabel="description" bindValue="code">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="sbuoforder" class="required">SBU of Order</label>
+                                                <ng-select [items]="sbuofOrderList" class="form-control"
+                                                    formControlName="sbuoforder" bindLabel="description"
+                                                    bindValue="code" placeholder="Please Select"
+                                                    (change)="onSBUChange($event)"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.sbuoforder.errors }">
+                                                </ng-select>
+                                                <div *ngIf="submitted && offerInformationForm.sbuoforder.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="offerInformationForm.sbuoforder.errors.required">
+                                                        SBU of Order is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                            *ngIf="isOfferIndirect">
+                                            <div class="form-group">
+                                                <label for="mrotype" class="required">MRO Type</label>
+                                                <ng-select [items]="MROTypeList" class="form-control"
+                                                    placeholder="Please Select" formControlName="mrotype"
+                                                    bindLabel="description" bindValue="code"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.mrotype.errors }">
+                                                </ng-select>
+                                                <div *ngIf="submitted && offerInformationForm.mrotype.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="offerInformationForm.mrotype.errors.required">
+                                                        MRO Type is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12"
+                                            *ngIf="isOfferIndirect">
+                                            <div class="form-group">
+                                                <label for="account" class="required">Customer</label>
+                                                <button style="float: right;text-decoration:none;margin-top:-3px"
+                                                    class="btn btn-link" (click)="onRefreshAccountPartners()"
+                                                    *ngIf="isEditSection('offerInformation')">
+                                                    [ Refresh ]
+                                                </button>
+
+                                                <ng-select #Selecter class="form-control" formControlName="account"
+                                                    labelForId="ngSelectAccountId" (keyup)="GetAccountListDropdown()"
+                                                    [items]="AccountsList" bindLabel="customerfullname"
+                                                    bindValue="sfdcid" (change)="onCustomerChange($event)"
+                                                    placeholder="Type 3 char to search"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.account.errors }">
+                                                </ng-select>
+                                                <div *ngIf="submitted && offerInformationForm.account.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="offerInformationForm.account.errors.required">
+                                                        Customer is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="required">Vertical</label>
+                                                <ng-select [items]="verticalList" class="form-control"
+                                                    formControlName="vertical" placeholder="Please Select"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.vertical.errors }">
+                                                </ng-select>
+                                                <div *ngIf="submitted && offerInformationForm.vertical.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="offerInformationForm.vertical.errors.required">
+                                                        Vertical is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="required">Segment</label>
+                                                <ng-select [items]="segmentList" class="form-control"
+                                                    formControlName="segment" placeholder="Please Select"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.segment.errors }">
+                                                </ng-select>
+                                                <div *ngIf="submitted && offerInformationForm.segment.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="offerInformationForm.segment.errors.required">
+                                                        Segment is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                            <div class="form-group">
+                                                <label>Industry Key</label>
+                                                <input type="text" formControlName="industry" class="form-control"
+                                                    [attr.disabled]="true" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                            *ngIf="isOfferIndirect">
+                                            <div class="form-group">
+                                                <label for="delearcommission" class="required">Dealer
+                                                    Margin(%)</label>
+                                                <input class="form-control" type="text"
+                                                    formControlName="delearcommission" numericwithdecimal decimals="2"
+                                                    beforedecimals="2" [(ngModel)]="DealerCommisionPer"
+                                                    [attr.disabled]="!isEditSection('offerInformation')  ? '' : null"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.delearcommission.errors }">
+                                                <div *ngIf="submitted && offerInformationForm.delearcommission.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="offerInformationForm.delearcommission.errors.required">
+                                                        Dealer Margin(%) is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="headerleveldiscount">
+                                                    Header Discount (%)</label>
+                                                <input class="form-control" type="text"
+                                                    formControlName="headerleveldiscount" numericwithdecimal
+                                                    decimals="2" beforedecimals="4"
+                                                    (change)="onHeaderLevelDiscountChange()"
+                                                    [attr.disabled]="!isEditSection('offerInformation')  ? '' : null">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="incoterms" class="required">Incoterms</label>
+                                                <ng-select [items]="incotermsList" class="form-control"
+                                                    placeholder="Please Select" formControlName="incoterms"
+                                                    bindLabel="description" bindValue="code"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.incoterms.errors }">
+                                                </ng-select>
+                                                <div *ngIf="submitted && offerInformationForm.incoterms.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="offerInformationForm.incoterms.errors.required">
+                                                        Incoterms is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                            *ngIf="isEditSection('offerInformation')">
+                                            <div class="form-group">
+                                                <label for="reqdeliverydate" class="required">Req. Delivery Date</label>
+                                                <div class="input-group"
+                                                    [ngClass]="{ 'is-invalid': submitted && offerInformationForm.reqdeliverydate.errors }">
+                                                    <input class="form-control doc-date"
+                                                        formcontrolname="reqdeliverydate" ngbDatepicker
+                                                        #reqdeliverydate="ngbDatepicker"
+                                                        [value]="formatter.format(reqdeliveryDate)"
+                                                        (dateSelect)="onReqDeliveryDateSelection($event)" readonly
+                                                        [minDate]="todayMinDate"
+                                                        [ngClass]="{ 'is-invalid': submitted && offerInformationForm.reqdeliverydate.errors }" />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="reqdeliverydate.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                                <div *ngIf="submitted && offerInformationForm.reqdeliverydate.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="offerInformationForm.reqdeliverydate.errors.required">
+                                                        Req. Delivery Date is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                            *ngIf="!isEditSection('offerInformation')">
+                                            <label for="reqdeliverydate" class="required">Req. Delivery Date</label>
+                                            <input class="form-control" type="text" formControlName="reqdeliverydate">
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="completedlv">Complete Dlv</label>
+                                                <div class="col-12 pl-0 mt-2">
+                                                    <input type="radio" formControlName="completedlv"
+                                                        (change)="toggleCompleteDlv($event)" value=""
+                                                        [checked]='optCompleteDlvNo' class="mr-1"
+                                                        [attr.disabled]="!isEditSection('offerInformation') ? '' : null">No
+                                                    <input type="radio" formControlName="completedlv"
+                                                        (change)="toggleCompleteDlv($event)" value="X"
+                                                        [checked]='optCompleteDlvYes' class="mr-1"
+                                                        [attr.disabled]="!isEditSection('offerInformation') ? '' : null">Yes
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="nacecode">Nace Code</label>
+                                                <button class="btn btn-link p-0" style="margin-left: 20px;"
+                                                    (click)="openNaceCodeModal()"
+                                                    *ngIf="usertype && usertype < 20 && (offerdata && offerdata.Status < 80)">Change</button>
+                                                <ng-select [items]="NacecodeList" class="form-control"
+                                                    formControlName="nacecode" bindLabel="nacecodefull" bindValue="code"
+                                                    [attr.disabled]="true">
+                                                </ng-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="nacelevel">Level</label>
+                                                <input class="form-control" type="text" formControlName="nacelevel"
+                                                    [attr.disabled]="true">
+                                            </div>
+                                        </div>
+                                        <!-- <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="nacemodel">Model</label>
+                                                <input class="form-control" type="text" formControlName="nacemodel"
+                                                    [attr.disabled]="true">
+                                            </div>
+                                        </div> -->
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="businessmodel">Business Model</label>
+                                                <input class="form-control" type="text" formControlName="businessmodel"
+                                                    [attr.disabled]="true">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </ng-template>
+                        </ngb-panel>
+                        <ngb-panel id="ngb-panel-1">
+                            <ng-template ngbPanelTitle>Items</ng-template>
+                            <ng-template ngbPanelContent>
+                                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="ItemsForm">
+                                    <div class="row">
+                                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-4 text-left mb-2"
+                                            *ngIf="isEditSection('offerInformation')">
+                                            <button type="button" class="btn btn-danger mr-2"
+                                                (click)="OpenDeleteAllPopup()" *ngIf="stdItem">Delete All
+                                            </button>
+                                            <!-- <button *ngIf="stdItem" class="btn btn-link p-0"
+                                                        (click)="onStockSearch()">Check
+                                                        Stock Availability
+                                                    </button> -->
+                                            <!-- <button class="btn btn-link p-0"
+                                                        (click)="onProductFinderClick()">Product Finder
+                                                    </button>
+                                                    <button class="btn btn-link p-0 ml-2"
+                                                        (click)="onProductCatalogueClick()">Product Catalogue
+                                                    </button> -->
+                                        </div>
+                                        <div class="col-12 col-xl-8 col-lg-8 col-md-8 col-sm-8 text-right mb-2"
+                                            *ngIf="isEditSection('offerInformation')">
+                                            <button type="button" class="btn btn-orange-s ml-2"
+                                                (click)="openImportItemsModal(ImportItems)">Import Item
+                                                (MFG/TRD)
+                                            </button>
+                                            <button type="button" class="btn btn-orange-s ml-2"
+                                                (click)="openLg(content1, undefined)">Add Item
+                                                (MFG/TRD)</button>
+                                        </div>
+                                        <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12"></div>
+                                        <div class="row" *ngIf="stdItem"
+                                            class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                            <div class="overflow-auto">
+                                                <table *ngIf="offerItemStd.length > 0"
+                                                    class="table table-hover table-responsive table-sorting"
+                                                    id="table-opportunities">
+                                                    <thead class="thead-inverse">
+                                                        <tr>
+                                                            <th width="85px">Action</th>
+                                                            <th width="80px">Seq No.</th>
+                                                            <th width="150px">Article No</th>
+                                                            <th width="50px">SAP ID</th>
+                                                            <th width="50px">Type</th>
+                                                            <th>Description</th>
+                                                            <th width="50px" style="text-align: right;">Unit
+                                                                Price ({{currencycode | currencySymbol}})</th>
+                                                            <th width="100px" style="text-align: right;">Qty
+                                                            </th>
+                                                            <th width="120px" style="text-align: right;">List
+                                                                Price ({{currencycode | currencySymbol}})
+                                                            </th>
+                                                            <th width="100px" style="text-align: right;">
+                                                                Discount (%)</th>
+                                                            <th width="150px" style="text-align: right;">Net
+                                                                Value ({{currencycode | currencySymbol}})</th>
+                                                            <th width="150px" style="text-align: right;">
+                                                                Cutting Charges ({{currencycode | currencySymbol}})</th>
+                                                            <!-- <th width="120px" style="text-align: right;"
+                                                                *ngIf="isShowOverallRGroupMargin">R. GM(%)</th> -->
+                                                            <th width="100px" style="text-align: right;"
+                                                                *ngIf="isShowOverallMargin">GM(%)</th>
+                                                            <th width="100px" style="text-align: right;"
+                                                                *ngIf="isShowOverallMargin">T. GM(%)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let stditem of filterDatatoDeletewithOrder(offerItemStd); let j=index;"
+                                                            (dblclick)="openLg(content1, j)">
+                                                            <td *ngIf="isEditSection('offerInformation')">
+                                                                <button class="btn btn-link p-0 mr-3"
+                                                                    (click)="OpenItemDeletePopup(j, stditem.id, stditem.articleNo)"
+                                                                    [attr.disabled]="!isEditSection('offerInformation')  ? '' : null"><img
+                                                                        class="table-icon"
+                                                                        src="../../../../../assets/images/icon-delete.svg"></button>
+                                                                <button class="btn btn-link p-0 mr-3"
+                                                                    (click)="openLg(content1, j)"
+                                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null"><img
+                                                                        class="table-icon"
+                                                                        src="../../../../../assets/images/icon-edit.svg"></button>
+                                                            </td>
+                                                            <td *ngIf="!isEditSection('offerInformation')">
+                                                                <button class="btn btn-link p-0 mr-3"
+                                                                    (click)="openLg(content1,j)"><img class="table-icon"
+                                                                        src="../../../../../assets/images/icon-view.svg"></button>
+                                                            </td>
+                                                            <td>{{stditem.seqno}}</td>
+                                                            <td>{{stditem.articleNo}}</td>
+                                                            <td>{{stditem.sapid}}</td>
+                                                            <td>{{stditem.itemType == 'STD' ? 'MFG' :
+                                                                stditem.itemType}}
+                                                            </td>
+                                                            <td>{{stditem.description}}</td>
+                                                            <td align="right">
+                                                                {{(stditem.unitprice -
+                                                                (stditem.unitprice * DealerCommisionPer / 100))
+                                                                | number: '1.2-2'}}
+                                                            </td>
+                                                            <td align="right">{{stditem.quantity}}</td>
+                                                            <td align="right">
+                                                                {{(stditem.price) |
+                                                                number: '1.2-2'}}
+                                                            </td>
+                                                            <td align="right">
+                                                                {{finddiscountper(stditem.discountPer, 2)}}
+                                                            </td>
+                                                            <td align="right">
+                                                                {{((stditem.unitprice -
+                                                                (stditem.unitprice * DealerCommisionPer / 100))
+                                                                * stditem.quantity) | number: '1.2-2'}}
+                                                                <!-- {{converttocurrency(findnetunitprice(stditem.unitprice, stditem.quantity)) | number: '1.2-2'}} -->
+                                                            </td>
+                                                            <td align="right">
+                                                                {{(stditem.cuttingcharges) |
+                                                                number: '1.2-2'}}
+                                                            </td>
+                                                            <!-- <td align="right" *ngIf="isShowOverallRGroupMargin">
+                                                                {{stditem.RMCGrossMargin | percent:'2.2-2'}}
+                                                            </td> -->
+                                                            <td align="right" *ngIf="isShowItemMargin">
+                                                                {{stditem.GrossMargin | percent:'2.2-2'}}
+                                                            </td>
+                                                            <td align="right" *ngIf="isShowItemMargin">
+                                                                {{stditem.TargetGrossMargin | percent:'2.2-2'}}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <!-- <tr style="background-color: #f5f5f5;">
+                                                                    <td colspan="11" align="right">
+                                                                        Freight
+                                                                        Charges({{currencycode | currencySymbol}}):
+                                                                    </td>
+                                                                    <td colspan="5">
+                                                                        <div
+                                                                            class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                                                            <input class="form-control" type="text"
+                                                                                formControlName="freightcharges"
+                                                                                numericwithdecimal decimals="2"
+                                                                                beforedecimals="18"
+                                                                                style="text-align: right;"
+                                                                                (change)="onFreightChagesChange()"
+                                                                                [attr.disabled]="!isEditSection('offerInformation') ? '' : null" />
+                                                                            
+                                                                        </div>
+                                                                    </td>
+                                                                </tr> -->
+                                                        <tr>
+                                                            <td colspan="10" align="right">
+                                                                <strong>Total Amount ({{currencycode | currencySymbol}}):</strong>
+                                                            </td>
+                                                            <td align="right">
+                                                                <strong>{{totalnetvalue -
+                                                                    (totalnetvalue * DealerCommisionPer / 100) |
+                                                                    number: '1.2-2'}}</strong>
+                                                            </td>
+                                                            <td align="right">
+                                                                <strong>{{(offerlevelcuttingcharges)
+                                                                    | number: '1.2-2'}}</strong>
+                                                            </td>
+                                                            <!-- <td align="right" *ngIf="isShowOverallRGroupMargin">
+                                                                <strong>
+                                                                    {{offerdata.TotalRMCGrossMargin |
+                                                                    percent:'2.2-2'}}</strong>
+                                                            </td> -->
+                                                            <td align="right" *ngIf="isShowOverallMargin">
+                                                                <strong>
+                                                                    {{offerdata.TotalGrossMargin |
+                                                                    percent:'2.2-2'}}</strong>
+                                                            </td>
+                                                            <td align="right" *ngIf="isShowOverallMargin">
+                                                                <strong>
+                                                                    {{offerdata.TotalTargetGrossMargin |
+                                                                    percent:'2.2-2'}}</strong>
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="row" *ngIf="deletedItem"
+                                            class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                            <p> </p>
+                                            <h5 class="redtext">Deleted Items</h5>
+                                            <div class="overflow-auto">
+                                                <table class="table table-hover table-responsive table-sorting"
+                                                    id="table-opportunities">
+                                                    <thead class="thead-inverse">
+                                                        <tr>
+                                                            <th width="80px">Action</th>
+                                                            <th width="80px">Seq No</th>
+                                                            <th width="150px">Article No</th>
+                                                            <th width="70px">Type</th>
+                                                            <th>Description</th>
+                                                            <th width="50px" style="text-align: right;">Unit
+                                                                Price</th>
+                                                            <th width="100px" style="text-align: right;">Qty
+                                                            </th>
+                                                            <th width="120px" style="text-align: right;">List
+                                                                Price
+                                                            </th>
+                                                            <th width="100px" style="text-align: right;">
+                                                                Discount (%)</th>
+                                                            <th width="150px" style="text-align: right;">Net
+                                                                Value</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let delitem of offerDeletedItem; let j=index;"
+                                                            (dblclick)="onDeletedItemView(DeletedItem, j)">
+                                                            <td>
+                                                                <button class="btn btn-link p-0 mr-3"
+                                                                    (click)="onDeletedItemView(DeletedItem,j)"><img
+                                                                        class="table-icon"
+                                                                        src="../../../../../assets/images/icon-view.svg"></button>
+                                                            </td>
+                                                            <td>{{delitem.seqno}}</td>
+                                                            <td>{{delitem.articleNo}}</td>
+                                                            <td>{{delitem.itemType == 'STD' ? 'MFG' :
+                                                                delitem.itemType}}
+                                                            </td>
+                                                            <td>{{delitem.description}}</td>
+                                                            <td align="right">
+                                                                {{(delitem.unitprice -
+                                                                (delitem.unitprice * DealerCommisionPer / 100))
+                                                                | number: '1.2-2'}}
+                                                            </td>
+                                                            <td style="text-align: right;">{{delitem.quantity}}
+                                                            </td>
+                                                            <td style="text-align: right;">
+                                                                {{(delitem.price) |
+                                                                number: '1.2-2'}}
+                                                            </td>
+                                                            <td style="text-align: right;">
+                                                                {{delitem.discountPer}} </td>
+                                                            <td style="text-align: right;">
+                                                                {{(delitem.netvalue) |
+                                                                number: '1.2-2'}}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12"
+                                            style="margin-bottom: 10px;" *ngIf="stdItem">
+                                            <span class="dot red"
+                                                title="Quantity must be greater than or equal to MOQ."></span>
+                                            Quantity
+                                            must be greater than or equal to MOQ.
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                            <div class="form-group" *ngIf="isEditSection('offerInformation')">
+                                                <label>Attachments</label>
+                                                <div><button (click)="fileInput.click()">Select File</button>
+                                                    <input type="file" id="importFile" style="display: none;"
+                                                        (change)="OfferfileChangeListener($event)" #fileInput
+                                                        multiple />
+                                                </div>
+                                            </div>
+                                            <div class="form-group" *ngIf="!isEditSection('offerInformation')">
+                                                <label>Attachments</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 mt-3" *ngIf="OfferFiles.length > 0">
+                                            <div class="row">
+                                                <div *ngFor="let file of OfferFiles;let f=index"
+                                                    class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 outer-container-upload-control">
+                                                    <div class="upload-control-filetype-container"><img
+                                                            class="table-icon-lg"
+                                                            src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                                    </div>
+                                                    <div class="upload-control-filename-container dot-views"><a
+                                                            href="javascript:void(0)" *ngIf="file.id"
+                                                            (click)="downloadFile(file.name,file.id,file.type)">
+                                                            {{file.name}}</a><span *ngIf="!file.id">{{file.name}}</span>
+                                                    </div>
+                                                    <div class="upload-control-delete-container"
+                                                        *ngIf="isEditSection('offerInformation')">
+                                                        <button class="btn btn-link p-0" (click)="OfferFileRemove(f)">
+                                                            <img class="table-icon"
+                                                                src="../../../../../assets/images/icon-delete1.svg"
+                                                                title="delete image"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </ng-template>
+                        </ngb-panel>
+                        <!-- <ngb-panel id="ngb-panel-2">
+                                    <ng-template ngbPanelTitle>Customer's Contact Detail</ng-template>
+                                    <ng-template ngbPanelContent>
+                                        <form class="ng-invalid ng-touched ng-dirty" [formGroup]="AccountContactDetail">
+                                            <div class="row">
+                                                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-3"
+                                                    *ngIf="isEditSection('offerInformation')">
+                                                    <div class="gridSearchBox">
+                                                        <input type="text" class="form-control"
+                                                            (keyup.enter)='onContactSearch()'
+                                                            formControlName="contactsearch" placeholder="Search"
+                                                            class="gridSearchInput" maxlength="100">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                                    <div class="overflow-auto">
+                                                        <table class="table table-hover table-responsive"
+                                                            id="table-accountdetail">
+                                                            <thead class="thead-inverse">
+                                                                <tr>
+                                                                    <th>Select</th>
+                                                                    <th>Name</th>
+                                                                    <th>Department</th>
+                                                                    <th>Designation</th>
+                                                                    <th>Phone</th>
+                                                                    <th>Email</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <ng-container
+                                                                    *ngIf="searchedcontactdetail && searchedcontactdetail.length > 0">
+                                                                    <tr
+                                                                        *ngFor="let cd of searchedcontactdetail; let j = index">
+                                                                        <td>
+                                                                            <div class="radio">
+                                                                                <input type="radio"
+                                                                                    name="billingAddress"
+                                                                                    value="{{cd.id}}"
+                                                                                    (click)="onContactSelect($event)"
+                                                                                    [attr.disabled]="!isEditSection('offerInformation') ? '' : null"
+                                                                                    [checked]="selectedcontact > 0 ? cd.id == selectedcontact : j == 0">
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>{{cd.name}}</td>
+                                                                        <td>{{cd.department}}</td>
+                                                                        <td>{{cd.designation}}</td>
+                                                                        <td>{{cd.mobile}}</td>
+                                                                        <td>{{cd.email}}</td>
+                                                                    </tr>
+                                                                </ng-container>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </ng-template>
+                                </ngb-panel> -->
+                        <ngb-panel id="ngb-panel-2">
+                            <ng-template ngbPanelTitle>Terms & Conditions</ng-template>
+                            <ng-template ngbPanelContent>
+                                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="TermsandConditionForm">
+                                    <div class="row">
+                                        <div class="row col-12">
+                                            <div class="col-12 col-xl-3 col-lg-3 col-md-6 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="paymentterms" class="required">Payment
+                                                        Terms</label>
+                                                    <ng-select [items]="paymenttermsList" class="form-control"
+                                                        formControlName="paymentterms" bindLabel="description"
+                                                        bindValue="code" placeholder="Please Select"
+                                                        [ngClass]="{ 'is-invalid': submitted && termsandConditionForm.paymentterms.errors }">
+                                                    </ng-select>
+                                                    <div *ngIf="submitted && termsandConditionForm.paymentterms.errors"
+                                                        class="invalid-feedback">
+                                                        <div *ngIf="termsandConditionForm.paymentterms.errors.required">
+                                                            Payment Terms is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                            <p class="font-weight-bold">Special Terms</p>
+                                        </div>
+                                        <div class="col-6 col-xl-6 col-lg-6 col-md-6 col-sm-12 text-right mb-2"
+                                            *ngIf="isEditSection('termsandcondition')">
+                                            <button type="button" class="btn btn-orange-s"
+                                                (click)="openAddSpecialText(AddSpecialText, undefined)">Add
+                                                Special Term</button>
+                                        </div>
+                                        <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                            <div class="overflow-auto">
+                                                <table class="table table-hover table-responsive"
+                                                    id="table-specialtermscondition">
+                                                    <thead class="thead-inverse">
+                                                        <tr>
+                                                            <th *ngIf="isEditSection('termsandcondition')">
+                                                                Action
+                                                            </th>
+                                                            <th>Title</th>
+                                                            <th>Description</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <ng-container
+                                                            *ngIf="specialtextdata && specialtextdata.length > 0">
+                                                            <tr
+                                                                *ngFor="let std of filterDatatoDelete(specialtextdata); let j=index">
+                                                                <td *ngIf="isEditSection('termsandcondition')">
+                                                                    <button class="btn btn-link p-0 mr-3"
+                                                                        (click)="OpenSpecialTermsDeletePopup(j)"
+                                                                        [attr.disabled]="!isEditSection('termsandcondition')  ? '' : null"><img
+                                                                            class="table-icon"
+                                                                            src="../../../../../assets/images/icon-delete.svg"></button>
+                                                                    <button class="btn btn-link p-0 mr-3"
+                                                                        (click)="openAddSpecialText(AddSpecialText, j)"
+                                                                        [attr.disabled]="!isEditSection('termsandcondition') ? '' : null"><img
+                                                                            class="table-icon"
+                                                                            src="../../../../../assets/images/icon-edit.svg"></button>
+                                                                </td>
+                                                                <td>{{std.displaytitle}}</td>
+                                                                <td>{{std.description}}</td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </ng-template>
+                        </ngb-panel>
+                        <ngb-panel id="ngb-panel-3" *ngIf="isShowSection('managepo')">
+                            <ng-template ngbPanelTitle>Manage PO</ng-template>
+                            <ng-template ngbPanelContent>
+                                <form class="ng-invalid ng-touched ng-dirty" [formGroup]="ManagePOForm">
+                                    <div class="row">
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="ponumber"
+                                                    [ngClass]="{ 'required': OrderType && OrderType == 30 }">PO
+                                                    Number</label>
+                                                <input type="text" class="form-control" formControlName="ponumber"
+                                                    AllowAlphaNumericDashSlash="true" maxlength="34"
+                                                    [ngClass]="{ 'is-invalid': submitted && managePOForm.ponumber.errors }"
+                                                    [attr.disabled]="!isEditSection('managepo') ? '' : null" />
+                                                <div *ngIf="submitted && managePOForm.ponumber.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="managePOForm.ponumber.errors.required">
+                                                        PO Number is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                            *ngIf="isEditSection('managepo')">
+                                            <div class="form-group">
+                                                <label for="podate"
+                                                    [ngClass]="{ 'required': OrderType && OrderType == 30 }">PO
+                                                    Date</label>
+                                                <div class="input-group"
+                                                    [ngClass]="{ 'is-invalid': submitted && managePOForm.podate.errors }">
+                                                    <input class="form-control doc-date" formcontrolname="podate"
+                                                        ngbDatepicker #podate="ngbDatepicker"
+                                                        [value]="formatter.format(poDate)"
+                                                        (dateSelect)="onPODateSelection($event)" readonly
+                                                        [ngClass]="{ 'is-invalid': submitted && managePOForm.podate.errors }" />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="podate.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                                <div *ngIf="submitted && managePOForm.podate.errors"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="managePOForm.podate.errors.required">
+                                                        PO Date is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                            *ngIf="!isEditSection('managepo')">
+                                            <label for="podate"
+                                                [ngClass]="{ 'required': OrderType && OrderType == 30 }">PO Date</label>
+                                            <input class="form-control" type="text" formControlName="podate">
+                                        </div>
+                                        <div class="col-12 col-xl-1 col-lg-1 col-md-2 col-sm-12"
+                                            *ngIf="isEditSection('managepo')">
+                                            <div class="form-group">
+                                                <label [ngClass]="{ 'required': OrderType && OrderType == 30 }">PO
+                                                    Attachment</label>
+                                                <div>
+                                                    <button (click)="fileInput.click()">Select File</button>
+                                                    <input type="file" id="importFile" style="display: none;"
+                                                        (change)="ManagePOfileChangeListener($event)" #fileInput />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-1 col-lg-1 col-md-2 col-sm-12"
+                                            *ngIf="!isEditSection('managepo')">
+                                            <div class="form-group">
+                                                <label [ngClass]="{ 'required': OrderType && OrderType == 30 }">PO
+                                                    Attachment</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12 mt-3"
+                                            *ngIf="pofiles.length > 0">
+                                            <div class="row">
+                                                <div *ngFor="let pofiledtl of pofiles;let f=index"
+                                                    class="col-md-12 col-lg-6 outer-container-upload-control">
+                                                    <div class="upload-control-filetype-container"><img
+                                                            class="table-icon-lg"
+                                                            src="../../../../../assets/images/{{setFileTypeIcon(pofiledtl.type)}}">
+                                                    </div>
+                                                    <div class="upload-control-filename-container dot-views">
+                                                        <a href="javascript:void(0)" *ngIf="pofiledtl.id"
+                                                            (click)="downloadFile(pofiledtl.name,pofiledtl.id,pofiledtl.type)">
+                                                            {{pofiledtl.name}}</a><span
+                                                            *ngIf="!pofiledtl.id">{{pofiledtl.name}}</span>
+                                                    </div>
+                                                    <div class="upload-control-delete-container"
+                                                        *ngIf="isEditSection('managepo')">
+                                                        <button class="btn btn-link p-0" (click)="removePOFile(f)">
+                                                            <img class="table-icon"
+                                                                src="../../../../../assets/images/icon-delete1.svg"
+                                                                title="delete image"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" *ngIf="isOfferIndirect">
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="customerponumber">Customer PO
+                                                    Number</label>
+                                                <input type="text" class="form-control"
+                                                    formControlName="customerponumber" AllowAlphaNumericDashSlash="true"
+                                                    maxlength="34"
+                                                    [attr.disabled]="!isEditSection('managepo') ? '' : null" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                            *ngIf="isEditSection('managepo')">
+                                            <div class="form-group">
+                                                <label for="customerpodate">Customer PO
+                                                    Date</label>
+                                                <div class="input-group">
+                                                    <input class="form-control doc-date"
+                                                        formcontrolname="customerpodate" ngbDatepicker
+                                                        #custpodate="ngbDatepicker"
+                                                        [value]="formatter.format(CustomerPODate)"
+                                                        (dateSelect)="onCustomerPODateSelection($event)" readonly />
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary calendar"
+                                                            (click)="custpodate.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                            *ngIf="!isEditSection('managepo')">
+                                            <label for="podate"
+                                                [ngClass]="{ 'required': OrderType && OrderType == 30 }">Customer PO
+                                                Date</label>
+                                            <input class="form-control" type="text" formControlName="customerpodate">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 text-right"
+                                        *ngIf="isEditSection('managepo') && !isEditSection('offerInformation')">
+                                        <div class="form-group">
+                                            <button class="btn btn-orange-outline ml-2 key key-m" #cancelbutton><i
+                                                    class="icon-x"></i>Cancel</button>
+                                            <button class="btn btn-orange-s ml-2" (click)="onPONumberSaveClick()"
+                                                appNoDblClick><i class="icon-floppy-o"></i>Save &
+                                                Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </ng-template>
+                        </ngb-panel>
+                    </div>
+                    <ngb-panel id="ngb-panel-4" *ngIf="isShowSection('approvedandrejectedby')">
+                        <ng-template ngbPanelTitle>Approved/Rejected by</ng-template>
+                        <ng-template ngbPanelContent>
+                            <form class="ng-invalid ng-touched ng-dirty">
+                                <div class="col-12 text-right" *ngIf="isOfferOpen">
+                                    <div class="form-group">
+                                        <button class="btn btn-success ml-2 key key-m" style="min-width: 80px;"
+                                            (click)="onOfferApproveClick()" #cancelbutton><i></i>Approve</button>
+                                        &nbsp;
+                                        <button class="btn btn-danger" style="min-width: 80px;"
+                                            (click)="onOfferRejectClick()"><i></i>Reject</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                        <div class="overflow-auto">
+                                            <table class="table table-hover table-responsive"
+                                                id="table-specialtermscondition">
+                                                <thead class="thead-inverse">
+                                                    <tr>
+                                                        <th>Sr No</th>
+                                                        <th>Name</th>
+                                                        <th>Role</th>
+                                                        <th>Request Datetime</th>
+                                                        <th>Status</th>
+                                                        <th>Approve/Reject Date</th>
+                                                        <th>Message</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <ng-container
+                                                        *ngIf="offerapprovaldata && offerapprovaldata.length > 0">
+                                                        <tr *ngFor="let ad of offerapprovaldata; let j=index">
+                                                            <td>{{ad.srno}}</td>
+                                                            <td>{{ad.username}}</td>
+                                                            <td>{{ad.role}}</td>
+                                                            <td>{{ad.senddate}}</td>
+                                                            <td>{{ad.showstatus}}</td>
+                                                            <td>{{ad.statusdate}}</td>
+                                                            <td>{{ad.rejectreason}}</td>
+                                                        </tr>
+                                                    </ng-container>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </ng-template>
+                    </ngb-panel>
+                    <ngb-panel id="ngb-panel-5" *ngIf="isShowSection('FMapproveandreject') && isFMApprovalReq">
+                        <ng-template ngbPanelTitle>FM Approve/Reject</ng-template>
+                        <ng-template ngbPanelContent>
+                            <form class="ng-invalid ng-touched ng-dirty">
+                                <div class="col-12 text-right" *ngIf="isOfferOpenforFM">
+                                    <div class="form-group">
+                                        <button class="btn btn-success ml-2 key key-m" style="min-width: 80px;"
+                                            (click)="onOfferApproveClick()" #cancelbutton><i></i>Approve</button>
+                                        &nbsp;
+                                        <button class="btn btn-danger" style="min-width: 80px;"
+                                            (click)="onOfferRejectClick()"><i></i>Reject</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                        <div class="overflow-auto">
+                                            <table class="table table-hover table-responsive"
+                                                id="table-specialtermscondition">
+                                                <thead class="thead-inverse">
+                                                    <tr>
+                                                        <th>Name</th>
+                                                        <th>Request Datetime</th>
+                                                        <th>Status</th>
+                                                        <th>Approve/Reject Date</th>
+                                                        <th>Message</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <ng-container *ngIf="FMApprovalData && FMApprovalData.length > 0">
+                                                        <tr *ngFor="let ad of FMApprovalData; let j=index">
+                                                            <td>{{ad.username}}</td>
+                                                            <td>{{ad.requesteddate}}</td>
+                                                            <td>{{ad.showstatus}}</td>
+                                                            <td>{{ad.statusdate}}</td>
+                                                            <td>{{ad.comment}}</td>
+                                                        </tr>
+                                                    </ng-container>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </ng-template>
+                    </ngb-panel>
+                    <!-- <ngb-panel id="ngb-panel-6" *ngIf="false">
+                        <ng-template ngbPanelTitle>Item Additional Fields</ng-template>
+                        <ng-template ngbPanelContent>
+                            <form class="ng-invalid ng-touched ng-dirty">
+                                <div class="row">
+                                    <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                        <div class="overflow-auto">
+                                            <table class="table table-hover table-responsive table-sorting">
+                                                <thead class="thead-inverse">
+                                                    <tr>
+                                                        <th>Action</th>
+                                                        <th>Item No</th>
+                                                        <th>Article No</th>
+                                                        <th style="text-align: right;">Unit Price</th>
+                                                        <th style="text-align: right;">Qty</th>
+                                                        <th>Req. Delivery Date</th>
+                                                        <th style="text-align: right;">Cutting Charges</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let item of ItemAdditionalFieldsList; let j=index;">
+                                                        <td>
+                                                            <button class="btn btn-link p-0 mr-3"
+                                                                (click)="openItemAdditionalFieldsModal(j)"><img
+                                                                    class="table-icon"
+                                                                    *ngIf="isEditSection('additionalfields')"
+                                                                    src="../../../../../assets/images/icon-edit.svg"></button>
+                                                            <button class="btn btn-link p-0 mr-3"
+                                                                (click)="openItemAdditionalFieldsModal(j)"><img
+                                                                    class="table-icon"
+                                                                    *ngIf="!isEditSection('additionalfields')"
+                                                                    src="../../../../../assets/images/icon-view.svg"></button>
+                                                        </td>
+                                                        <td>{{item.itemno}}</td>
+                                                        <td>{{item.articleno}}</td>
+                                                        <td align="right">{{item.unitprice}}</td>
+                                                        <td align="right">{{item.quantity}}</td>
+                                                        <td>{{item.reqdeliverydate | date:dateformate}}</td>
+                                                        <td align="right">{{item.cuttingcharges}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </ng-template>
+                    </ngb-panel> -->
+                    <ngb-panel id="ngb-panel-6" *ngIf="isShowSection('cpovalidator')">
+                        <ng-template ngbPanelTitle>CPO Validation</ng-template>
+                        <ng-template ngbPanelContent>
+                            <form class="ng-invalid ng-touched ng-dirty" [formGroup]="CPOValidatorForm">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <div style="float: left;">
+                                                <label for="cpocomment" class="required">Comment</label>
+                                            </div>
+                                            <div style="float: right;">
+                                                <span *ngIf="isEditSection('cpovalidator') && usertype == 10">
+                                                    <i class="fas fa-exclamation"></i> <i>
+                                                        {{500 - InitiateSOComment?.length}} characters
+                                                        left.</i></span>
+                                            </div>
+                                            <textarea rows=" 3" cols="50" class="form-control"
+                                                formControlName="cpocomment"
+                                                [attr.disabled]="isEditSection('cpovalidator') && usertype == 10 ? null : ''"
+                                                [ngClass]="{ 'is-invalid': submitted && cpovalidatorForm.cpocomment.errors }"
+                                                [(ngModel)]="InitiateSOComment" maxlength="500"></textarea>
+                                            <div *ngIf="submitted && cpovalidatorForm.cpocomment.errors"
+                                                class="invalid-feedback">
+                                                <div *ngIf="cpovalidatorForm.cpocomment.errors.required">
+                                                    Comment is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 text-right" *ngIf="isEditSection('cpovalidator') && usertype == 10">
+                                    <div class="form-group">
+                                        <button class="btn btn-orange-outline ml-2 key key-m" #cancelbutton><i
+                                                class="icon-x" (click)="oncancelClick()"></i>Cancel</button>
+                                        <button class="btn btn-orange-s ml-2" (click)="onCPOVaidatorSave()"
+                                            appNoDblClick><i class="icon-floppy-o"></i>Save &
+                                            Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </ng-template>
+                    </ngb-panel>
+                    <ngb-panel id="ngb-panel-7" *ngIf="isShowSection('saperror')">
+                        <ng-template ngbPanelTitle>SAP Error(s)</ng-template>
+                        <ng-template ngbPanelContent>
+                            <form class="ng-invalid ng-touched ng-dirty" [formGroup]="CPOValidatorForm">
+                                <div class="row">
+                                    <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-2"
+                                        *ngIf="offerdata && offerdata.Status == 75 && isSOError">
+                                        <div class="form-group alert alert-danger" style="white-space: pre-line">
+                                            <label>{{soerror}}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 text-right" *ngIf="isEditSection('saperror')"
+                                    style="margin-top: 10px;">
+                                    <div class="form-group">
+                                        <button class="btn btn-orange-outline ml-2 key key-m" (click)="oncancelClick()"
+                                            #cancelbutton><i class="icon-x"></i>Cancel</button>
+                                        <button class="btn btn-orange-s" (click)="onCreateOrderClick()" appNoDblClick><i
+                                                class="icon-floppy-o"></i>Create Order</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </ng-template>
+                    </ngb-panel>
+                    <ngb-panel id="ngb-panel-8" *ngIf="isShowSection('orderstatus')">
+                        <ng-template ngbPanelTitle>SO No (Manual)</ng-template>
+                        <ng-template ngbPanelContent>
+                            <form class="ng-invalid ng-touched ng-dirty" [formGroup]="SOnoForm">
+                                <div class="row">
+                                    <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="sono"></label>
+                                            <input class="form-control" type="text" OnlyNumber=true
+                                                formControlName="sono"
+                                                [ngClass]="{ 'is-invalid': submitted && sonoForm.sono.errors }"
+                                                [attr.disabled]="!isEditSection('orderstatus') ? '' : null" />
+                                            <div *ngIf="submitted && sonoForm.sono.errors" class="invalid-feedback">
+                                                <div *ngIf="sonoForm.sono.errors.required">
+                                                    SO no is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 text-right" *ngIf="isEditSection('orderstatus')">
+                                    <div class="form-group">
+                                        <button class="btn btn-orange-outline ml-2 key key-m" (click)="oncancelClick()"
+                                            #cancelbutton><i class="icon-x"></i>Cancel</button>
+                                        <button class="btn btn-orange-s ml-2" (click)="onSOnoSaveClick()"
+                                            appNoDblClick><i class="icon-floppy-o"></i>Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </ng-template>
+                    </ngb-panel>
+                </ngb-accordion>
+
+                <div class="col-12 text-right" *ngIf="isEditSection('offerInformation')" style="margin-top: 10px;">
+                    <div class="form-group">
+                        <button class="btn btn-orange-outline ml-2 key key-m" (click)="oncancelClick()" #cancelbutton><i
+                                class="icon-x"></i>Cancel</button>
+                        <button class="btn btn-orange-s" (click)="onSaveasDraftClick(false)" appNoDblClick><i
+                                class="icon-floppy-o"></i>Save as Draft</button>
+                        <button class="btn btn-orange-s ml-2" (click)="onSaveandSubmitClick(true);" appNoDblClick><i
+                                class="icon-floppy-o"></i>Submit for approval</button>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-2"
+                    *ngIf="!isEditSection('additionalfields') && sonumber != ''">
+                    <div class="form-group alert alert-success">
+                        <label for="iscreateso">Sales order hase been created. Sales order number is:
+                            {{sonumber}}.</label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- models -->
+<ng-template #content1 let-modal>
+    <div class="modal-header" *ngIf="isEditSection('offerInformation')">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit Item</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-header" *ngIf="!isEditSection('offerInformation')">
+        <h4 class="modal-title" id="modal-basic-title">View Item</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="StdItemForm" enctype="multipart/form-data" method="POST">
+            <div class="row" *ngIf="isEditSection('offerInformation') && !itemforEdit">
+                <div class="col-md-12">
+                    <div class="w-50 float-left mr-3" style="margin: -15px 0px -15px 0px;">
+                        <app-itemsearch class="col-12 col-xl-8 col-lg-8 col-md-6 col-sm-12"
+                            (callBack)="onItemSearch($event)">
+                        </app-itemsearch>
+                    </div>
+                    <div class="w-30">
+                        <button *ngIf="articleNo" class="btn btn-link p-0"
+                            (click)="onSelectProductClearClick()">Clear</button>
+                        <button *ngIf="!articleNo" class="btn btn-link p-0" (click)="onSearchProductClick()">Search
+                            Product</button>
+                        <!-- <button *ngIf="articleNo" class="btn btn-link pl-2" (click)="onStockSearch()">Check Stock
+                            Availability</button> -->
+                    </div>
+                </div>
+                <div *ngIf="!isItemReady" class="col-12 redtext">
+                    {{itemErrorMessage}}
+                </div>
+                <!-- <div>
+                    <button class="btn btn-link p-0" (click)="onsendEmailClick()">Send mail</button>
+                </div> -->
+            </div>
+            <div class="row" *ngIf="!isEditSection('offerInformation') || itemforEdit">
+                <div class="col-md-12">
+                    <div class="w-50 float-left mr-3">
+                        <label for="stditemCode">Article No</label>
+                        <input type="text" class="form-control" formControlName="stditemCode" [attr.disabled]=true>
+                    </div>
+                    <div *ngIf="isEditSection('offerInformation')">
+                        <button class="btn btn-link p-0" (click)="onSelectProductClearClick()">Clear</button>
+                        <!-- <button class="btn btn-link pl-2" (click)="onStockSearch()">Check Stock
+                            Availability</button> -->
+                    </div>
+                </div>
+                <div *ngIf="!isItemReady" class="col-12 redtext">
+                    {{itemErrorMessage}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-10 col-lg-10 col-md-10 col-sm-12">
+                    <div class="row form-group">
+                        <div class="col-12 col-xl-7 col-lg-7 col-md-7 col-sm-12">
+                            <label for="stdItemName">Description</label>
+                            <input type="text" class="form-control" formControlName="stdItemName" [attr.disabled]=true>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 p-0" *ngIf="showpclength">
+                            <label for="stdItemUOM">UOM</label>
+                            <div class="row">
+                                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 pr-0">
+                                    <input type="text" class="form-control" formControlName="stdItemUOM"
+                                        [attr.disabled]=true>
+                                </div>
+                                <div class="col-12 col-xl-9 col-lg-9 col-md-9 col-sm-12 pl-2">
+                                    <input type="text" class="form-control" formControlName="stdItemPCLength"
+                                        [attr.disabled]=true>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12" *ngIf="!showpclength">
+                            <label for="stdItemUOM">UOM</label>
+                            <input type="text" class="form-control" formControlName="stdItemUOM" [attr.disabled]=true>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                            <label for="ItemMOQ">MOQ</label>
+                            <input type="text" class="form-control" formControlName="ItemMOQ" [attr.disabled]=true>
+                        </div>
+                        <div class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-12">
+                            <label for="ItemMDQ">MDQ</label>
+                            <input type="text" class="form-control" formControlName="ItemMDQ" [attr.disabled]=true>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-4">
+                            <button *ngIf="articleNo && isEditSection('offerInformation')" class="btn btn-link pl-2"
+                                (click)="onStockSearch(false, null, true)">Check Stock
+                            </button>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="itemstock">Available Stock</label>
+                            <input class="form-control" type="text" formControlName="itemstock" [attr.disabled]="true">
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="customerpartno">Customer Part No.</label>
+                            <input class="form-control" type="text" formControlName="customerpartno"
+                                [attr.disabled]="!isEditSection('offerInformation') ? '' : null" maxlength="35">
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="enquiredquantity" class="required">Enquired Quantity</label>
+                            <input type="text" class="form-control" formControlName="enquiredquantity"
+                                numericwithdecimal decimals="2" beforedecimals="18"
+                                [attr.disabled]="!isEditSection('offerInformation') ? '' : null"
+                                [ngClass]="{ 'is-invalid': submitted && stdItemForm.enquiredquantity.errors }">
+                            <div *ngIf="submitted && stdItemForm.enquiredquantity.errors" class="invalid-feedback">
+                                <div *ngIf="stdItemForm.enquiredquantity.errors.required">
+                                    Required!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-4">
+                            <button type="button" class="btn btn-orange-s" *ngIf="StdItemForm.get('stdItemUOM')?.value == 'M' || StdItemForm.get('stdItemUOM')?.value == 'M'"
+                                [attr.disabled]="!isEditSection('offerInformation') || lengthandfactorbtndisable ? '' : null"
+                                (click)="openAddLengthandFactor(AddLengthandFactor)">Add Length & Factor</button>
+                                <button type="button" class="btn btn-orange-s" *ngIf="StdItemForm.get('stdItemUOM')?.value == 'PC'"
+                                (click)="openAddQuantity(AddQuantity)">Add Quantity</button>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="seqno">Seq No.</label>
+                            <input class="form-control" type="text" formControlName="seqno" [OnlyNumber]=true
+                                [attr.disabled]="!isEditSection('offerInformation') ? '' : null" maxlength="3">
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="importby">Import By</label>
+                            <ng-select [items]="importbyList" class="form-control" formControlName="importby"
+                                bindLabel="description" bindValue="code" placeholder="Please Select"
+                                [attr.disabled]="!isEditSection('offerInformation') ? '' : null">
+                            </ng-select>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12"
+                            *ngIf="isEditSection('offerInformation')">
+                            <label for="itemreqdeliverydate" class="required">Req. Dlv. Date</label>
+                            <div class="input-group"
+                                [ngClass]="{ 'is-invalid': submitted && stdItemForm.itemreqdeliverydate.errors }">
+                                <input class="form-control doc-date" formcontrolname="itemreqdeliverydate" ngbDatepicker
+                                    #itemreqdeliverydate="ngbDatepicker" [value]="formatter.format(itemreqdeliveryDate)"
+                                    (dateSelect)="onitemReqDeliveryDateSelection($event)" readonly
+                                    [minDate]="todayMinDate"
+                                    [ngClass]="{ 'is-invalid': submitted && stdItemForm.itemreqdeliverydate.errors }" />
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary calendar"
+                                        (click)="itemreqdeliverydate.toggle()" type="button"></button>
+                                </div>
+                            </div>
+                            <div *ngIf="submitted && stdItemForm.itemreqdeliverydate.errors" class="invalid-feedback">
+                                <div *ngIf="stdItemForm.itemreqdeliverydate.errors.required">
+                                    Req. Delivery Date is required
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12"
+                            *ngIf="!isEditSection('offerInformation')">
+                            <label for="itemreqdeliverydate">Req. Dlv. Date</label>
+                            <input class="form-control" type="text" formControlName="itemreqdeliverydate">
+                        </div>
+                    </div>
+                    <div class="overflow-auto">
+                        <table class="table table-hover table-responsive" id="table-lengthandfactor"  *ngIf="StdItemForm.get('stdItemUOM')?.value == 'M' || StdItemForm.get('stdItemUOM')?.value == 'M'">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th *ngIf="isEditSection('offerInformation')">Action</th>
+                                    <th>Length</th>
+                                    <th>Factor</th>
+                                    <th>Quantity</th>
+                                    <th>Cutting Charges</th>
+                                    <th>Req. Dlv. Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngIf="LengthandFactordata && LengthandFactordata.length > 0">
+                                    <tr *ngFor="let lf of filterDatatoDelete(LengthandFactordata); let j = index">
+                                        <td *ngIf="isEditSection('offerInformation')">
+                                            <button class="btn btn-link p-0 mr-3"
+                                                (click)="onLengthandFactorRemove(j)"><img class="table-icon"
+                                                    src="../../../../../assets/images/icon-delete.svg"></button>
+                                        </td>
+                                        <td>{{lf.length}}</td>
+                                        <td>{{lf.factor}}</td>
+                                        <td>{{lf.qty}}</td>
+                                        <td>
+                                            {{lf.cuttingcharges}}
+                                            <span
+                                                *ngIf="usertype && usertype < 20 && (offerdata && offerdata.Status < 80)"><button
+                                                    class="btn btn-link p-0"
+                                                    (click)="onCuttingChargesUpdate(lf.id, lf.cuttingcharges)">Click to
+                                                    update</button></span>
+                                        </td>
+                                        <td>{{lf.lengthreqdeliverydate}}</td>
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                            <tfoot *ngIf="LengthandFactordata && LengthandFactordata.length > 0">
+                                <tr>
+                                    <td *ngIf="isEditSection('offerInformation')">
+                                    </td>
+                                    <td colspan="3">
+                                    </td>
+                                    <td><strong>{{itemlevelcuttingcharges}}</strong></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <table class="table table-hover table-responsive" id="table-lengthandfactor" *ngIf="StdItemForm.get('stdItemUOM')?.value == 'PC'">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th *ngIf="isEditSection('offerInformation')">Action</th>
+                                    <th>Quantity</th>
+                                    <th>Req. Dlv. Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngIf="quantityData && quantityData?.length > 0">
+                                    <tr *ngFor="let lf of quantityData; let j = index">
+                                        <td *ngIf="isEditSection('offerInformation')">
+                                            <button class="btn btn-link p-0 mr-3"
+                                                (click)="onquantityRemove(j)"><img class="table-icon"
+                                                    src="../../../../../assets/images/icon-delete.svg"></button>
+                                        </td>
+                                        <td>{{lf.quantity}}</td>
+                                        <td>{{ (lf.reqdeliverydate).includes("/") ?  (lf.reqdeliverydate) :( lf.reqdeliverydate | date:'dd/MM/yyyy') }}</td>
+
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                            <tfoot *ngIf="LengthandFactordata && LengthandFactordata.length > 0">
+                                <tr>
+                                    <td *ngIf="isEditSection('offerInformation')">
+                                    </td>
+                                    <td colspan="3">
+                                    </td>
+                                    <td>
+                                        <strong>{{itemlevelcuttingcharges}}</strong>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                    <div class="form-group">
+                        <label for="stdItemPrice">List Price</label>
+                        <input type="text" class="form-control" formControlName="stdItemPrice" [attr.disabled]=true>
+                    </div>
+                    <div class="form-group">
+                        <label for="stdItemQty" class="required">Quantity</label>
+                        <input class="form-control" type="text" formControlName="stdItemQty"
+                            (change)="onItemQtyChange()" [OnlyNumber]=true readonly
+                            [attr.disabled]="qtydisable || !isEditSection('offerInformation') ? '' : null"
+                            [ngClass]="{ 'is-invalid': submitted && stdItemForm.stdItemQty.errors }">
+                        <div *ngIf="submitted && stdItemForm.stdItemQty.errors" class="invalid-feedback">
+                            <div *ngIf="stdItemForm.stdItemQty.errors.required">
+                                Required!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemunitnetprice" class="required">Unit Price</label>
+                        <input class="form-control" type="text" formControlName="itemunitnetprice"
+                            (change)="onItemUnitnetPriceChange()" numericwithdecimal decimals="4" beforedecimals="18"
+                            [attr.disabled]="!isEditSection('offerInformation') ? '' : null"
+                            [ngClass]="{ 'is-invalid': submitted && stdItemForm.itemunitnetprice.errors }">
+                        <div *ngIf="submitted && stdItemForm.itemunitnetprice.errors" class="invalid-feedback">
+                            <div *ngIf="stdItemForm.itemunitnetprice.errors.required">
+                                Required!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemDiscount">Discount (%)</label>
+                        <input class="form-control" type="text" formControlName="itemDiscount" numericwithdecimal
+                            decimals="2" beforedecimals="2" (change)="discountchange()"
+                            [attr.disabled]="!isEditSection('offerInformation') ? '' : null">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemtotal">Total</label>
+                        <input class="form-control" type="text" formControlName="itemtotal" numericwithdecimal
+                            decimals="2" beforedecimals="2" [attr.disabled]=true>
+                    </div>
+                    <!-- <div class="form-group" *ngIf="isEditSection('offerInformation')">
+                        <label for="itemreqdeliverydate">Req. Dlv. Date</label>
+                        <div class="input-group">
+                            <input class="form-control doc-date" formcontrolname="itemreqdeliverydate" ngbDatepicker
+                                #itemreqdeliverydate="ngbDatepicker" [value]="formatter.format(itemreqdeliveryDate)"
+                                (dateSelect)="onitemReqDeliveryDateSelection($event)" readonly
+                                [minDate]="todayMinDate" />
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary calendar"
+                                    (click)="itemreqdeliverydate.toggle()" type="button"></button>
+                            </div>
+                        </div>
+                    </div> -->
+                    <!-- <div class="form-group" *ngIf="!isEditSection('offerInformation')">
+                        <label for="itemreqdeliverydate">Req. Dlv. Date</label>
+                        <input class="form-control" type="text" formControlName="itemreqdeliverydate">
+                    </div> -->
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onItemSaveClick()"
+            *ngIf="isEditSection('offerInformation')">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #AddSpecialText let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add Special Text</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="SpecialTextForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="addspecialtexttype" class="required">Type</label>
+                        <ng-select [items]="specialtexttypeList" class="form-control" placeholder="Please Select"
+                            formControlName="addspecialtexttype" bindLabel="description" bindValue="code"
+                            [ngClass]="{ 'is-invalid': submitted && specialTextForm.addspecialtexttype.errors }">
+                        </ng-select>
+                        <div *ngIf="submitted && specialTextForm.addspecialtexttype.errors" class="invalid-feedback">
+                            <div *ngIf="specialTextForm.addspecialtexttype.errors.required">
+                                Type is required
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div style="float: left;">
+                            <label for="addspecialtextdescription" class='required'>Description</label>
+                        </div>
+                        <div style="float: right;">
+                            <span *ngIf="isEditSection('termsandcondition')"><i class="fas fa-exclamation"></i> <i>
+                                    {{200 - SpecialTermDescription?.length}}
+                                    characters left </i> </span>
+                        </div>
+                        <textarea rows="3" cols="50" formControlName="addspecialtextdescription"
+                            [attr.disabled]="!isEditSection('termsandcondition') ? '' : null"
+                            [ngClass]="{ 'is-invalid': submitted && specialTextForm.addspecialtextdescription.errors }"
+                            [(ngModel)]="SpecialTermDescription" maxlength="200"></textarea>
+                        <div *ngIf="submitted && specialTextForm.addspecialtextdescription.errors"
+                            class="invalid-feedback">
+                            <div *ngIf="specialTextForm.addspecialtextdescription.errors.required">
+                                Description is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" *ngIf="isEditSection('termsandcondition')"
+            (click)="onSpecialTextSave()">Save</button>
+    </div>
+
+</ng-template>
+
+<ng-template #AddLengthandFactor let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add Length and Factor</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="LengthandFactorForm">
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="itemLength" class="required">Length</label>
+                        <ng-select [items]="itemLengthList" class="form-control" formControlName="itemLength"
+                            bindLabel="description" bindValue="code" (change)="onLengthChange($event)"
+                            placeholder="Please Select"
+                            [ngClass]="{ 'is-invalid': submitted && lengthandFactorForm.itemLength.errors }">
+                        </ng-select>
+                        <div *ngIf="submitted && lengthandFactorForm.itemLength.errors" class="invalid-feedback">
+                            <div *ngIf="lengthandFactorForm.itemLength.errors.required">
+                                Length is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="itemFactor" class="required">Factor</label>
+                        <input type="text" class="form-control" formControlName="itemFactor" [OnlyNumber]=true
+                            [ngClass]="{ 'is-invalid': submitted && (lengthandFactorForm.itemFactor.errors || lengthandFactorForm.itemFactor.value <= 0) || isFactorError }"
+                            (change)=onfactorchange($event) />
+                        <div *ngIf="submitted && lengthandFactorForm.itemFactor.errors && !isFactorError"
+                            class="invalid-feedback">
+                            <div *ngIf="lengthandFactorForm.itemFactor.errors.required">
+                                Factor is required
+                            </div>
+                        </div>
+                        <div *ngIf="submitted && !lengthandFactorForm.itemFactor.errors && lengthandFactorForm.itemFactor.value <= 0 && !isFactorError"
+                            class="invalid-feedback">
+                            Factor must be greater than 0
+                        </div>
+                        <div *ngIf="isFactorError" class="invalid-feedback">
+                            Factor is not available
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="lfqty">Qty</label>
+                        <input type="text" class="form-control" formControlName="lfqty" [OnlyNumber]=true
+                            [attr.disabled]=true />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <label for="lengthreqdeliverydate" class="required">Req. Dlv. Date</label>
+                    <div class="input-group"
+                        [ngClass]="{ 'is-invalid': submitted && lengthandFactorForm.lengthreqdeliverydate.errors }">
+                        <input class="form-control doc-date" formcontrolname="lengthreqdeliverydate" ngbDatepicker
+                            #lengthreqdeliverydate="ngbDatepicker" [value]="formatter.format(lengthreqdeliveryDate)"
+                            (dateSelect)="onLengthReqDeliveryDateSelection($event)" readonly [minDate]="todayMinDate"
+                            [ngClass]="{ 'is-invalid': submitted && lengthandFactorForm.lengthreqdeliverydate.errors }" />
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary calendar" (click)="lengthreqdeliverydate.toggle()"
+                                type="button"></button>
+                        </div>
+                    </div>
+                    <div *ngIf="submitted && lengthandFactorForm.lengthreqdeliverydate.errors" class="invalid-feedback">
+                        <div *ngIf="lengthandFactorForm.lengthreqdeliverydate.errors.required">
+                            Req. Dlv. Date is required
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12" *ngIf="isShowOtherLength">
+                    <div class="form-group">
+                        <label for="itemLength" class="required">Cut Length (Factor)</label>
+                        <!-- <input type="text" class="form-control" formControlName="otherLength" [OnlyNumber]=true
+                            [ngClass]="{ 'is-invalid': submitted && (lengthandFactorForm.otherLength.errors || lengthandFactorForm.otherLength.value <= 0) }"
+                            (change)="onOtherLengthChange()" /> 
+                        -->
+
+                        <ng-select [items]="itemCutLengthList" class="form-control" formControlName="otherLength"
+                            bindLabel="lengthlable" bindValue="length" placeholder="Please Select"
+                            (change)="onOtherLengthChange($event)"
+                            [ngClass]="{ 'is-invalid': submitted && lengthandFactorForm.otherLength.errors }">
+                        </ng-select>
+
+                        <div *ngIf="submitted && lengthandFactorForm.otherLength.errors" class="invalid-feedback">
+                            <div *ngIf="lengthandFactorForm.otherLength.errors.required">
+                                Cut Length is required
+                            </div>
+                        </div>
+                        <!-- <div *ngIf="submitted && !lengthandFactorForm.otherLength.errors && lengthandFactorForm.otherLength.value <= 0"
+                            class="invalid-feedback">
+                            length must be greater than 0
+                        </div> -->
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12" *ngIf="isShowExtraLength">
+                    <div class="form-group">
+                        <label for="itemLength" class="required">Other Length</label>
+                        <input type="text" class="form-control" formControlName="extraLength" [OnlyNumber]=true
+                            [ngClass]="{ 'is-invalid': submitted && (lengthandFactorForm.extraLength.errors || lengthandFactorForm.extraLength.value <= 0) }"
+                            (change)="onOtherLengthChange('Other')" />
+                        <div *ngIf="submitted && lengthandFactorForm.extraLength.errors" class="invalid-feedback">
+                            <div *ngIf="lengthandFactorForm.extraLength.errors.required">
+                                Other Length is required
+                            </div>
+                        </div>
+                        <div *ngIf="submitted && !lengthandFactorForm.extraLength.errors && lengthandFactorForm.extraLength.value <= 0"
+                            class="invalid-feedback">
+                            length must be greater than 0
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <!-- <button type="button" class="btn btn-orange-s" (click)="modal.close('Save click')">Save</button> -->
+        <button type="button" class="btn btn-orange-s" data-dismiss="modal"
+            (click)="onLengthandFactorSave()">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #AddQuantity let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add Quantity</h4>
+        <button type="button" class="close" aria-label="Close" (click)="closeQuantity()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form #myForm="ngForm">
+            <div class="col-12 alert alert-danger" *ngIf="subErrorMessage?.length > 0">
+                {{subErrorMessage}}
+            </div>
+            <div class="row">
+                
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="lfqty" class="required">Qty</label>
+                        <input type="text" class="form-control" name="quantity" [(ngModel)]="addQuantity.quantity" [ngStyle]="{'border-color': (submitted && !addQuantity.quantity) ? '#f00' : ''}" [OnlyNumber]=true
+                            />
+                            <div *ngIf="submitted && !addQuantity.quantity" style="font-size: 0.846rem;font-style: italic; color: #f00;" >Required!</div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <label for="lengthreqdeliverydate" class="required">Req. Dlv. Date</label>
+                    <div class="input-group"
+                        [ngClass]="{ 'is-invalid': submitted && lengthandFactorForm.lengthreqdeliverydate.errors }">
+                        <input class="form-control doc-date" name="quantityreqdeliverydate" ngbDatepicker #qtyrequireddelivery
+                            #lengthreqdeliverydate="ngbDatepicker" [value]="formatter.format(lengthreqdeliveryDate)" [(ngModel)]="defaultDate"
+                            (dateSelect)="onQuantityReqDeliveryDateSelection($event)" readonly [minDate]="todayMinDate" required
+                            [ngClass]="{ 'is-invalid': submitted && lengthandFactorForm.lengthreqdeliverydate.errors }" />
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary calendar" (click)="lengthreqdeliverydate.toggle()"
+                                type="button"></button>
+                        </div>
+                    </div>
+                    <div *ngIf="qtyrequireddelivery.invalid && submitted" style="font-size: 0.846rem;font-style: italic; color: #f00;">Req. Dlv. Date is required</div>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <label for="lengthreqdeliverydate" class="required">Req. Dlv. Date</label>
+                    <div class="input-group"
+                        [ngClass]="{ 'is-invalid': submitted && lengthandFactorForm.lengthreqdeliverydate.errors }">
+                        <input class="form-control doc-date" formcontrolname="lengthreqdeliverydate" ngbDatepicker
+                            #lengthreqdeliverydate="ngbDatepicker" [value]="formatter.format(lengthreqdeliveryDate)"
+                            (dateSelect)="onLengthReqDeliveryDateSelection($event)" readonly [minDate]="todayMinDate"
+                            [ngClass]="{ 'is-invalid': submitted && lengthandFactorForm.lengthreqdeliverydate.errors }" />
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary calendar" (click)="lengthreqdeliverydate.toggle()"
+                                type="button"></button>
+                        </div>
+                    </div>
+                    <div *ngIf="submitted && lengthandFactorForm.lengthreqdeliverydate.errors" class="invalid-feedback">
+                        <div *ngIf="lengthandFactorForm.lengthreqdeliverydate.errors.required">
+                            Req. Dlv. Date is required
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12" *ngIf="isShowOtherLength">
+                    <div class="form-group">
+                        <label for="itemLength" class="required">Other Length</label>
+                        <input type="text" class="form-control" formControlName="otherLength" [OnlyNumber]=true
+                            [ngClass]="{ 'is-invalid': submitted && (lengthandFactorForm.otherLength.errors || lengthandFactorForm.otherLength.value <= 0) }"
+                            (change)="onOtherLengthChange()" />
+                        <div *ngIf="submitted && lengthandFactorForm.otherLength.errors" class="invalid-feedback">
+                            <div *ngIf="lengthandFactorForm.otherLength.errors.required">
+                                Length is required
+                            </div>
+                        </div>
+                        <div *ngIf="submitted && !lengthandFactorForm.otherLength.errors && lengthandFactorForm.otherLength.value <= 0"
+                            class="invalid-feedback">
+                            length must be greater than 0
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+        </form>
+    </div>
+    <div class="modal-footer">
+        
+            <button type="button" class="btn btn-orange-outline-s mr-2" 
+            (click)="closeQuantity()">Cancel</button>
+        
+            <button type="button" class="btn btn-orange-s" data-dismiss="modal" 
+            (click)="onQuantitySave()">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #DeletedItem let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">View Item</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="StdItemForm" enctype="multipart/form-data" method="POST">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="w-50 float-left mr-3">
+                        <label for="stditemCode">Article No</label>
+                        <input type="text" class="form-control" formControlName="stditemCode" [attr.disabled]=true>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-10 col-lg-10 col-md-10 col-sm-12">
+                    <div class="row form-group">
+                        <div class="col-12 col-xl-7 col-lg-7 col-md-7 col-sm-12">
+                            <label for="stdItemName">Description</label>
+                            <input type="text" class="form-control" formControlName="stdItemName" [attr.disabled]=true>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 p-0" *ngIf="showpclength">
+                            <label for="stdItemUOM">UOM</label>
+                            <div class="row">
+                                <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 pr-0">
+                                    <input type="text" class="form-control" formControlName="stdItemUOM"
+                                        [attr.disabled]=true>
+                                </div>
+                                <div class="col-12 col-xl-9 col-lg-9 col-md-9 col-sm-12 pl-2">
+                                    <input type="text" class="form-control" formControlName="stdItemPCLength"
+                                        [attr.disabled]=true>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12" *ngIf="!showpclength">
+                            <label for="stdItemUOM">UOM</label>
+                            <input type="text" class="form-control" formControlName="stdItemUOM" [attr.disabled]=true>
+                        </div>
+                        <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                            <label for="ItemMOQ">MOQ</label>
+                            <input type="text" class="form-control" formControlName="ItemMOQ" [attr.disabled]=true>
+                        </div>
+                        <div class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-12">
+                            <label for="ItemMDQ">MDQ</label>
+                            <input type="text" class="form-control" formControlName="ItemMDQ" [attr.disabled]=true>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-4">
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="itemstock">Available Stock</label>
+                            <input class="form-control" type="text" formControlName="itemstock" [attr.disabled]="true">
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="customerpartno">Customer Part No.</label>
+                            <input class="form-control" type="text" formControlName="customerpartno"
+                                [attr.disabled]=true>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="enquiredquantity" class="required">Enquired Quantity</label>
+                            <input type="text" class="form-control" formControlName="enquiredquantity"
+                                [attr.disabled]=true>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-4">
+                            <button type="button" class="btn btn-orange-s" [attr.disabled]="true"
+                                (click)="openAddLengthandFactor(AddLengthandFactor)">Add Length & Factor</button>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="seqno">Seq No.</label>
+                            <input class="form-control" type="text" formControlName="seqno" [OnlyNumber]=true
+                                [attr.disabled]=true maxlength="3">
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="importby">Import By</label>
+                            <ng-select [items]="importbyList" class="form-control" formControlName="importby"
+                                bindLabel="description" bindValue="code" placeholder="Please Select">
+                            </ng-select>
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="itemreqdeliverydate">Req. Dlv. Date</label>
+                            <input class="form-control" type="text" formControlName="itemreqdeliverydate"
+                                [attr.disabled]="true">
+                        </div>
+                    </div>
+                    <div class="overflow-auto">
+                        <table class="table table-hover table-responsive" id="table-lengthandfactor">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>Length</th>
+                                    <th>Factor</th>
+                                    <th>Quantity</th>
+                                    <th>Cutting Charges</th>
+                                    <th>Req. Dlv. Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngIf="LengthandFactordata && LengthandFactordata.length > 0">
+                                    <tr *ngFor="let lf of LengthandFactordata; let j = index">
+                                        <td>{{lf.length}}</td>
+                                        <td>{{lf.factor}}</td>
+                                        <td>{{lf.qty}}</td>
+                                        <td>{{lf.cuttingcharges}}</td>
+                                        <td>{{lf.lengthreqdeliverydate}}</td>
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                            <tfoot *ngIf="LengthandFactordata && LengthandFactordata.length > 0">
+                                <tr>
+                                    <td colspan="3">
+                                    </td>
+                                    <td><strong>{{itemlevelcuttingcharges}}</strong></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                    <div class="form-group">
+                        <label for="stdItemPrice">List Price</label>
+                        <input type="text" class="form-control" formControlName="stdItemPrice" [attr.disabled]=true>
+                    </div>
+                    <div class="form-group">
+                        <label for="stdItemQty">Quantity</label>
+                        <input class="form-control" type="text" formControlName="stdItemQty" [attr.disabled]=true>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemunitnetprice" class="required">Unit Price</label>
+                        <input class="form-control" type="text" formControlName="itemunitnetprice" [attr.disabled]=true>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemDiscount">Discount (%)</label>
+                        <input class="form-control" type="text" formControlName="itemDiscount" numericwithdecimal
+                            decimals="2" beforedecimals="2" [attr.disabled]=true>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemtotal">Total</label>
+                        <input class="form-control" type="text" formControlName="itemtotal" numericwithdecimal
+                            decimals="2" beforedecimals="2" [attr.disabled]=true>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+    </div>
+</ng-template>
+
+<ng-template #ImportItems let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Import MFG/TRD Items</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="ImportItemsForm">
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12" *ngIf="isEditSection('offerInformation')">
+                    <div class="form-group">
+                        <label class="required">Attachments</label>
+                        <div><button (click)="fileInput.click()">Select File</button>
+                            <input type="file" id="importFile" style="display: none;"
+                                (change)="ImportItemsfileChangeListener($event)" #fileInput accept=".xlsx, .xls" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-1 col-lg-1 col-md-2 col-sm-12" *ngIf="!isEditSection('offerInformation')">
+                    <div class="form-group">
+                        <label class="required">Attachments</label>
+                    </div>
+                </div>
+                <div class="col-12 mt-3" *ngIf="ImportItemFiles">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-6 outer-container-upload-control">
+                            <div class="upload-control-filetype-container"><img class="table-icon-lg"
+                                    src="../../../../../assets/images/{{setFileTypeIcon(ImportItemFiles.type)}}">
+                            </div>
+                            <div class="upload-control-filename-container dot-views">
+                                <span>{{ImportItemFiles.name}}</span>
+                            </div>
+                            <div class="upload-control-delete-container">
+                                <button class="btn btn-link p-0" (click)="removeImportItemFile()">
+                                    <img class="table-icon" src="../../../../../assets/images/icon-delete1.svg"
+                                        title="delete image"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                (click)="downloadImportItemSample()">here</button> to download sample file.</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onImportItemSave(ItemStatusModal)">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #ItemStatusModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Status of import items</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <div class="overflow-auto">
+                    <table class="table table-hover table-responsive table-sorting" id="table-opportunities">
+                        <thead class="thead-inverse">
+                            <tr>
+                                <th>Seq No</th>
+                                <th>Article No</th>
+                                <th>Description</th>
+                                <th>Unit Price</th>
+                                <th>Qty</th>
+                                <th>Discount</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let iis of importItemStatus">
+                                <td>{{iis.seqno}}</td>
+                                <td>{{iis.articleNo}}</td>
+                                <td>{{iis.description}}</td>
+                                <td>{{iis.unitprice}}</td>
+                                <td>{{iis.quantity}}</td>
+                                <td>{{iis.discountPer}}</td>
+                                <td>{{iis.Remarks}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onProceedtoAddItem()">Proceed to Add Items</button>
+    </div>
+</ng-template>
+
+<ng-template #specialtermsdeletemodel let-modal>
+    <app-delete-confirmation [model]="deleteConfirModel" (ondelete)="onSpecialTermsDelete($event)"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #stditemdeletemodel let-modal>
+    <app-delete-confirmation [model]="deleteConfirModel" (ondelete)="onSTDItemDelete($event)"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #itemdeleteallmodel let-modal>
+    <app-delete-confirmation (ondelete)="onDeleteAllClick()" (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #offerapprovemodel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Order Approve</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="ApproveForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <div style="float: left;">
+                            <label for="approvereason" class='required'>Comment</label>
+                        </div>
+                        <div style="float: right;">
+                            <span><i class="fas fa-exclamation"></i> <i>
+                                    {{500 - ApproveReason?.length}}
+                                    characters left </i> </span>
+                        </div>
+                        <textarea rows="3" cols="50" formControlName="approvereason"
+                            [ngClass]="{ 'is-invalid': submitted && approveForm.approvereason.errors }"
+                            [(ngModel)]="ApproveReason" maxlength="500"></textarea>
+                        <div *ngIf="submitted && approveForm.approvereason.errors" class="invalid-feedback">
+                            <div *ngIf="approveForm.approvereason.errors.required">
+                                Comment is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer text-right">
+        <button type="button" ngbAutofocus class="btn btn-outline-secondary" style="min-width: 50px;"
+            (click)="modal.dismiss('Cross click')">
+            <i title='Cancel'></i> No</button>
+        <button type="button" class="btn btn-success" (click)="onApprovedClick()" style="min-width: 50px;">
+            <i title='Yes'></i>Yes</button>
+    </div>
+</ng-template>
+
+<ng-template #offerrejectmodel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Order Reject</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="RejectForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <div style="float: left;">
+                            <label for="rejectreason" class='required'>Reason</label>
+                        </div>
+                        <div style="float: right;">
+                            <span><i class="fas fa-exclamation"></i> <i>
+                                    {{500 - RejectReason?.length}}
+                                    characters left </i> </span>
+                        </div>
+                        <textarea rows="3" cols="50" formControlName="rejectreason"
+                            [ngClass]="{ 'is-invalid': submitted && rejectForm.rejectreason.errors }"
+                            [(ngModel)]="RejectReason" maxlength="500"></textarea>
+                        <div *ngIf="submitted && rejectForm.rejectreason.errors" class="invalid-feedback">
+                            <div *ngIf="rejectForm.rejectreason.errors.required">
+                                Reason is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" style="min-width: 50px;"
+            (click)="modal.dismiss('Cross click')">No</button>
+        <button type="button" class="btn btn-danger" style="min-width: 50px;" (click)="onRejectClick()">Yes</button>
+    </div>
+</ng-template>
+
+<ng-template #ProductSearchModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Search Product</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="col-12">
+            
+                <div class="row">
+                    <div class="col-12">
+                        <app-appsearch [model]="searchModel" (callBack)="onSearch($event)"></app-appsearch>
+                    </div>
+               
+            </div>
+            <table class="table table-hover table-responsive table-sorting" id="table-productmaster">
+                <thead class="thead-inverse">
+                    <tr>
+                        <th>Action</th>
+                        <th (click)="headerClick($event)" name="articleno" id="articleno">Article Number</th>
+                        <th (click)="headerClick($event)" name="description" id="description">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="productmasterlist.length == 0">
+                        <td colspan="3" style="text-align: center;">
+                            No Records Found
+                        </td>
+                    </tr>
+                    <tr *ngFor="let pm of productmasterlist" (dblclick)="onSelectProductClick(pm.articleno)">
+                        <td>
+                            <button class="btn btn-link p-0"
+                                (click)="onSelectProductClick(pm.articleno)">Select</button>
+                        </td>
+                        <td>{{pm.articleno}}</td>
+                        <td>{{pm.description}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+            <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                <li [ngClass]="{disabled:pager.currentPage === 1}">
+                    <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                    <ng-template #elseFirst>
+                        <a (click)="setPage(1)">First</a>
+                    </ng-template>
+                </li>
+                <li [ngClass]="{disabled:pager.currentPage === 1}">
+                    <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                    <ng-template #elsePrevious>
+                        <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                    </ng-template>
+                </li>
+                <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                    <a (click)="setPage(page)">{{page}}</a>
+                </li>
+                <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                    <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                    <ng-template #elseNext>
+                        <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                    </ng-template>
+                </li>
+                <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                    <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                    <ng-template #elseLast>
+                        <a (click)="setPage(pager.totalPages)">Last</a>
+                    </ng-template>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+    </div>
+</ng-template>
+
+<ng-template #stockmodel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Stock Availability - {{articleNo}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="col-12">
+            <table class="table table-hover table-responsive" id="table-stock">
+                <thead class="thead-inverse">
+                    <tr>
+                        <th class="text-right">Length</th>
+                        <th class="text-right">Factor</th>
+                        <th class="text-right">Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="StockData.length == 0">
+                        <td colspan="3" style="text-align: center;">
+                            No Records Found
+                        </td>
+                    </tr>
+                    <tr *ngFor="let sd of StockData">
+                        <td align="right">{{sd.length}}</td>
+                        <td align="right">{{sd.factor}}</td>
+                        <td align="right">{{sd.qty}}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" align="right"><strong>Total Stock</strong></td>
+                        <td align="right"><strong>{{ItemStockValue}}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+    </div>
+</ng-template>
+
+<!-- <ng-template #ItemAdditionalFieldsModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Item Additional Fields</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="ItemAdditionalFieldsForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row form-group">
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                            <label for="iafItemno">Item No</label>
+                            <input type="text" class="form-control" formControlName="iafItemno" [attr.disabled]=true>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                            <label for="iafArticleno">Article No</label>
+                            <input type="text" class="form-control" formControlName="iafArticleno" [attr.disabled]=true>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                            <label for="iafQuantity">Quantity</label>
+                            <input type="text" class="form-control" formControlName="iafQuantity" [attr.disabled]=true>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                            <label for="iafunitprice">Unit Price</label>
+                            <input type="text" class="form-control" formControlName="iafunitprice" [attr.disabled]=true>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12"
+                            *ngIf="isEditSection('additionalfields')">
+                            <div class="form-group">
+                                <label class="required">Req. Delivery Date</label>
+                                <div class="input-group">
+                                    <input class="form-control doc-date" formcontrolname="reqdeliverydate" ngbDatepicker
+                                        #reqdeliverydate="ngbDatepicker" [value]="formatter.format(reqdeliveryDate)"
+                                        (dateSelect)="onReqDeliveryDateSelection($event)" readonly
+                                        [minDate]="todayMinDate" />
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary calendar"
+                                            (click)="reqdeliverydate.toggle()" type="button"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                            <label for="reqdeliverydate">Req. Delivery Date</label>
+                            <input class="form-control" type="text" formControlName="reqdeliverydate"
+                                [attr.disabled]="!isEditSection('additionalfields') ? '' : null">
+                        </div>
+                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                            <div class="form-group">
+                                <label for="cuttingcharges">Cutting Charges</label>
+                                <input class="form-control" type="text" formControlName="cuttingcharges"
+                                    numericwithdecimal decimals="4" beforedecimals="18"
+                                    [attr.disabled]="!isEditSection('additionalfields') ? '' : null" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer text-right">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="onItemAdditionalFieldsCancelClick()">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onItemAdditionalFieldsSaveClick()"
+            *ngIf="isEditSection('additionalfields')">Save</button>
+    </div>
+</ng-template> -->
+
+<ng-template #CuttingChargesModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Cutting Charges</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="CuttingChargesForm">
+            <div class="col-12">
+                <input type="text" class="form-control" formControlName="itemcuttingcharges">
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onCuttingChargesSaveClick()">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #NaceCodeModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Change Nace Detail</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="NaceDetailForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="nacecode">Nace Code</label>
+                        <ng-select [items]="NacecodeList" class="form-control" formControlName="nacecode"
+                            bindLabel="nacecodefull" bindValue="code" [attr.disabled]="true"
+                            (change)="onNacecodeChange($event)">
+                        </ng-select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                    <div class="form-group">
+                        <label for="level">Level</label>
+                        <input class="form-control" type="text" formControlName="level" [attr.disabled]="true">
+                    </div>
+                </div>
+                <!-- <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                    <div class="form-group">
+                        <label for="model">Model</label>
+                        <input class="form-control" type="text" formControlName="model" [attr.disabled]="true">
+                    </div>
+                </div> -->
+                <div class="col-12 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                    <div class="form-group">
+                        <label for="businessmodel">Business Model</label>
+                        <ng-select [items]="BusinessModelList" class="form-control" formControlName="businessmodel"
+                            bindLabel="description" bindValue="code" [attr.disabled]="true"
+                            (change)="onBusinessModelChange($event)">
+                        </ng-select>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="SaveNacecodeDetail()">Save</button>
+    </div>
+</ng-template>

@@ -1,0 +1,59 @@
+<div class="modal-header">
+    <h4 class="modal-title" id="modal-title">{{boxtitle}}</h4>
+    <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title"
+        (click)="onCancelModal()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body text-center" style="max-height: 400px;">
+    <table class="table table-hover table-responsive table-sorting">
+        <thead class="thead-inverse">
+            <tr>
+                <th width="100px">Article No</th>
+                <th width="50px">Type</th>
+                <th style="text-align: left;">Description</th>
+                <th width="100px">Valid To</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of Items; let j=index;">
+                <td>{{item.articleNo}}</td>
+                <td>{{item.itemType}}</td>
+                <td style="text-align: left;">{{item.description}}</td>
+                <td>{{item.validto | date:dateFormate}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- <p class="font-weight-normal my-4">{{messageText}}</p> -->
+    <div style="text-align: left;">
+        <p>The validity of article(s) mentioned above are lesser than next 10 days, Please select from the below options
+            to proceed.</p>
+        <!-- <p>The article(s) minimum validity {{minDate}} will be apply for the offer. Do you want to continue?</p> -->
+        <p>
+            <strong>Change Validity:</strong> <br>
+            This action will revise your Offer Validity to article with minimum validity of your offer i.e. {{minDate}}.
+        </p>
+        <!-- <p *ngIf="!isChangevalidityBtnVisible">
+            <strong>Change Validity:</strong> <br>
+            Change validity option is not possible because of article with minimum validity ({{minDate}}) is less than todays date.
+        </p> -->
+        <p *ngIf="isRevalidationBtnVisible">
+            <strong>Send for re-validation:</strong> <br>
+            This option will send SPR articles with lesser validity to PE for revalidation.<br>
+            NOTE: For MFG/TRD: Kindly contact Product Engineering team offline to extend the validity and create a clone
+            post their action.
+        </p>
+        <p>
+            <strong>Cancel:</strong> <br>
+            This Option will not make any changes to offer. Offer Validity remains as standard but the validity of
+            articles which are lesser than Offer validity (10 days) will expire on their respect dates.
+            <br>
+        </p>
+    </div>
+</div>
+<div class="modal-footer text-right">
+    <button type="button" class="btn btn-secondary" (click)="onCancelModal()">Cancel</button>
+    <button type="button" class="btn btn-info" (click)="onClose()" *ngIf="isRevalidationBtnVisible">Send for
+        re-validation</button>
+    <button type="button" class="btn btn-success" (click)="onDelete()">Change Validity</button>
+</div>

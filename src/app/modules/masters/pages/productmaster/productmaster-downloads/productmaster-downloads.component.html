@@ -1,0 +1,84 @@
+<app-app-header></app-app-header>
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isRefresh]=true [isCancel]="true" (cancelClicked)="cancelClicked()"
+                (refreshClicked)="onRefreshClick()"></app-list-sub-header>
+
+            <div class="col-12">
+                <table class="table table-hover table-responsive table-sorting" id="table-productmaster">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th name="Downloaded By" id="downloaded_by" (click)="headerClick($event)">Downloaded By</th>
+                            <th name="Downloaded On" id="created_at" (click)="headerClick($event)">Downloaded On</th>
+                            <th name="Comments" id="comments" (click)="headerClick($event)">Comments</th>
+                            <th name="Status" id="download_status" (click)="headerClick($event)">Status</th>
+                            <th name="Downloaded File Name" id="downloaded_file_name" (click)="headerClick($event)">
+                                Downloaded
+                                File Name
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="downloadList.length === 0">
+                            <td colspan="5" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let ci of downloadList">
+                            <td> {{ci.downloadedbyname}}</td>
+                            <td>{{ci.created_at}}</td>
+                            <td *ngIf="ci.comments">Filtered By : search = {{ci.newcomments}}</td>
+                            <td *ngIf="!ci.comments">&nbsp;</td>
+                            <td *ngIf="ci.download_status != 50">{{sendNameByStatusID(ci.download_status)}}</td>
+                            <td *ngIf="ci.download_status == 50">Failed <input type="button" value="Restart"
+                                    (click)="restartExportFile(ci)" /></td>
+                            <td *ngIf="ci.download_status != 30">
+                                &nbsp;
+                            </td>
+                            <td *ngIf="ci.download_status == 30">
+                                <a href="{{getDownloadFileLink(ci.downloaded_file_name)}}">
+                                    Download
+                                </a>
+                                <!-- <button class="btn btn-link p-0"> -->
+                                <!-- (click)="downloadFile(ci.downloaded_file_path)" -->
+                                <!-- Download</button> -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

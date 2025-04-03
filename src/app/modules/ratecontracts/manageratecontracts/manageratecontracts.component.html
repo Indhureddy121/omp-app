@@ -1,0 +1,1452 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+
+            <app-sub-header [isCancel]="true" (cancelClicked)="oncancelClick()" (editClicked)="onEditClick()">
+            </app-sub-header>
+            <div class="col-12" *ngIf="isEditOrView" [formGroup]="basicRateContractForm">
+                <div class="row">
+                    <div class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1">
+                        <label>RC Number</label>
+                        <input type="text" formControlName="rcnumbertext" class="form-control" [attr.disabled]="true" />
+                    </div>
+                    <div class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1">
+                        <label>Ver</label>
+                        <input type="text" formControlName="ver" class="form-control" [attr.disabled]="true" />
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                        <div>
+                            <label>Status</label>
+                            <input type="text" class="form-control" formControlName="status" [attr.disabled]="true" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                        <label>Action required</label>
+                        <input type="text" class="form-control" formControlName="actionrequired"
+                            [attr.disabled]="true" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-2"
+                *ngIf="contractInformationFieldsForm.soldtoparty.value && CustomerDataFetched && !CustomerData">
+                <div class="form-group alert alert-danger">
+                    <label>Customer is not available in SFDC.</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="row">
+                        <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 text-right pr-0">
+                            <button type="button" class="btn btn-orange-outline ml-2" (click)="acc.expandAll()">Expand
+                                All</button>
+                            <button type="button" class="btn btn-orange-outline ml-2"
+                                (click)="acc.collapseAll()">Collapse
+                                All</button>
+                        </div>
+                        <ngb-accordion #acc="ngbAccordion" [destroyOnHide]="false" activeIds="ngb-panel-0, ngb-panel-1">
+                            <ngb-panel id="ngb-panel-0" *ngIf="isShowSection('headersection')">
+                                <ng-template ngbPanelTitle let-opened="opened">Contract Information</ng-template>
+                                <ng-template ngbPanelContent>
+                                    <form class="ng-invalid ng-touched ng-dirty" [formGroup]="contractInformationForm">
+                                        <div class="row"
+                                            *ngIf="isRefrenceOffer || (contractInformationData && contractInformationData.refrcid > 0)">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <div style="float: left;">
+                                                        <label for="reasonforclone" class="required">Reason for
+                                                            Clone</label>
+                                                    </div>
+                                                    <div style="float: right;">
+                                                        <span *ngIf="isAdd">
+                                                            <i class="fas fa-exclamation"></i> <i>
+                                                                {{500 - ReasonforClone?.length}} characters
+                                                                left.</i></span>
+                                                    </div>
+                                                    <textarea rows=" 3" cols="50" class="form-control" maxlength="512"
+                                                        formControlName="reasonforclone"
+                                                        [attr.disabled]="!isAdd  ? '' : null"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.reasonforclone.errors }"
+                                                        [(ngModel)]="ReasonforClone" maxlength="500"></textarea>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.reasonforclone.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.reasonforclone.errors.required">
+                                                            Reason for Clone is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                                <div class="form-group">
+                                                    <label class="required">Types</label>
+                                                    <ng-select [items]="rcTypeList" class="form-control"
+                                                        bindLabel="description" bindValue="code"
+                                                        formControlName="rctype" placeholder="Please Select"
+                                                        [readonly]="!checkisTypeEditable()  || !isEditSection('headersection')"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.rctype.errors }">
+                                                    </ng-select>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.rctype.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.rctype.errors.required">
+                                                            Types is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                                <div class="form-group">
+                                                    <label class="required">Price Based On</label>
+                                                    <ng-select [items]="priceBasedonList" class="form-control"
+                                                        bindLabel="description" bindValue="code"
+                                                        [readonly]="!isEditSection('headersection')"
+                                                        formControlName="rcpricebasedon" placeholder="Please Select"
+                                                        (change)="onPriceBasedonChange($event)"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.rcpricebasedon.errors }">
+                                                    </ng-select>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.rcpricebasedon.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.rcpricebasedon.errors.required">
+                                                            Price Based On is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                                <div class="form-group">
+                                                    <label class="required">Contract For</label>
+                                                    <ng-select [items]="contractForList" class="form-control"
+                                                        bindLabel="description" bindValue="code"
+                                                        [readonly]="!isAdd || !isEditSection('headersection')"
+                                                        formControlName="rcfor" placeholder="Please Select"
+                                                        (change)="onContractforChange($event)"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.rcfor.errors }">
+                                                    </ng-select>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.rcfor.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.rcfor.errors.required">
+                                                            Contract For is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                                *ngIf="isOrderIndirect">
+                                                <div class="form-group">
+                                                    <label for="dealercommission" class="required">Dealer
+                                                        Margin(%)</label>
+                                                    <input class="form-control" type="text"
+                                                        formControlName="dealercommission" numericwithdecimal
+                                                        decimals="2" beforedecimals="2"
+                                                        [attr.disabled]="!isEditSection('headersection') ? '' : null"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.dealercommission.errors }">
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.dealercommission.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.dealercommission.errors.required">
+                                                            Dealer Margin(%) is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="soldtoparty" class="required">Sold to</label>
+                                                    <ng-select [items]="soldtopartySearchList" class="form-control"
+                                                        formControlName="soldtoparty" bindLabel="fullname"
+                                                        (keyup)="onSoldtoPartySearch()" labelForId="ngSelectSoldtoParty"
+                                                        bindValue="kunnr" (change)="onsoldtoSearchChange($event)"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.soldtoparty.errors }"
+                                                        [readonly]="!isEditSection('headersection')"
+                                                        placeholder="Please Select">
+                                                    </ng-select>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.soldtoparty.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.soldtoparty.errors.required">
+                                                            Sold to Party is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                                <!-- (change)="onshiptopartySearchChange($event)" -->
+                                                <div class="form-group">
+                                                    <label for="shiptoparty" class="required">Ship to</label>
+                                                    <ng-select [items]="shiptopartySearchList" class="form-control"
+                                                        formControlName="shiptoparty" placeholder="Please Select"
+                                                        [readonly]="!isEditSection('headersection')"
+                                                        bindLabel="fullname" bindValue="partner"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.shiptoparty.errors }">
+                                                    </ng-select>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.shiptoparty.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.shiptoparty.errors.required">
+                                                            Ship to Party is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="owner" class="required">Owner</label>
+                                                    <ng-select class="form-control" formControlName="owner"
+                                                        [items]="OwnersList" bindLabel="fullname" bindValue="id"
+                                                        placeholder="Type 3 char to search"
+                                                        (change)="onOwnerChange($event)"
+                                                        [readonly]="!isEditSection('headersection')"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.owner.errors }">
+                                                    </ng-select>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.owner.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.owner.errors.required">
+                                                            Owner is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="vertical" class="required">Vertical</label>
+                                                    <ng-select class="form-control" formControlName="vertical"
+                                                        [items]="verticals" bindLabel="description" bindValue="code"
+                                                        placeholder="Please Select"
+                                                        (change)="onVerticalChange($event.code, true)"
+                                                        [readonly]="!isEditSection('headersection')"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.vertical.errors }">
+                                                    </ng-select>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.vertical.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.vertical.errors.required">
+                                                            Vertical is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="segment" class="required">Segment</label>
+                                                    <ng-select class="form-control" formControlName="segment"
+                                                        [items]="filteredSegments" bindLabel="description"
+                                                        bindValue="code" placeholder="Please Select"
+                                                        [readonly]="!isEditSection('headersection')"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.segment.errors }">
+                                                    </ng-select>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.segment.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.segment.errors.required">
+                                                            Segment is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                                *ngIf="isEditSection('headersection')">
+                                                <div class="form-group">
+                                                    <label class="required">Valid From</label>
+                                                    <div class="input-group"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.validfrom.errors }">
+                                                        <input class="form-control doc-date" formcontrolname="validfrom"
+                                                            [attr.disabled]="!isEditSection('headersection')"
+                                                            ngbDatepicker #validfrom="ngbDatepicker"
+                                                            [value]="formatter.format(offervalidfromDate)" readonly
+                                                            [minDate]="todayMinDate"
+                                                            (dateSelect)="onOffValidFromDateSelection($event)"
+                                                            [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.validfrom.errors }" />
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-outline-secondary calendar"
+                                                                (click)="validfrom.toggle()" type="button"></button>
+                                                        </div>
+                                                    </div>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.validfrom.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.validfrom.errors.required">
+                                                            Valid From is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                                *ngIf="!isEditSection('headersection')">
+                                                <label>Valid From</label>
+                                                <input class="form-control" type="text" formControlName="validfrom"
+                                                    disabled>
+                                            </div>
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                                *ngIf="isEditSection('headersection')">
+                                                <div class="form-group">
+                                                    <label class="required">Valid To</label>
+                                                    <!-- [maxDate]="offerValidMaxdate" -->
+                                                    <div class="input-group"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.validto.errors }">
+                                                        <input class="form-control doc-date" formcontrolname="validto"
+                                                            ngbDatepicker #validto="ngbDatepicker"
+                                                            [value]="formatter.format(offervalidtoDate)"
+                                                            [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.validto.errors }"
+                                                            [readonly]="isEditSection('headersection')"
+                                                            (dateSelect)="onOffValidToDateSelection($event)"
+                                                            [minDate]="offerValidMindate"
+                                                            [maxDate]="" />
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-outline-secondary calendar"
+                                                                (click)="validto.toggle()" type="button"></button>
+                                                        </div>
+                                                    </div>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.validto.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.validto.errors.required">
+                                                            Valid To is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12"
+                                                *ngIf="!isEditSection('headersection')">
+                                                <label>Valid To</label>
+                                                <input class="form-control" type="text" formControlName="validto"
+                                                    disabled>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12"
+                                                *ngIf="isEditSection('headersection')">
+                                                <div class="form-group">
+                                                    <label for="employeeresponsible" class="required">Employee
+                                                        Responsible</label>
+                                                    <ng-select [items]="EmployeeResponsibleList" class="form-control"
+                                                        formControlName="employeeresponsible"
+                                                        bindLabel="employeefullname" bindValue="Empno"
+                                                        placeholder="Please Select"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.employeeresponsible.errors }"
+                                                        [readonly]="!isEditSection('headersection')">
+                                                    </ng-select>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.employeeresponsible.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.employeeresponsible.errors.required">
+                                                            Employee Responsible is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12"
+                                                *ngIf="!isEditSection('headersection')">
+                                                <div class="form-group">
+                                                    <label for="employeeresponsible" class="required">
+                                                        Employee Responsible
+                                                    </label>
+                                                    <input class="form-control" type="text"
+                                                        formControlName="employeeresponsible" [attr.disabled]="true">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12"
+                                                *ngIf="isOrderIndirect">
+                                                <div class="form-group">
+                                                    <label for="account" class="required">Customer</label>
+                                                    <button style="float: right;text-decoration:none;margin-top:-3px"
+                                                        class="btn btn-link" (click)="onRefreshAccountPartners()"
+                                                        *ngIf="isEditSection('headersection')">[
+                                                        Refresh ]</button>
+                                                    <ng-select #Selecter class="form-control" formControlName="account"
+                                                        labelForId="ngSelectAccountId"
+                                                        (keyup)="GetAccountListDropdown()" [items]="AccountsList"
+                                                        bindLabel="customerfullname" bindValue="sfdcid"
+                                                        (change)="onCustomerChange($event)"
+                                                        placeholder="Type 3 char to search"
+                                                        [readonly]="!isEditSection('headersection')"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.account.errors }">
+                                                    </ng-select>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.account.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.account.errors.required">
+                                                            Customer is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="nacecode">Nace Code</label>
+                                                    <input class="form-control" type="text" formControlName="nacecode"
+                                                        [attr.disabled]="true">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="nacelevel">Level</label>
+                                                    <input class="form-control" type="text" formControlName="nacelevel"
+                                                        [attr.disabled]="true">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="businessmodel">Business Model</label>
+                                                    <input class="form-control" type="text"
+                                                        formControlName="businessmodel" [attr.disabled]="true">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <div style="float: left;">
+                                                        <label for="terms" class="required">Terms & Condition</label>
+                                                    </div>
+                                                    <div style="float: right;">
+                                                        <span *ngIf="isEditSection('headersection')">
+                                                            <i class="fas fa-exclamation"></i>
+                                                            <i>
+                                                                {{500 - TermsAndConditionValue?.length}} characters
+                                                                left.</i>
+                                                        </span>
+                                                    </div>
+                                                    <textarea rows=" 3" cols="50" class="form-control" maxlength="500"
+                                                        formControlName="terms"
+                                                        [ngClass]="{ 'is-invalid': submitted && contractInformationFieldsForm.terms.errors }"
+                                                        [(ngModel)]="TermsAndConditionValue" maxlength="500"
+                                                        [attr.disabled]="!isEditSection('headersection') ? '' : null"></textarea>
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.terms.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="contractInformationFieldsForm.terms.errors.required">
+                                                            Terms & Condition is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="annexure">
+                                                        Annexure
+                                                    </label>
+                                                    <input class="form-control" type="text" formControlName="annexure"
+                                                        [attr.disabled]="!isEditSection('headersection') ? '' : null">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </ng-template>
+                            </ngb-panel>
+                            <ngb-panel id="ngb-panel-1" *ngIf="isShowSection('headersection')">
+                                <ng-template ngbPanelTitle let-opened="opened">Items</ng-template>
+                                <ng-template ngbPanelContent>
+                                    <div class="row">
+                                        <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-4 text-left mb-2"
+                                            *ngIf="isEditSection('headersection')">
+                                            <button type="button" class="btn btn-danger mr-2" *ngIf="showDeleteAllBtn()"
+                                                (click)="OpenDeleteAllPopup()">Delete
+                                                All
+                                            </button>
+                                        </div>
+                                        <div class="col-12 col-xl-8 col-lg-8 col-md-8 col-sm-8 text-right mb-2"
+                                            *ngIf="isEditSection('headersection')">
+                                            <button type="button" class="btn btn-orange-s ml-2"
+                                                (click)="openImportItemsModal()">Import Item (MFG/TRD)
+                                            </button>
+                                            <button type="button" class="btn btn-orange-s ml-2"
+                                                (click)="openLg(content1, undefined)">Add Item (MFG/TRD)</button>
+                                        </div>
+                                        <div class="col-12 text-right mb-2" *ngIf="rcStatus && rcStatus >= 50">
+                                            <button type="button" class="btn btn-orange-s ml-2"
+                                                (click)="onExportItemExcel()">Export Item(s) - Excel
+                                            </button>
+                                            <button type="button" class="btn btn-orange-s ml-2"
+                                                (click)="onExportItemPDF()">Export Item(s) - PDF
+                                            </button>
+                                        </div>
+                                        <div class="row" *ngIf="filterDatatoDeletewithOrder(contarctItemStd).length > 0"
+                                            class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                            <div class="overflow-auto">
+                                                <table class="table table-hover table-responsive table-sorting"
+                                                    id="table-opportunities">
+                                                    <thead class="thead-inverse">
+                                                        <tr>
+                                                            <th *ngIf="isEditSection('headersection')" width="90">
+                                                                Action</th>
+                                                            <th *ngIf="!isEditSection('headersection')"
+                                                                style="width: 0;"></th>
+                                                            <th width="10">Seq No</th>
+                                                            <th width="80">Article No</th>
+                                                            <th>Description</th>
+                                                            <th width="50">Type</th>
+                                                            <th width="50">Qty</th>
+                                                            <th width="50" *ngIf="isLMEBased()">List Price</th>
+                                                            <th width="50">Disc(%)</th>
+                                                            <th width="80">Unit Price</th>
+                                                            <th width="100">Unique doc no</th>
+                                                            <th width="80">Valid From</th>
+                                                            <th width="80">Valid To</th>
+                                                            <th width="80" style="text-align: right;"
+                                                                *ngIf="isShowOverallRGroupMargin">R. GM(%)</th>
+                                                            <th width="80" style="text-align: right;"
+                                                                *ngIf="isShowOverallMargin">GM(%)</th>
+                                                            <th width="80" style="text-align: right;"
+                                                                *ngIf="isShowOverallMargin">T. GM(%)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngIf="contarctItemStd.length===0">
+                                                            <td colspan="13" style="text-align: center;">
+                                                                No Records Found
+                                                            </td>
+                                                        </tr>
+                                                        <tr
+                                                            *ngFor="let stditem of filterDatatoDeletewithOrder(contarctItemStd); let j=index;">
+                                                            <td *ngIf="isEditSection('headersection')">
+                                                                <button class="btn btn-link p-0 mr-3"
+                                                                    (click)="OpenItemDeletePopup(j, stditem.id, stditem.articleNo, 10)"
+                                                                    [disabled]="!isEditSection('headersection')  ? true : false"><img
+                                                                        class="table-icon"
+                                                                        src="../../../../../assets/images/icon-delete.svg"></button>
+                                                                <button
+                                                                    [disabled]="!isEditSection('headersection')  ? true : false"
+                                                                    class="btn btn-link p-0 mr-3"
+                                                                    (click)="itemEdit(content1, j)" appNoDblClick><img
+                                                                        class="table-icon"
+                                                                        src="../../../../../assets/images/icon-edit.svg"></button>
+                                                            </td>
+                                                            <td *ngIf="!isEditSection('headersection')"></td>
+                                                            <td>{{stditem.seqno}}</td>
+                                                            <td>{{stditem.articleno}}</td>
+                                                            <td>{{stditem.articledesc}}</td>
+                                                            <td>{{stditem?.itemtype == 'STD' ? 'MFG' :
+                                                                stditem?.itemtype}}</td>
+                                                            <td>{{stditem.quantity}}</td>
+                                                            <td *ngIf="isLMEBased()">{{stditem.price}}</td>
+                                                            <td>{{stditem.discount}}</td>
+                                                            <td>{{stditem.unitprice}}</td>
+                                                            <td>{{stditem.unique_doc_number}}</td>
+                                                            <td>{{stditem?.validfrom | date:dateformate}}
+                                                            </td>
+                                                            <td>{{stditem?.validto | date:dateformate}}
+                                                            </td>
+                                                            <td align="right" *ngIf="isShowItemRMCGrossMargin">
+                                                                {{stditem.rmcgrossmargin | percent:'2.2-2'}}
+                                                            </td>
+                                                            <td align="right" *ngIf="isShowItemMargin">
+                                                                {{stditem.grossmargin | percent:'2.2-2'}}
+                                                            </td>
+                                                            <td align="right" *ngIf="isShowItemMargin">
+                                                                {{stditem.targetgrossmargin | percent:'2.2-2'}}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <tfoot
+                                                        *ngIf="!isAdd && (isShowOverallRGroupMargin || isShowOverallMargin)">
+                                                        <tr>
+                                                            <td *ngIf="isLMEBased()" colspan="12" align="right"> </td>
+                                                            <td *ngIf="!isLMEBased()" colspan="11" align="right"></td>
+                                                            <td align="right" *ngIf="isShowOverallRGroupMargin">
+                                                                <strong>
+                                                                    {{contractInformationData.totalrmcgrossmargin |
+                                                                    percent:'2.2-2'}}</strong>
+                                                            </td>
+                                                            <td align="right" *ngIf="isShowOverallMargin">
+                                                                <strong>
+                                                                    {{contractInformationData.totalgrossmargin |
+                                                                    percent:'2.2-2'}}</strong>
+                                                            </td>
+                                                            <td align="right" *ngIf="isShowOverallMargin">
+                                                                <strong>
+                                                                    {{contractInformationData.totaltargetgrossmargin |
+                                                                    percent:'2.2-2'}}</strong>
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="row" *ngIf="isDeletedDataVisible()"
+                                            class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                            <p> </p>
+                                            <h5 class="redtext">Deleted Items</h5>
+                                            <div class="overflow-auto">
+                                                <table class="table table-hover table-responsive table-sorting"
+                                                    id="table-opportunities">
+                                                    <thead class="thead-inverse">
+                                                        <tr>
+                                                            <th width="85px">Seq No</th>
+                                                            <th width="80px">Article No</th>
+                                                            <th>Description</th>
+                                                            <th width="80px">Type</th>
+                                                            <th width="150px">Cust. Part No</th>
+                                                            <th width="50px">Qty</th>
+                                                            <th width="50px" *ngIf="isLMEBased()">List Price</th>
+                                                            <th width="50px">Discount(%)</th>
+                                                            <th width="50px">Unit Price</th>
+                                                            <th width="100px">Unique doc no</th>
+                                                            <th width="120px">Valid From</th>
+                                                            <th width="100px">Valid To</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr
+                                                            *ngFor="let stditem of filtredDeletedItemData(); let j=index;">
+                                                            <td width="85px">{{stditem.seqno}}</td>
+                                                            <td width="80px">{{stditem?.articleno}}</td>
+                                                            <td>{{stditem.articledesc}}</td>
+                                                            <td width="80px">{{stditem?.itemtype == 'STD' ? 'MFG' :
+                                                                stditem?.itemtype}}</td>
+                                                            <td width="150px">{{stditem?.customerpartno}}</td>
+                                                            <td width="50px">{{stditem?.quantity}}</td>
+                                                            <td width="50px" *ngIf="isLMEBased()">{{stditem.price}}</td>
+                                                            <td width="50px">{{stditem?.discount}}</td>
+                                                            <td width="50px">{{stditem?.unitprice}}</td>
+                                                            <td width="100px">{{stditem?.unique_doc_number}}</td>
+                                                            <td width="120px">{{stditem?.validfrom | date:dateformate}}
+                                                            </td>
+                                                            <td width="100px">{{stditem?.validto | date:dateformate}}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                            <div class="form-group" *ngIf="isEditSection('headersection')">
+                                                <label
+                                                    [ngClass]="{ 'required': contractInformationFieldsForm.rcpricebasedon.value && (contractInformationFieldsForm.rcpricebasedon.value === 10 || contractInformationFieldsForm.rcpricebasedon.value === 40) }">Attachments</label>
+                                                <div>
+                                                    <button (click)="fileInput.click()">Select File</button>
+                                                    <input type="file" id="importFile" style="display: none;"
+                                                        (change)="OfferfileChangeListener($event)" #fileInput multiple
+                                                        [ngClass]="{ 'is-invalid': submitted && 
+                                                        contractInformationFieldsForm.rcpricebasedon.value && (contractInformationFieldsForm.rcpricebasedon.value === 10 || contractInformationFieldsForm.rcpricebasedon.value === 40) 
+                                                        && !RateContractFiles.length }" />
+                                                    <div *ngIf="submitted && contractInformationFieldsForm.rcpricebasedon.value
+                                                     && (contractInformationFieldsForm.rcpricebasedon.value === 10 || contractInformationFieldsForm.rcpricebasedon.value === 40)"
+                                                        class="invalid-feedback">
+                                                        <div *ngIf="RateContractFiles.length == 0">
+                                                            required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" *ngIf="!isEditSection('headersection')">
+                                                <label>Attachments</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 mt-3" *ngIf="RateContractFiles.length > 0">
+                                            <div class="row">
+                                                <div *ngFor="let file of RateContractFiles;let f=index"
+                                                    class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 outer-container-upload-control">
+                                                    <div class="upload-control-filetype-container"><img
+                                                            class="table-icon-lg"
+                                                            src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                                    </div>
+                                                    <div class="upload-control-filename-container dot-views"><a
+                                                            href="javascript:void(0)" *ngIf="file.id"
+                                                            (click)="downloadFile(file.name,file.id,file.type)">
+                                                            {{file.name}}</a><span *ngIf="!file.id">{{file.name}}</span>
+                                                    </div>
+                                                    <div class="upload-control-delete-container"
+                                                        *ngIf="isEditSection('headersection')">
+                                                        <button class="btn btn-link p-0"
+                                                            (click)="OfferFileRemove(f, 0)">
+                                                            <img class="table-icon"
+                                                                src="../../../../../assets/images/icon-delete1.svg"
+                                                                title="delete image"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <form class="ng-invalid ng-touched ng-dirty" [formGroup]="OtherForm"
+                                        *ngIf="isEditSection('headersection')">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <div style="float: left;">
+                                                        <label for="approvalcomment">Approval
+                                                            Comment</label>
+                                                    </div>
+                                                    <div style="float: right;">
+                                                        <span>
+                                                            <i class="fas fa-exclamation"></i> <i>
+                                                                {{500 - otherForm.approvalcomment.value.length}}
+                                                                characters
+                                                                left.</i></span>
+                                                    </div>
+                                                    <textarea rows="3" formControlName="approvalcomment" cols="50"
+                                                        class="form-control" maxlength="500"
+                                                        [ngClass]="{ 'is-invalid': submitted && otherForm.approvalcomment.errors }"></textarea>
+                                                    <div *ngIf="submitted && otherForm.approvalcomment.errors"
+                                                        class="invalid-feedback">
+                                                        <div *ngIf="otherForm.approvalcomment.errors.required">
+                                                            Approval Comments is required
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="row">
+                                        <div class="col-12 text-right" style="margin-top: 10px;"
+                                            *ngIf="isEditSection('headersection')">
+                                            <div class="form-group">
+                                                <button class="btn btn-orange-outline ml-2 key key-m"
+                                                    (click)="oncancelClick()" #cancelbutton><i
+                                                        class="icon-x"></i>Cancel</button>
+                                                <button class="btn btn-orange-s" (click)="onSaveasDraftClick()"
+                                                    appNoDblClick><i class="icon-floppy-o"></i>Save</button>
+                                                <button class="btn btn-success ml-2" appNoDblClick
+                                                    *ngIf="ShowSubmitforApprovalButton"
+                                                    (click)="submitForApprovalRateContract()"><i
+                                                        class="icon-floppy-o"></i>Submit for Approval</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </ngb-panel>
+
+                            <ngb-panel id="ngb-panel-2" *ngIf="isShowSection('approvedandrejectedby')">
+                                <ng-template ngbPanelTitle let-opened="opened">Approved/Rejected by</ng-template>
+                                <ng-template ngbPanelContent>
+                                    <div class="row">
+                                        <div *ngIf="isEditSection('approvedandrejectedby') && approvalStatus===rateContractsStatus.pending"
+                                            class="col-12 text-right mb-2">
+                                            <button type="button" class="btn btn-success ml-2"
+                                                (click)="onOfferApproveClick()">Approve</button>
+                                            <button type="button" (click)="onOfferRejectClick()"
+                                                class="btn btn btn-danger ml-2">Reject</button>
+                                        </div>
+                                    </div>
+                                    <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 p-0">
+                                        <div class="overflow-auto">
+                                            <table class="table table-hover table-responsive table-sorting"
+                                                id="table-opportunities">
+                                                <thead class="thead-inverse">
+                                                    <tr>
+                                                        <th width="85px">Sr No</th>
+                                                        <th width="80px">Name</th>
+                                                        <th width="50px">Role</th>
+                                                        <th width="150px">Request Date</th>
+                                                        <th width="50px">Status</th>
+                                                        <th width="50px">Approve/Reject Date</th>
+                                                        <th width="100px">Message</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngIf="approvalData.length===0">
+                                                        <td colspan="8">No records found..</td>
+                                                    </tr>
+                                                    <tr *ngFor="let item of approvalData;let j=index;">
+                                                        <td>{{j+1}}</td>
+                                                        <td>{{item.username}}</td>
+                                                        <td>{{item.role}}</td>
+                                                        <td>{{item.senddate | date:dateformate : '+0000'}}</td>
+                                                        <td>{{item.showstatus}}</td>
+                                                        <td>{{item.statusdate | date:dateformate : '+0000'}}</td>
+                                                        <td>{{item.rejectreason==='undefined'?'':item.rejectreason}}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </ngb-panel>
+                            <ngb-panel id="ngb-panel-3" *ngIf="isShowSection('attachments')">
+                                <ng-template ngbPanelTitle let-opened="opened">Attachments</ng-template>
+                                <ng-template ngbPanelContent>
+                                    <div class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 p-0">
+                                        <div>
+                                            <table class="table table-hover table-responsive table-sorting"
+                                                id="table-opportunities">
+                                                <thead class="thead-inverse">
+                                                    <tr>
+                                                        <th style="width: 4%;">Sr No.</th>
+                                                        <th style="width: 11%;">Title</th>
+                                                        <th>Attachment</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>
+                                                            <label class="required">RC Agreement</label>
+                                                        </td>
+                                                        <td>
+                                                            <div class="row mt-2">
+                                                                <div
+                                                                    class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                                                    <div class="form-group"
+                                                                        *ngIf="isEditSection('attachments')">
+                                                                        <div><button (click)="fileInput.click()">Select
+                                                                                File</button>
+                                                                            <input type="file" id="importFile"
+                                                                                style="display: none;"
+                                                                                (change)="RateContractfileChangeListener($event)"
+                                                                                #fileInput multiple />
+                                                                            <div *ngIf="!rateContarctsFiles.length && requiredError"
+                                                                                class="invalid">
+                                                                                {{requiredErrorText}}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-xl-10 col-lg-10 col-md-10 col-sm-12"
+                                                                    *ngIf="rateContarctsFiles.length > 0">
+                                                                    <div class="row">
+                                                                        <div *ngFor="let file of rateContarctsFiles;let f=index"
+                                                                            class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 outer-container-upload-control">
+                                                                            <div
+                                                                                class="upload-control-filetype-container">
+                                                                                <img class="table-icon-lg"
+                                                                                    src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                                                            </div>
+                                                                            <div
+                                                                                class="upload-control-filename-container dot-views">
+                                                                                <a href="javascript:void(0)"
+                                                                                    *ngIf="file.id"
+                                                                                    (click)="downloadFile(file.name,file.id,file.type)">
+                                                                                    {{file.name}}</a><span
+                                                                                    *ngIf="!file.id">{{file.name}}</span>
+                                                                            </div>
+                                                                            <div class="upload-control-delete-container"
+                                                                                *ngIf="isEditSection('attachments')">
+                                                                                <button class="btn btn-link p-0"
+                                                                                    (click)="OfferFileRemove(f, 10)">
+                                                                                    <img class="table-icon"
+                                                                                        src="../../../../../assets/images/icon-delete1.svg"
+                                                                                        title="delete image"></button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>2</td>
+                                                        <td><label class="required">RC Annexure</label></td>
+                                                        <td>
+                                                            <div class="row mt-2">
+                                                                <div
+                                                                    class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                                                    <div class="form-group"
+                                                                        *ngIf="isEditSection('attachments')">
+                                                                        <div><button (click)="fileInput.click()">Select
+                                                                                File</button>
+                                                                            <input type="file" id="importFile"
+                                                                                style="display: none;"
+                                                                                (change)="RateContractAnnexurefileChangeListener($event)"
+                                                                                #fileInput multiple />
+                                                                            <div *ngIf="!rateContarctsFiles.length && requiredError"
+                                                                                class="invalid">
+                                                                                {{requiredErrorText}}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-xl-10 col-lg-10 col-md-10 col-sm-12"
+                                                                    *ngIf="rateContarctsAnnexureFiles.length > 0">
+                                                                    <div class="row">
+                                                                        <div *ngFor="let file of rateContarctsAnnexureFiles;let f=index"
+                                                                            class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 outer-container-upload-control">
+                                                                            <div
+                                                                                class="upload-control-filetype-container">
+                                                                                <img class="table-icon-lg"
+                                                                                    src="../../../../../assets/images/{{setFileTypeIcon(file.type)}}">
+                                                                            </div>
+                                                                            <div
+                                                                                class="upload-control-filename-container dot-views">
+                                                                                <a href="javascript:void(0)"
+                                                                                    *ngIf="file.id"
+                                                                                    (click)="downloadFile(file.name,file.id,file.type)">
+                                                                                    {{file.name}}</a><span
+                                                                                    *ngIf="!file.id">{{file.name}}</span>
+                                                                            </div>
+                                                                            <div class="upload-control-delete-container"
+                                                                                *ngIf="isEditSection('attachments')">
+                                                                                <button class="btn btn-link p-0"
+                                                                                    (click)="OfferFileRemove(f, 20)">
+                                                                                    <img class="table-icon"
+                                                                                        src="../../../../../assets/images/icon-delete1.svg"
+                                                                                        title="delete image"></button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12 text-right" style="margin-top: 10px;"
+                                            *ngIf="isEditSection('attachments')">
+                                            <div class="form-group">
+                                                <button class="btn btn-orange-outline ml-2 key key-m"
+                                                    (click)="oncancelClick()" #cancelbutton><i
+                                                        class="icon-x"></i>Cancel</button>
+                                                <button class="btn btn-orange-s mr-2" (click)="FileUpload(false)"
+                                                    appNoDblClick><i class="icon-floppy-o"></i>Save</button>
+                                                <button class="btn btn-orange-s" (click)="FileUpload(true)"
+                                                    appNoDblClick><i class="icon-floppy-o"></i>Submit</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </ngb-panel>
+                            <ngb-panel id="ngb-panel-4" *ngIf="isShowSection('initiateso')">
+                                <ng-template ngbPanelTitle let-opened="opened">Review & Submit</ng-template>
+                                <ng-template ngbPanelContent>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <div style="float: left;">
+                                                    <label for="approvalcomment" class="required">Comment</label>
+                                                </div>
+                                                <div style="float: right;" *ngIf="isEditSection('initiateso')">
+                                                    <span>
+                                                        <i class="fas fa-exclamation"></i> <i>
+                                                            {{500 - SOComment.length}}
+                                                            characters
+                                                            left.</i></span>
+                                                </div>
+                                                <textarea rows="3" cols="50" class="form-control"
+                                                    [(ngModel)]="SOComment" maxlength="500"
+                                                    [attr.disabled]="!isEditSection('initiateso') ? '' : null"></textarea>
+                                                <div *ngIf="submitted && SOComment.length == 0" class="textValidation">
+                                                    Comment is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 text-right" style="margin-top: 10px;"
+                                            *ngIf="isEditSection('initiateso')">
+                                            <div class="form-group">
+                                                <button class="btn btn-success ml-2" appNoDblClick
+                                                    *ngIf="ShowSubmitforApprovalButton" (click)="onActiveRC()"><i
+                                                        class="icon-floppy-o"></i>Complete</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </ngb-panel>
+                            <ngb-panel *ngFor="let item of AmendmentItemData; let j=index;" title="Amendment{{j+1}}">
+                                <ng-template ngbPanelContent>
+                                    <div class="row">
+                                        <div *ngIf="isEditSection('amendment') && item.status != 80"
+                                            class="col-12 text-right mb-2">
+                                            <button type="button" class="btn btn-orange-s"
+                                                (click)="onItemAmendment(undefined)">Add Item</button>
+                                        </div>
+                                    </div>
+                                    <div class="row" *ngIf="item.id && item.status >= 10">
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="annexure">Initiated By</label>
+                                                <input class="form-control" type="text" value="{{item.InitiatedBy}}"
+                                                    [attr.disabled]="true">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="annexure">Initiated On</label>
+                                                <input class="form-control" type="text"
+                                                    value="{{item.InitiatedOn | date:dateformate}}"
+                                                    [attr.disabled]="true">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 p-0">
+                                        <div class="overflow-auto">
+                                            <table class="table table-hover table-responsive table-sorting"
+                                                id="table-opportunities">
+                                                <thead class="thead-inverse">
+                                                    <tr>
+                                                        <th width="85px"
+                                                            *ngIf="isEditSection('amendment') && item.status !== 80">
+                                                            Action</th>
+                                                        <th width="85px">Sr No</th>
+                                                        <th width="80px">Article No</th>
+                                                        <th>RC Quantity</th>
+                                                        <th>Quantity Used</th>
+                                                        <th>Quantity Remaining</th>
+                                                        <th>Amendment Quantity</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngIf="!item || !item.items || !filtredDeletedData(item.items).length"
+                                                        style="text-align: center;">
+                                                        <td colspan="7">No records found</td>
+                                                    </tr>
+                                                    <tr
+                                                        *ngFor="let article of filtredDeletedData(item.items); let j=index;">
+                                                        <td *ngIf="isEditSection('amendment') && item.status !== 80">
+                                                            <button class="btn btn-link p-0 mr-3"
+                                                                (click)="OpenItemDeletePopup(j, article.id, article.articleno, 20)"
+                                                                [attr.disabled]="!isEditSection('amendment')  ? '' : null"><img
+                                                                    class="table-icon"
+                                                                    src="../../../../../assets/images/icon-delete.svg"></button>
+                                                            <button class="btn btn-link p-0 mr-3"
+                                                                (click)="onItemAmendment(j)"
+                                                                [attr.disabled]="!isEditSection('amendment') ? '' : null"><img
+                                                                    class="table-icon"
+                                                                    src="../../../../../assets/images/icon-edit.svg"></button>
+                                                        </td>
+                                                        <td>{{j+1}}</td>
+                                                        <td>{{article.articleno}}</td>
+                                                        <td>{{article.quantity}}</td>
+                                                        <td>{{article.quantityused}}</td>
+                                                        <td>{{article.quantityremaining}}</td>
+                                                        <td>{{article.amendmentquantity}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="row" *ngIf="item.status == 80">
+                                        <div class="col-12 row">
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="annexure">Approved By</label>
+                                                    <input class="form-control" type="text" value="{{item.ApprovedBy}}"
+                                                        [attr.disabled]="true">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-xl-2 col-lg-2 col-md-3 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="annexure">Approved On</label>
+                                                    <input class="form-control" type="text"
+                                                        value="{{item.ApprovedOn | date:dateformate}}"
+                                                        [attr.disabled]="true">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <div style="float: left;">
+                                                    <label for="approvalcomment">Approval Comment</label>
+                                                </div>
+                                                <textarea rows="3" cols="50" class="form-control" maxlength="500"
+                                                    value="{{item.comment}}" [attr.disabled]="true"></textarea>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 text-right" style="margin-top: 10px;"
+                                            *ngIf="isEditSection('amendment') && item.status !== 80">
+                                            <div class="form-group">
+                                                <button class="btn btn-orange-outline ml-2 key key-m"
+                                                    (click)="oncancelClick()" #cancelbutton><i
+                                                        class="icon-x"></i>Cancel</button>
+                                                <button class="btn btn-success" appNoDblClick
+                                                    (click)="onItemAmendmentSave(false)"><i
+                                                        class="icon-floppy-o"></i>Save</button>
+                                                <button class="btn btn-success ml-2" appNoDblClick
+                                                    (click)="onItemAmendmentApprove()" *ngIf="isAdmin || isOMT"><i
+                                                        class="icon-floppy-o"></i>Approve</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </ngb-panel>
+                        </ngb-accordion>
+                        <div *ngIf="isEditSection('amendment') && showAddItemAmendmentButton">
+                            <button type="button" class="btn btn-orange-s mt-2" (click)="onAmendmentItemClick()">
+                                Amendment Item
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- models -->
+<ng-template #content1 let-modal>
+    <add-rate-contracts-items-popup #addRateContractPoup [ItemForm]="ItemForm" (itemSaveClick)="onItemSaveClick()"
+        [submitted]="submitted" [contarctItemStd]="contarctItemStd" [rcStatus]="rcStatus" [rcType]="rcType"
+        [RCValidity]="RCValidity" [LMEBased]="isLMEBased()" [ALPBased]="isALPBased()">
+    </add-rate-contracts-items-popup>
+</ng-template>
+
+<ng-template #offerapprovemodel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Rate Contract Approve</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="ApproveForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <div style="float: left;">
+                            <label for="approvereason" class='required'>Comment</label>
+                        </div>
+                        <div style="float: right;">
+                            <span><i class="fas fa-exclamation"></i> <i>
+                                    {{500 - ApproveReason?.length}}
+                                    characters left </i> </span>
+                        </div>
+                        <textarea #approvedText rows="3" cols="50" formControlName="approvereason"
+                            [ngClass]="{ 'is-invalid': submitted && approveForm.approvereason.errors }"
+                            [(ngModel)]="ApproveReason" maxlength="500"></textarea>
+                        <div *ngIf="submitted && approveForm.approvereason.errors" class="invalid-feedback">
+                            <div *ngIf="approveForm.approvereason.errors.required">
+                                Comment is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer text-right">
+        <button type="button" ngbAutofocus class="btn btn-outline-secondary" style="min-width: 50px;"
+            (click)="modal.dismiss('Cross click')">
+            <i title='Cancel'></i> No</button>
+        <button type="button" class="btn btn-success"
+            (click)="onApprovedRejectedClick(rateContractsStatus.approved,approvedText)" style="min-width: 50px;">
+            <i title='Yes'></i>Yes</button>
+    </div>
+</ng-template>
+
+<ng-template #offerrejectmodel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Rate Contract Reject</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="RejectForm">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <div style="float: left;">
+                            <label for="rejectreason" class='required'>Reason</label>
+                        </div>
+                        <div style="float: right;">
+                            <span><i class="fas fa-exclamation"></i> <i>
+                                    {{500 - RejectReason?.length}}
+                                    characters left </i> </span>
+                        </div>
+                        <textarea #rejectedText rows="3" cols="50" formControlName="rejectreason"
+                            [ngClass]="{ 'is-invalid': submitted && rejectForm.rejectreason.errors }"
+                            [(ngModel)]="RejectReason" maxlength="500"></textarea>
+                        <div *ngIf="submitted && rejectForm.rejectreason.errors" class="invalid-feedback">
+                            <div *ngIf="rejectForm.rejectreason.errors.required">
+                                Reason is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" style="min-width: 50px;"
+            (click)="modal.dismiss('Cross click')">No</button>
+        <button type="button" class="btn btn-danger" style="min-width: 50px;"
+            (click)="onApprovedRejectedClick(rateContractsStatus.rejected,rejectedText)">Yes</button>
+    </div>
+</ng-template>
+
+<ng-template #itemDeleteallmodel let-modal>
+    <app-delete-confirmation (ondelete)="onDeleteAllClick()" (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #itemdeletemodel let-modal>
+    <app-delete-confirmation [model]="deleteConfirModel" (ondelete)="onItemDelete()"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #ImportItems let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Import MFG/TRD Items</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12" *ngIf="isEditSection('headersection')">
+                <div class="form-group">
+                    <label class="required">Attachments</label>
+                    <div><button (click)="fileInput.click()">Select File</button>
+                        <input type="file" id="importFile" style="display: none;"
+                            (change)="ImportItemsfileChangeListener($event)" #fileInput accept=".xlsx, .xls" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-1 col-lg-1 col-md-2 col-sm-12" *ngIf="!isEditSection('headersection')">
+                <div class="form-group">
+                    <label class="required">Attachments</label>
+                </div>
+            </div>
+            <div class="col-12 mt-3" *ngIf="ImportItemFiles">
+                <div class="row">
+                    <div class="col-md-12 col-lg-6 outer-container-upload-control">
+                        <div class="upload-control-filetype-container"><img class="table-icon-lg"
+                                src="../../../../../assets/images/{{setFileTypeIcon(ImportItemFiles.type)}}">
+                        </div>
+                        <div class="upload-control-filename-container dot-views">
+                            <span>{{ImportItemFiles.name}}</span>
+                        </div>
+                        <div class="upload-control-delete-container">
+                            <button class="btn btn-link p-0" (click)="removeImportItemFile()">
+                                <img class="table-icon" src="../../../../../assets/images/icon-delete1.svg"
+                                    title="delete image"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                (click)="downloadImportItemSample()">here</button> to download sample file.</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onImportItemSave()">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #ItemStatusModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Status of import items</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="row" class="col-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <div class="overflow-auto">
+                    <table class="table table-hover table-responsive table-sorting" id="table-opportunities">
+                        <thead class="thead-inverse">
+                            <tr>
+                                <th>Seq No</th>
+                                <th>Article No</th>
+                                <th>Description</th>
+                                <th>Unit Price</th>
+                                <th>Qty</th>
+                                <th>Discount (%)</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let iis of importItemStatus">
+                                <td>{{iis.seqno}}</td>
+                                <td>{{iis.articleno}}</td>
+                                <td>{{iis.description}}</td>
+                                <td>{{iis.unitprice}}</td>
+                                <td>{{iis.quantity}}</td>
+                                <td>{{iis.discount}}</td>
+                                <td>{{iis.Remarks}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onProceedtoAddItem()">Proceed to Add Items</button>
+    </div>
+</ng-template>
+
+<ng-template #ItemAmendmentModal let-modal>
+    <div class="modal-header" *ngIf="isEditSection('amendment')">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit Item</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="ItemAmendmentForm" enctype="multipart/form-data" method="POST">
+            <div class="row" *ngIf="isEditSection('amendment') && !itemforEdit">
+                <div class="col-md-12">
+                    <div class="w-50 float-left mr-3" style="margin: -15px 0px -15px 0px;">
+                        <app-itemsearch class="col-12 col-xl-8 col-lg-8 col-md-6 col-sm-12"
+                            (callBack)="onItemSearch($event)">
+                        </app-itemsearch>
+                    </div>
+                    <div class="w-30">
+                        <button *ngIf="articleno" class="btn btn-link p-0"
+                            (click)="onSelectProductClearClick()">Clear</button>
+                        <button *ngIf="!articleno" class="btn btn-link p-0" (click)="onSearchProductClick()">Search
+                            Product</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="!isEditSection('amendment') || itemforEdit">
+                <div class="col-md-12">
+                    <div class="w-50 float-left mr-3">
+                        <label for="articleno">Article No</label>
+                        <input type="text" class="form-control" formControlName="articleno" [attr.disabled]=true>
+                    </div>
+                    <div *ngIf="isEditSection('amendment')">
+                        <button class="btn btn-link p-0" (click)="onSelectProductClearClick()">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-10 col-lg-10 col-md-10 col-sm-12">
+                    <!-- <div class="row form-group">
+                        <div class="col-12 col-xl-8 col-lg-8 col-md-8 col-sm-12">
+                            <label for="articledesc">Article Description</label>
+                            <input type="text" class="form-control" formControlName="articledesc" [attr.disabled]=true>
+                        </div>
+                    </div> -->
+                    <div class="row form-group">
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="quantity">Quantity</label>
+                            <input class="form-control" type="text" formControlName="quantity" [attr.disabled]="true"
+                                maxlength="35">
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="quantityused">Quantity Used</label>
+                            <input class="form-control" type="text" formControlName="quantityused"
+                                [attr.disabled]="true" maxlength="35">
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="quantityremaining">Quantity Remaining</label>
+                            <input class="form-control" type="text" formControlName="quantityremaining"
+                                [attr.disabled]="true" maxlength="35">
+                        </div>
+                        <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <label for="amendmentquantity" class="required">Amendment Quantity</label>
+                            <input class="form-control" type="text" formControlName="amendmentquantity"
+                                [OnlyNumber]=true [attr.disabled]="!isEditSection('amendment') ? '' : null"
+                                [ngClass]="{ 'is-invalid': submitted && itemAmendmentForm.amendmentquantity.errors }">
+                            <div *ngIf="submitted && itemAmendmentForm.amendmentquantity.errors"
+                                class="invalid-feedback">
+                                <div *ngIf="itemAmendmentForm.amendmentquantity.errors.required">
+                                    Required!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onAmendmentItemSave()"
+            *ngIf="isEditSection('amendment')">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #ProductSearchModel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">RC Articles</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="col-12 search_product_div">
+            <table class="table table-hover table-responsive table-sorting" id="table-productmaster">
+                <thead class="thead-inverse">
+                    <tr>
+                        <th>Action</th>
+                        <th>Article Number</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="productmasterlist.length == 0">
+                        <td colspan="3" style="text-align: center;">
+                            No Records Found
+                        </td>
+                    </tr>
+                    <tr *ngFor="let pm of productmasterlist" (dblclick)="onSelectProductClick(pm.articleno)">
+                        <td>
+                            <button class="btn btn-link p-0"
+                                (click)="onSelectProductClick(pm.articleno)">Select</button>
+                        </td>
+                        <td>{{pm.articleno}}</td>
+                        <td>{{pm.articledesc}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+    </div>
+</ng-template>
+
+<ng-template #ItemAmendmentCommentmodal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Rate Contract Item Amendment</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <div style="float: left;">
+                        <label for="ItemAmendmentComment" class='required'>Comment</label>
+                    </div>
+                    <div style="float: right;">
+                        <span><i class="fas fa-exclamation"></i> <i>
+                                {{500 - ItemAmendmentComment?.length}}
+                                characters left </i> </span>
+                    </div>
+                    <textarea #approvedText rows="3" cols="50"
+                        [ngClass]="{ 'is-invalid': submitted && !ItemAmendmentComment.length }"
+                        [(ngModel)]="ItemAmendmentComment" maxlength="500"></textarea>
+                    <div *ngIf="submitted && !ItemAmendmentComment.length" class="invalid-feedback">
+                        Comment is required
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer text-right">
+        <button type="button" ngbAutofocus class="btn btn-outline-secondary" style="min-width: 50px;"
+            (click)="modal.dismiss('Cross click')">
+            <i title='Cancel'></i> No</button>
+        <button type="button" class="btn btn-success" (click)="onItemAmendmentSave(true)" style="min-width: 50px;">
+            <i title='Yes'></i>Yes</button>
+    </div>
+</ng-template>

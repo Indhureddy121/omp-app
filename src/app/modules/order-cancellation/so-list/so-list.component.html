@@ -1,0 +1,679 @@
+<div class="page-wrapper">
+  <div class="container-fluid">
+    <div class="row">
+      <app-list-sub-header
+        [isExport]="true"
+        (exportClicked)="onExport()"
+      ></app-list-sub-header>
+      <div class="col-12">
+        <form [formGroup]="SAPForm">
+          <div class="w-100 row">
+            <div
+              class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12"
+              *ngIf="usertype == 20"
+            >
+              <div class="form-group">
+                <label for="soldto">Sold To</label>
+                <input
+                  type="text"
+                  formControlName="sold_to"
+                  class="form-control"
+                  [attr.disabled]="true"
+                />
+              </div>
+            </div>
+            <div
+              class="col-12 col-xl-4 col-lg-4 col-md-3 col-sm-12"
+              *ngIf="usertype != 20"
+            >
+              <div class="form-group">
+                <label for="dealer">Sold To</label>
+                <ng-select
+                  [items]="DealersList"
+                  class="form-control"
+                  formControlName="sold_to"
+                  bindLabel="dealerfullname"
+                  bindValue="sapid"
+                  placeholder="Type 3 char to search"
+                  (keyup)="GetDealersList()"
+                  labelForId="ngSelectDealers"
+                  [ngClass]="{
+                    'is-invalid': submitted && sapForm.sold_to.errors
+                  }"
+                >
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+              <div class="form-group">
+                <label for="currentfrom">From Date</label>
+                <div
+                  class="input-group"
+                  [ngClass]="{
+                    'is-invalid': submitted && sapForm.currentfrom.errors
+                  }"
+                >
+                  <input
+                    class="form-control doc-date"
+                    formcontrolname="currentfrom"
+                    ngbDatepicker
+                    #currentfrom="ngbDatepicker"
+                    (dateSelect)="OnCurrentFromDateSelection($event)"
+                    readonly
+                    [value]="formatter.format(CurrentFromDate)"
+                    [ngClass]="{
+                      'is-invalid': submitted && sapForm.currentfrom.errors
+                    }"
+                  />
+                  <div class="input-group-append">
+                    <button
+                      class="btn btn-outline-secondary calendar"
+                      (click)="currentfrom.toggle()"
+                      type="button"
+                    ></button>
+                  </div>
+                </div>
+                <div
+                  *ngIf="submitted && sapForm.currentfrom.errors"
+                  class="invalid-feedback"
+                >
+                  <div *ngIf="sapForm.currentfrom.errors.required">
+                    From Date is required
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+              <div class="form-group">
+                <label for="currentto">To Date</label>
+                <div
+                  class="input-group"
+                  [ngClass]="{
+                    'is-invalid': submitted && sapForm.currentto.errors
+                  }"
+                >
+                  <input
+                    class="form-control doc-date"
+                    formcontrolname="currentto"
+                    ngbDatepicker
+                    #currentto="ngbDatepicker"
+                    (dateSelect)="OnCurrentToDateSelection($event)"
+                    readonly
+                    [value]="formatter.format(CurrentToDate)"
+                    [minDate]="CurrentToMindate"
+                    [maxDate]="CurrentToMaxdate"
+                    [ngClass]="{
+                      'is-invalid': submitted && sapForm.currentto.errors
+                    }"
+                  />
+                  <div class="input-group-append">
+                    <button
+                      class="btn btn-outline-secondary calendar"
+                      (click)="currentto.toggle()"
+                      type="button"
+                    ></button>
+                  </div>
+                </div>
+                <div
+                  *ngIf="submitted && sapForm.currentto.errors"
+                  class="invalid-feedback"
+                >
+                  <div *ngIf="sapForm.currentto.errors.required">
+                    To Date is required
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+              <div class="form-group">
+                <label for="soldto" class="required">Sales Order</label>
+                <input
+                  type="text"
+                  formControlName="sales_order"
+                  class="form-control"
+                />
+              </div>
+            </div>
+            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+              <div class="form-group">
+                <label for="soldto" class="required">Customer PO No.</label>
+                <input
+                  type="text"
+                  formControlName="cust_po_no"
+                  class="form-control"
+                />
+              </div>
+            </div>
+            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+              <div class="form-group">
+                <label for="soldto">Material</label>
+                <input
+                  type="text"
+                  formControlName="material"
+                  class="form-control"
+                />
+              </div>
+            </div>
+            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+              <div class="form-group">
+                <label for="dealer" class="required d-block">OMP NO.</label>
+                <div class="d-flex align-items-center">
+                  <div class="col pl-0">
+                    <ng-select
+                      [items]="ompList"
+                      class="form-control"
+                      formControlName="omp"
+                      bindLabel="name"
+                      bindValue="code"
+                    >
+                    </ng-select>
+                  </div>
+                  <div class="col pl-0">
+                    <input
+                      type="text"
+                      formControlName="omp_text"
+                      class="form-control"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+              <div class="form-group">
+                <label for="dealer">Order Status</label>
+                <ng-select
+                  [items]="orderStatus"
+                  class="form-control"
+                  formControlName="order_status"
+                  bindLabel="name"
+                  bindValue="name"
+                  [ngClass]="{
+                    'is-invalid': submitted && sapForm.order_status.errors
+                  }"
+                >
+                </ng-select>
+              </div>
+            </div>
+            <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-4">
+              <div class="form-group">
+                <button
+                  class="btn btn-orange-s"
+                  (click)="OnGenerateReportClick()"
+                  appNoDblClick
+                >
+                  <i class="icon-floppy-o"></i>Generate Report
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="w-100" style="overflow-x: auto">
+          <table class="table table-hover table-sorting">
+            <thead class="thead-inverse">
+              <tr>
+                <!-- <th>Dlv Info</th>
+                <th>Inv Info</th> -->
+                <th>Reason for Rejection</th>
+                <th>Sales Order</th>
+                <th>Sales Item</th>
+                <th>OMP No</th>
+                <th>Order Cr. Dt</th>
+                <th>Order Cr. By</th>
+                <th>Sold To Party</th>
+                <th>Sold To Name</th>
+                <th>Order Type</th>
+                <th>Ordertypedesc</th>
+                <th class="text-right">Salesorg</th>
+                <th class="text-right">Salesdistribution</th>
+                <th class="text-right">Salesdivision</th>
+                <th>Custponumber</th>
+                <th>Custpodate</th>
+                <th>Ordervaluehdr</th>
+                <th>Emprespnumber</th>
+                <th>Emprespname</th>
+                <th>Endcustname</th>
+                <th>Orderstatus</th>
+                <th>Plant</th>
+                <th>Itemcreatedate</th>
+                <th>Materialno</th>
+                <th>MaterialDesc</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Factor</th>
+                <th>Length</th>
+                <th>Untol</th>
+                <th>Ovtol</th>
+                <th>Unitprice</th>
+                <th>Currency</th>
+                <th>DeliveryDate</th>
+                <th>Openquanity</th>
+                <th>Matavaldate</th>
+                <th>Ordervalue</th>
+                <th>Openvalue</th>
+                <th>Delvalue</th>
+                <th>Itemorderstatus</th>
+                <th>City</th>
+                <th>Postalcode</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="sapData.length === 0">
+                <td colspan="14" style="text-align: center">
+                  No Records Found
+                </td>
+              </tr>
+              <tr
+                *ngFor="let ol of sapData"
+                [ngClass]="{
+                  'cancellation-in-progress': ol.status === 'PENDING',
+                  'cancellation-success': ol.status === 'COMPLETED',
+                  'cancellation-rejected': ol.status === 'REJECTED'
+                }"
+                (click)="onRowClick(ol)"
+              >
+                <!-- <td>
+                  <button
+                    class="btn btn-link p-0"
+                    (click)="
+                      onDeliveryLinkClicked(ol.DBORDTODELIVERYNAV.results)
+                    "
+                  >
+                    Delivery
+                  </button>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-link p-0"
+                    (click)="onInvoiceLinkClicked(ol.DBORDTOINVOICENAV.results)"
+                  >
+                    Invoice
+                  </button>
+                </td>
+                <td>
+                  <a (click)="sendSoNo(ol.Salesorder)" class="sono-link">{{
+                    ol.Salesorder
+                  }}</a>
+                </td> -->
+                <td>
+                  <ng-select
+                    [disabled]="
+                      ol.status === 'PENDING' ||
+                      ol.status === 'COMPLETED' ||
+                      ol.Itemorderstatus === 'Completely Processed'
+                    "
+                    [items]="reasons"
+                    bindLabel="reason"
+                    [(ngModel)]="ol.cancellationReason"
+                    [placeholder]="
+                      ol.status === 'PENDING' || ol.status === 'COMPLETED'
+                        ? ol.comment
+                        : ol.Itemorderstatus === 'Completely Processed'
+                        ? 'Completely Processed'
+                        : 'select a cancellation reason'
+                    "
+                    (change)="onReasonChange(ol)"
+                  >
+                  </ng-select>
+                </td>
+                <td>{{ ol.Salesorder }}</td>
+                <td>
+                  <ng-container
+                    *ngIf="ol.cancellationInProgress; else salesItem"
+                  >
+                    <button
+                      (click)="fetchApprovers(ol)"
+                      class="btn btn-link p-0"
+                    >
+                      {{ ol.Salesitem }}
+                    </button>
+                  </ng-container>
+                  <ng-template #salesItem>
+                    {{ ol.Salesitem }}
+                  </ng-template>
+                </td>
+                <td>{{ ol.Ompno }}</td>
+                <td>{{ ol.Ordercreateddate }}</td>
+                <td>{{ ol.Ordercreatedby }}</td>
+                <td>{{ ol.Soldtoparty }}</td>
+                <td>{{ ol.Soldtoname }}</td>
+                <td>{{ ol.Ordertype }}</td>
+                <td>{{ ol.Ordertypedesc }}</td>
+                <td>{{ ol.Salesorg }}</td>
+                <td>{{ ol.Salesdistribution }}</td>
+                <td>{{ ol.Salesdivision }}</td>
+                <td>{{ ol.Custponumber }}</td>
+                <td>{{ ol.Custpodate }}</td>
+                <td>{{ ol.Ordervaluehdr }}</td>
+                <td>{{ ol.Emprespnumber }}</td>
+                <td>{{ ol.Emprespname }}</td>
+                <td>{{ ol.Endcustname }}</td>
+                <td>{{ ol.Orderstatus }}</td>
+                <td>{{ ol.Plant }}</td>
+                <td>{{ ol.Itemcreatedate }}</td>
+                <td>{{ ol.Materialno }}</td>
+                <td>{{ ol.MaterialDesc }}</td>
+                <td>{{ ol.Quantity }}</td>
+                <td>{{ ol.Unit }}</td>
+                <td>{{ ol.Factor }}</td>
+                <td>{{ ol.Length }}</td>
+                <td>{{ ol.Untol }}</td>
+                <td>{{ ol.Ovtol }}</td>
+                <td>{{ ol.Unitprice }}</td>
+                <td>{{ ol.Currency }}</td>
+                <td>{{ ol.DeliveryDate }}</td>
+                <td>{{ ol.Openquanity }}</td>
+                <td>{{ ol.Matavaldate }}</td>
+                <td>{{ ol.Ordervalue }}</td>
+                <td>{{ ol.Openvalue }}</td>
+                <td>{{ ol.Delvalue }}</td>
+                <td>{{ ol.Itemorderstatus }}</td>
+                <td>{{ ol.City }}</td>
+                <td>{{ ol.Postalcode }}</td>
+              </tr>
+              <tr>
+                <td colspan="18" style="text-align: left">
+                  <button
+                    class="btn btn-orange-s"
+                    [disabled]="!selectedReasons.length"
+                    (click)="submitCancellation()"
+                  >
+                    <i class="fa fa-times"> Cancel Order(s)</i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<!-- INVOICE -->
+<ng-template #OrderDashboardInvoiceModel let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">INVOICE</h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <div class="w-100" style="overflow-x: auto">
+      <table class="table table-hover table-sorting">
+        <thead class="thead-inverse">
+          <tr>
+            <th>Invoiceno</th>
+            <th>Invoiceitemno</th>
+            <th>Gstinvno</th>
+            <th>Billingdate</th>
+            <th>Paymentterm</th>
+            <th>Netvalueheader</th>
+            <th>Netvalieitem</th>
+            <th>Taxamountheader</th>
+            <th>Taxamountitem</th>
+            <th>Payer</th>
+            <th>Soldtoparty</th>
+            <th>Businessplace</th>
+            <th>Billedqty</th>
+            <th>Materialno</th>
+            <th>Materialdesc</th>
+            <th>Unitprice</th>
+            <th>Currency</th>
+            <th>Shipmentno</th>
+            <th>Transportername</th>
+            <th>Lrno</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="invoiceData.length === 0">
+            <td colspan="14" style="text-align: center">No Records Found</td>
+          </tr>
+
+          <tr *ngFor="let result of invoiceData">
+            <td>
+              <a (click)="printOrder(result.Invoiceno)" class="sono-link">{{
+                result.Invoiceno
+              }}</a>
+            </td>
+            <td>{{ result.Invoiceitemno }}</td>
+            <td>{{ result.Gstinvno }}</td>
+            <td>{{ result.Billingdate }}</td>
+            <td>{{ result.Paymentterm }}</td>
+            <td>{{ result.Netvalueheader }}</td>
+            <td>{{ result.Netvalieitem }}</td>
+            <td>{{ result.Taxamountheader }}</td>
+            <td>{{ result.Taxamountitem }}</td>
+            <td>{{ result.Payer }}</td>
+            <td>{{ result.Soldtoparty }}</td>
+            <td>{{ result.Businessplace }}</td>
+            <td>{{ result.Billedqty }}</td>
+            <td>{{ result.Materialno }}</td>
+            <td>{{ result.Materialdesc }}</td>
+            <td>{{ result.Unitprice }}</td>
+            <td>{{ result.Currency }}</td>
+            <td>{{ result.Shipmentno }}</td>
+            <td>{{ result.Transportername }}</td>
+            <td>{{ result.Lrno }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-orange-outline-s mr-2"
+      (click)="modal.dismiss('Cross click')"
+    >
+      Cancel
+    </button>
+  </div>
+</ng-template>
+
+<!-- Delivery -->
+
+<ng-template #OrderDashboardDeliveryModel let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Delivery</h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <table class="table table-hover table-responsive table-sorting">
+      <thead class="thead-inverse">
+        <tr>
+          <th>Deliveryno</th>
+          <th>Deliveryitem</th>
+          <th>Delcreateddate</th>
+          <th>Materialno</th>
+          <th>Plant</th>
+          <th>Storagelocation</th>
+          <th>Batch</th>
+          <th>Deliveredqty</th>
+          <th>Salesunit</th>
+          <th>Materialdesc</th>
+          <th>Deliverystatus</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="deliveryData.length === 0">
+          <td colspan="14" style="text-align: center">No Records Found</td>
+        </tr>
+
+        <tr *ngFor="let result of deliveryData">
+          <td>{{ result.Deliveryno }}</td>
+          <td>{{ result.Deliveryitem }}</td>
+          <td>{{ result.Delcreateddate }}</td>
+          <td>{{ result.Materialno }}</td>
+          <td>{{ result.Plant }}</td>
+          <td>{{ result.Storagelocation }}</td>
+          <td>{{ result.Batch }}</td>
+          <td>{{ result.Deliveredqty }}</td>
+          <td>{{ result.Salesunit }}</td>
+          <td>{{ result.Materialdesc }}</td>
+          <td>{{ result.Deliverystatus }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-orange-outline-s mr-2"
+      (click)="modal.dismiss('Cross click')"
+    >
+      Cancel
+    </button>
+  </div>
+</ng-template>
+
+<!-- Cancellation -->
+<ng-template #CancelConfirmationModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">
+      Cancellation Confirmatiion
+    </h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <table class="table table-hover table-responsive table-sorting">
+      <tfoot></tfoot>
+      <thead class="thead-inverse">
+        <tr>
+          <th>Order No</th>
+          <th>Item Number</th>
+          <th>Cancellation Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let sr of selectedReasons">
+          <td>{{ sr.Salesorder }}</td>
+          <td>{{ sr.Salesitem }}</td>
+          <td>{{ sr.cancellationReason.reason }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-orange-outline-s mr-2"
+      (click)="modal.dismiss('Cross click')"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="btn btn-orange-s mr-2"
+      (click)="confirmDelete(); modal.dismiss('Cross click')"
+    >
+      Confirm Cancellation
+    </button>
+  </div>
+</ng-template>
+
+<!-- Approval History -->
+<ng-template #ApprovalHistoryModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">
+      Approval History of Order No - {{ soNumber }}, Item No - {{ itemNumber }}
+    </h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <table class="table table-hover table-responsive table-sorting">
+      <tfoot></tfoot>
+      <thead class="thead-inverse">
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Approver Level</th>
+          <th>Status</th>
+          <th>Comment</th>
+          <th>Creation Date</th>
+          <th>Updated Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ap of approverList">
+          <td>{{ ap.approver_name }}</td>
+          <td>{{ ap.approver_email }}</td>
+          <td>{{ ap.stage }}</td>
+          <td>{{ ap.approval_status }}</td>
+          <td>{{ ap.approval_comment }}</td>
+          <td>{{ ap.approval_creation_date | date }}</td>
+          <td>{{ ap.approval_updated_date | date }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-orange-outline-s mr-2"
+      (click)="modal.dismiss('Cross click')"
+    >
+      Close
+    </button>
+  </div>
+</ng-template>
+
+<!-- Completely processed -->
+<ng-template #CompletelyProcessed let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Sales Order Alert</h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>Sales order is already processed and cannot be cancelled.</p>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-orange-outline-s mr-2"
+      (click)="modal.dismiss('Cross click')"
+    >
+      Close
+    </button>
+  </div>
+</ng-template>

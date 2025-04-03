@@ -1,0 +1,124 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isExport]=true></app-list-sub-header>
+            <div class="col-12">
+                
+                    <div class="row">
+                        <app-appsearch class="col-12 col-xl-8 col-lg-8 col-md-6 col-sm-12"
+                            (callBack)="onSearch($event)"></app-appsearch>
+                    </div>
+                
+                <table class="table table-hover table-responsive">
+                    <thead class="thead-inverse">
+                        <tr>
+							<th (click)="headerClick($event)" id="role_code">Status</th>
+							<th (click)="headerClick($event)" id="order_number">Order Req. #</th>
+							<th (click)="headerClick($event)" id="order_req_number">Order#</th>
+							<th (click)="headerClick($event)" id="order_text">Order Text</th>
+							<th (click)="headerClick($event)" id="dealer">Dealer</th>
+							<th (click)="headerClick($event)" id="dealer_name">Name</th>
+							<th (click)="headerClick($event)" id="created_date">Creation Date</th>
+							<th (click)="headerClick($event)" id="netAmout">NetValue</th>
+							<th (click)="headerClick($event)" id="rec_appr">Rec/Appr</th>
+							<!-- <th (click)="headerClick($event)" id="role_source" [ngClass]="sortDirection">Source</th> -->
+							<!-- <th (click)="headerClick($event)" id="created_date">Created Date</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="ordersList == 0">
+                            <td colspan="4" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr>
+							<td>Pending For Approval</td>
+							<td><a href="#">20028365</a></td>
+							<td>&nbsp;</td>
+							<td>Domestic Quotation</td>
+							<td>181143</td>
+							<td>Siddhi Kabel Corporation Pvt. Ltd.</td>
+							<td>20.02.2020</td>
+							<td>39,802.60</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr>
+							<td>Pending For Approval</td>
+							<td><a href="#">20028366</a></td>
+							<td>&nbsp;</td>
+							<td>Domestic Quotation</td>
+							<td>181143</td>
+							<td>Siddhi Kabel Corporation Pvt. Ltd.</td>
+							<td>20.02.2020</td>
+							<td>39,802.60</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr>
+							<td>Pending For Approval</td>
+							<td><a href="#">20028367</a></td>
+							<td>&nbsp;</td>
+							<td>Domestic Quotation</td>
+							<td>181143</td>
+							<td>Siddhi Kabel Corporation Pvt. Ltd.</td>
+							<td>20.02.2020</td>
+							<td>39,802.60</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr>
+							<td>Pending For Approval</td>
+							<td><a href="#">20028368</a></td>
+							<td>&nbsp;</td>
+							<td>Domestic Quotation</td>
+							<td>181143</td>
+							<td>Siddhi Kabel Corporation Pvt. Ltd.</td>
+							<td>20.02.2020</td>
+							<td>39,802.60</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr>
+							<td>Pending For Approval</td>
+							<td><a href="#">20028364</a></td>
+							<td>&nbsp;</td>
+							<td>Domestic Quotation</td>
+							<td>181143</td>
+							<td>Siddhi Kabel Corporation Pvt. Ltd.</td>
+							<td>20.02.2020</td>
+							<td>39,802.60</td>
+							<td>&nbsp;</td>
+						</tr>
+                    </tbody>
+                </table>
+				<label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                      <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                      <ng-template #elseFirst>
+                        <a (click)="setPage(1)">First</a>
+                      </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                      <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                      <ng-template #elsePrevious>
+                        <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                      </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                      <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                      <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                      <ng-template #elseNext>
+                        <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                      </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                      <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                      <ng-template #elseLast>
+                        <a (click)="setPage(pager.totalPages)">Last</a>
+                      </ng-template>
+                    </li>
+                  </ul>  
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,99 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header></app-list-sub-header>
+            <div class="col-12">
+                
+                    <div class="row">
+                        <app-appsearch [model]="searchModel" class="col-12 col-xl-8 col-lg-8 col-md-6 col-sm-12"
+                            (callBack)="onSearch($event)"></app-appsearch>
+                
+                </div>
+                <table class="table table-hover table-responsive table-sorting" id="table-additionalcharges">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th></th>
+                            <th style="display: none;"></th>
+                            <th (click)="headerClick($event)" id="offernumber">Offer No</th>
+                            <th (click)="headerClick($event)" id="lappopportunityid">LAPP Opportunity ID</th>
+                            <th (click)="headerClick($event)" id="OI.articleno">Artical No.</th>
+                            <th (click)="headerClick($event)" id="OI.description">Description</th>
+                            <th (click)="headerClick($event)" id="OI.validfrom">Valid From</th>
+                            <th (click)="headerClick($event)" id="OI.validto">Valid To</th>
+                            <th (click)="headerClick($event)" id="OI.status">Status</th>
+                            <th (click)="headerClick($event)" id="OI.actionrequired">Action Required</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="asmactionlist.length == 0">
+                            <td colspan="11" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let pe of asmactionlist">
+                            <!-- (dblclick)="onRowDoubleClick(pe.id)" -->
+                            <td>
+                                <button class="btn btn-link p-0 mr-3" *ngIf="pe.IsActive == 0 || pe.status >= 20"
+                                    (click)="viewClicked(pe.id)"><img class="table-icon"
+                                        src="../../../../../assets/images/icon-view.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" *ngIf="pe.IsActive == 1 && pe.status < 20"
+                                    (click)="editClicked(pe.id)"><img class="table-icon"
+                                        src="../../../../../assets/images/icon-edit.svg"></button>
+                            </td>
+                            <td><span class="dot green" *ngIf="pe.IsActive == 1"></span><span class="dot red"
+                                    *ngIf="pe.IsActive == 0"></span></td>
+                            <td style="display: none;">{{pe.id}}</td>
+                            <td>{{pe.offernumber}}</td>
+                            <td>{{pe.lappopportunityid}}</td>
+                            <td>{{pe.articleno}}</td>
+                            <td>{{pe.description}}</td>
+                            <td>{{pe.validfrom | date:dateformate}}</td>
+                            <td>{{pe.validto | date:dateformate}}</td>
+                            <td>{{pe.showstatus}}</td>
+                            <td>{{pe.actionrequired}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="width: 100%;">
+                    <div style=" float: left;">
+                        <span class="dot green"></span> Active | <span class="dot red"></span> Inactive or Expired
+                    </div>
+                    <div style=" float:right;">
+                        <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                        <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                                <ng-template #elseFirst>
+                                    <a (click)="setPage(1)">First</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                                <ng-template #elsePrevious>
+                                    <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                                </ng-template>
+                            </li>
+                            <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                                <a (click)="setPage(page)">{{page}}</a>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                                <ng-template #elseNext>
+                                    <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                                </ng-template>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                                <ng-template #elseLast>
+                                    <a (click)="setPage(pager.totalPages)">Last</a>
+                                </ng-template>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

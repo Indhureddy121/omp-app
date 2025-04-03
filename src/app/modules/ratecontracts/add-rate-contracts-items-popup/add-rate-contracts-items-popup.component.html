@@ -1,0 +1,226 @@
+<div class="modal-header" *ngIf="isEditSection('headersection')">
+    <h4 class="modal-title" id="modal-basic-title">Add/Edit Item</h4>
+    <button type="button" class="close" aria-label="Close" (click)="close()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-header" *ngIf="!isEditSection('headersection')">
+    <h4 class="modal-title" id="modal-basic-title">View Item</h4>
+    <button type="button" class="close" aria-label="Close" (click)="close()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form [formGroup]="ItemForm" enctype="multipart/form-data" method="POST">
+        <div class="row" *ngIf="!itemforEdit && !isEditSection('headersection')">
+            <div class="col-md-12">
+                <div class="w-50 float-left mr-3" style="margin: -15px 0px -15px 0px;">
+                    <app-itemsearch class="col-12 col-xl-8 col-lg-8 col-md-6 col-sm-12"
+                        (callBack)="onItemSearch($event)" #itemSearch>
+                    </app-itemsearch>
+                </div>
+                <div class="w-30">
+                    <button *ngIf="articleNo" class="btn btn-link p-0"
+                        (click)="onSelectProductClearClick(true)">Clear</button>
+                    <button *ngIf="!articleNo" class="btn btn-link p-0"
+                        (click)="onSearchProductClick(itemSearch)">Search Product</button>
+                </div>
+            </div>
+            <div *ngIf="!isItemReady" class="col-12 redtext">
+                {{itemErrorMessage}}
+            </div>
+            <!-- <div>
+                  <button class="btn btn-link p-0" (click)="onsendEmailClick()">Send mail</button>
+              </div> -->
+        </div>
+        <div class="row" *ngIf="itemforEdit || isEditSection('headersection')">
+            <div class="col-md-12">
+                <div class="w-50 float-left mr-3">
+                    <label for="articleno">Article No</label>
+                    <div class="gridSearchBox">
+                        <input type="text" class="form-control" formControlName="articleno" class="gridSearchInput"
+                            (keydown.Tab)="onItemSearch($event,true)" (keydown.Enter)="onItemSearch($event,true)"
+                            maxlength="100" #itemSearch2>
+                        <div *ngIf="submitted && itemForm.articleno.errors" class="invalid-feedback">
+                            <div *ngIf="itemForm.articleno.errors.required">
+                                Article No is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-30">
+                    <button type="button" *ngIf="articleNo" class="btn btn-link p-0"
+                        (click)="onSelectProductClearClick(true)">Clear</button>
+                    <button type="button" *ngIf="!articleNo" class="btn btn-link p-0"
+                        (click)="onSearchProductByFormClick(itemSearch2)">Search Product</button>
+                </div>
+            </div>
+            <div *ngIf="!isItemReady" class="col-12 redtext">
+                {{itemErrorMessage}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-xl-10 col-lg-10 col-md-10 col-sm-12">
+                <div class="row form-group">
+                    <!-- <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12 p-0" *ngIf="showpclength">
+                          <label for="stdItemUOM">UOM</label>
+                          <div class="row">
+                              <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 pr-0">
+                                  <input type="text" class="form-control" formControlName="stdItemUOM"
+                                      [attr.disabled]=true>
+                              </div>
+                              <div class="col-12 col-xl-9 col-lg-9 col-md-9 col-sm-12 pl-2">
+                                  <input type="text" class="form-control" formControlName="stdItemPCLength"
+                                      [attr.disabled]=true>
+                              </div>
+                          </div>
+                      </div> -->
+                    <!-- *ngIf="!showpclength" -->
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <label for="uom">UOM</label>
+                        <input type="text" class="form-control" formControlName="uom" [attr.disabled]=true>
+                    </div>
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <label for="itemtype">Type</label>
+                        <input type="text" class="form-control" formControlName="itemtype" [attr.disabled]=true>
+                    </div>
+                    <!-- <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <label for="ItemMOQ">MOQ</label>
+                        <input type="text" class="form-control" formControlName="ItemMOQ" [attr.disabled]=true>
+                    </div> -->
+                    <div class="col-12 col-xl-2 col-lg-2 col-md-2 col-sm-12" *ngIf="LMEBased">
+                        <div class="form-group">
+                            <label for="price">List Price</label>
+                            <input type="text" class="form-control" formControlName="price" [attr.disabled]=true>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-4">
+                <div class="form-group">
+                    <label for="quantity" class="required">Quantity</label>
+                    <input class="form-control" type="text" formControlName="quantity" [OnlyNumber]=true
+                        [attr.disabled]="!isEditSection('headersection') || rcType === 10 ? '' : null"
+                        [ngClass]="{ 'is-invalid': submitted && itemForm.quantity.errors }">
+                    <div *ngIf="submitted && itemForm.quantity.errors" class="invalid-feedback">
+                        <div *ngIf="itemForm.quantity.errors.required">
+                            Quantity is Required!
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-4">
+                <div class="form-group">
+                    <label class="required" for="discount">Discount(%)</label>
+                    <input class="form-control" type="text" formControlName="discount" numericwithdecimalminus
+                        [attr.disabled]="ALPBased || !isEditSection('headersection') ? '' : null" decimals="2"
+                        beforedecimals="2" (change)="discountchange()"
+                        [ngClass]="{ 'is-invalid': submitted && itemForm.discount.errors }">
+                    <div *ngIf="submitted && itemForm.discount.errors" class="numberValidation">
+                        <div *ngIf="itemForm.discount.errors.required">
+                            Discount is Required!
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-4">
+                <div class="form-group">
+                    <label for="unitprice" class="required">Unit Price</label>
+                    <input class="form-control" type="text" formControlName="unitprice"
+                        [attr.disabled]="!ALPBased || !isEditSection('headersection') ? '' : null" numericwithdecimal
+                        decimals="4" beforedecimals="18" (change)="onItemUnitnetPriceChange()"
+                        [ngClass]="{ 'is-invalid': submitted && itemForm.unitprice.errors }">
+                    <div *ngIf="submitted && itemForm.unitprice.errors" class="invalid-feedback">
+                        <div *ngIf="itemForm.unitprice.errors.required">
+                            Unit Price is Required!
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-4">
+                <div class="form-group">
+                    <label for="unique_doc_number" class="required">Unique Doc Number</label>
+                    <input class="form-control" type="text"
+                        [attr.disabled]="!isEditSection('headersection') ? '' : null"
+                        formControlName="unique_doc_number"
+                        [ngClass]="{ 'is-invalid': submitted && itemForm.unique_doc_number.errors }">
+                    <div *ngIf="submitted && itemForm.unique_doc_number.errors" class="invalid-feedback">
+                        <div *ngIf="itemForm.unique_doc_number.errors.required">
+                            Unique Doc Number is Required!
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12 mt-4">
+                <div class="form-group">
+                    <label for="customerpartno" class="required">Customer Part No.</label>
+                    <input class="form-control" type="text"
+                        [attr.disabled]="!isEditSection('headersection') ? '' : null" formControlName="customerpartno"
+                        maxlength="35" [ngClass]="{ 'is-invalid': submitted && itemForm.customerpartno.errors }">
+                    <div *ngIf="submitted && itemForm.customerpartno.errors" class="numberValidation">
+                        <div *ngIf="itemForm.customerpartno.errors.required">
+                            Cutomer Part No is Required!
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+        <div class="row">
+            <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                <div class="form-group">
+                    <label class="required">Valid From</label>
+                    <div class="input-group" [ngClass]="{ 'is-invalid': submitted && itemForm.validfrom.errors }">
+                        <input class="form-control doc-date" formcontrolname="validfrom"
+                            [attr.disabled]="!isEditSection('headersection')" ngbDatepicker #validfrom="ngbDatepicker"
+                            [value]="formatter.format(offervalidfromDate)" readonly [minDate]="offerValidMindate"
+                            [maxDate]="offerValidMaxdate" (dateSelect)="onOffValidFromDateSelection($event)"
+                            [ngClass]="{ 'is-invalid': submitted && itemForm.validfrom.errors }" />
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary calendar" (click)="validfrom.toggle()"
+                                type="button"></button>
+                        </div>
+                    </div>
+                    <div *ngIf="submitted && itemForm.validfrom.errors" class="invalid-feedback">
+                        <div *ngIf="itemForm.validfrom.errors.required">
+                            Valid From is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                <div class="form-group">
+                    <label class="required">Valid To</label>
+                    <!-- [maxDate]="offerValidMaxdate" -->
+                    <div class="input-group" [ngClass]="{ 'is-invalid': submitted && itemForm.validto.errors }">
+                        <input class="form-control doc-date" formcontrolname="validto" ngbDatepicker
+                            #validto="ngbDatepicker" [value]="formatter.format(offervalidtoDate)"
+                            [ngClass]="{ 'is-invalid': submitted && itemForm.validto.errors }"
+                            (dateSelect)="onOffValidToDateSelection($event)" [readonly]="isEditSection('headersection')"
+                            [minDate]="offerValidMindate" [maxDate]="offerValidMaxdate" />
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary calendar" (click)="validto.toggle()"
+                                type="button"></button>
+                        </div>
+                    </div>
+                    <div *ngIf="submitted && itemForm.validto.errors" class="invalid-feedback">
+                        <div *ngIf="itemForm.validto.errors.required">
+                            Valid To is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-orange-outline-s mr-2" (click)="close()">Cancel</button>
+    <button type="button" class="btn btn-orange-s" (click)="onItemSaveClick()">Save</button>
+</div>
+
+<ng-template #ProductSearchModel let-modal>
+    <app-product-master-popup (selectProductClick)="onSelectProductClick($event)" (closePopup)="closeModal()">
+    </app-product-master-popup>
+</ng-template>

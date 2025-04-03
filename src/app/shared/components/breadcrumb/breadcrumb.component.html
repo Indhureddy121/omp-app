@@ -1,0 +1,28 @@
+<!-- breadcrumb -->
+<!-- <div class="">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item" *ngFor="let item of breadcrumbs; let i = index"
+      [class.active]="i===breadcrumbs.length-1">
+      <a [routerLink]="item.path" *ngIf="i!==breadcrumbs.length-1">
+        {{ item.label }}
+      </a>
+      <span *ngIf="i===breadcrumbs.length-1">{{ item.label }}</span>
+    </li>
+  </ol>
+</div> -->
+<!--
+  <div class="">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#" >Sub Module</a></li>
+        <li class="breadcrumb-item">Page or Activity Name</li>
+      </ol>
+    </div> -->
+<div class="">
+  <ol class="breadcrumb">
+   <li><a class="breadcrumb-item mr-10px" [routerLink]="['/home']"><img src="/assets/images/icon_home.svg" class="v-align-text-top"/> </a></li> 
+    <li class="breadcrumb-item" *ngFor="let breadcrumb of breadcrumbs">
+      <span>{{breadcrumb.label}}</span>
+    </li>
+  </ol>
+</div>
+<!-- [routerLink]="[breadcrumb.url, breadcrumb.params]" -->

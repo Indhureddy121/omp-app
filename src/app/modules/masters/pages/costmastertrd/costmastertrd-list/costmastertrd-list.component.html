@@ -1,0 +1,377 @@
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <app-list-sub-header [isUpload]="!viewOnly" [isExport]=true [isHistory]="!viewOnly" [isAdd]="!viewOnly" [isDownload]=true
+                (historyClicked)="getLog()" (uploadClicked)="open(content)" (exportClicked)="onExport()" (downloadClicked)="getDownload()"
+                (addClicked)="OpenAddEditCostMasterPopup(undefined)" [isSAPRefresh]="canSAPCostTrdRefresh" (saprefreshClicked)="onSAPRefreshClick()" >
+            </app-list-sub-header>
+
+            <div class="col-12">
+                
+                    <div class="row">
+                        <div class="col-12  col-md-8 col-sm-12">
+                            <app-appsearch [model]="searchModel" (callBack)="onSearch($event)"></app-appsearch>
+                        </div>
+                
+                </div>
+                <table style="display: block;overflow-x: auto;" class="table table-hover table-responsive table-sorting"
+                    id="table-rmcostmaster">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Action</th>
+                            <th (click)="headerClick($event)" id="CT.articleno">Article No</th>
+                            <th (click)="headerClick($event)" id="P.description">Description</th>
+                            <th (click)="headerClick($event)" id="primaryplant">Primary Plant</th>
+                            <th (click)="headerClick($event)" id="currency">Currency</th>
+                            <th class="text-right" (click)="headerClick($event)" id="landingcost">
+                                Landing Cost (INR/m)
+                            </th>
+                            <th class="text-right" (click)="headerClick($event)" id="copperindex">
+                                Copper Index (Kg/Km)
+                            </th>
+                            <th class="text-right" (click)="headerClick($event)" id="cubase">CU Base</th>
+                            <th class="text-right" (click)="headerClick($event)" id="transferprice">Transfer
+                                Price</th>
+                            <th (click)="headerClick($event)" id="moq">MOQ</th>
+                            <th (click)="headerClick($event)" id="CT.validfrom">Valid From</th>
+                            <th (click)="headerClick($event)" id="CT.validto">Valid To</th>
+                            <th class="text-right" (click)="headerClick($event)" id="adjustment_c">
+                                Adjustment(C)</th>
+                            <th class="text-right" (click)="headerClick($event)" id="adjustmentfullcu_c">
+                                Adjustment Full CU(C)</th>
+                            <th class="text-right" (click)="headerClick($event)" id="landingcost_c">Landing Cost(C)
+                            </th>
+                            <th class="text-right" (click)="headerClick($event)" id="finalcost_c">
+                                Final Cost(C)</th>
+                            <th class="text-right" (click)="headerClick($event)" id="CT.alp_c">ALP(C)</th>
+                            <th class="text-right" (click)="headerClick($event)" id="finalcost_c">
+                                Final Cost(C)(INR)</th>
+                            <th class="text-right" (click)="headerClick($event)" id="CT.alp_c">ALP(C)(INR)</th>
+                            <th class="text-right" (click)="headerClick($event)" id="M.gm">T. Margin</th>
+                            <th (click)="headerClick($event)" id="CT.ErrorMessage">Error Message
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="rmcostmasterlist.length === 0">
+                            <td colspan="19" style="text-align: center;">
+                                No Records Found
+                            </td>
+                        </tr>
+                        <tr *ngFor="let cm of rmcostmasterlist">
+                            <td *ngIf="!viewOnly && cm.managefrom == 0">
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenAddEditCostMasterPopup(cm.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenDeletePopup(cm.id)"><img
+                                        class="table-icon" src="../../../../../assets/images/icon-delete.svg"></button>
+                            </td>
+                            <td *ngIf="!viewOnly  && cm.managefrom == 10">
+                                <button class="btn btn-link p-0 mr-3" (click)="OpenOmpManageAddEditCostMasterPopup(cm.id)"><img
+                                    class="table-icon" src="../../../../../assets/images/icon-edit.svg"></button>
+                            </td>
+                            
+                            <td *ngIf="viewOnly"></td>
+                            <td>{{cm.articleno}}</td>
+                            <td>{{cm.description}}</td>
+                            <td>{{cm.primaryplant}}</td>
+                            <td>{{cm.currency}}</td>
+                            <td class="text-right">{{cm.landingcost}}</td>
+                            <td class="text-right">{{cm.copperindex}}</td>
+                            <td class="text-right">{{cm.cubase}}</td>
+                            <td class="text-right">{{cm.transferprice}}</td>
+                            <td class="text-right">{{cm.moq}}</td>
+                            <td>{{cm.validfrom | date: dateformate}}</td>
+                            <td>{{cm.validto | date: dateformate}}</td>
+                            <td class="text-right">{{cm.adjustment_c}}</td>
+                            <td class="text-right">{{cm.adjustmentfullcu_c}}</td>
+                            <td class="text-right">{{cm.landingcost_c}}</td>
+                            <td class="text-right">{{cm.finalcost_c}}</td>
+                            <td class="text-right">{{cm.alp_c}}</td>
+                            <td class="text-right">{{cm.finalcost_c_inr}}</td>
+                            <td class="text-right">{{cm.alp_c_inr}}</td>
+                            <td class="text-right">{{cm.gm}}</td>
+                            <td *ngIf="cm.ErrorMessage_alp">{{cm.ErrorMessage}} / {{cm.ErrorMessage_alp}}</td>
+                            <td *ngIf="!cm.ErrorMessage_alp">{{cm.ErrorMessage}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <label class="list-totalrecords">Total Records: {{totalRows}}</label>
+                <ul *ngIf="pager.pages && pager.pages.length && totalRows > pageSize" class="pagination">
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elseFirst"> First</a>
+                        <ng-template #elseFirst>
+                            <a (click)="setPage(1)">First</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === 1}">
+                        <a *ngIf="pager.currentPage === 1; else elsePrevious"> Previous</a>
+                        <ng-template #elsePrevious>
+                            <a (click)="setPage(pager.currentPage - 1)"> Previous</a>
+                        </ng-template>
+                    </li>
+                    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                        <a (click)="setPage(page)">{{page}}</a>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseNext">Next</a>
+                        <ng-template #elseNext>
+                            <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                        </ng-template>
+                    </li>
+                    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                        <a *ngIf="pager.currentPage === pager.totalPages; else elseLast">Last</a>
+                        <ng-template #elseLast>
+                            <a (click)="setPage(pager.totalPages)">Last</a>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Cost Master TRD</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="!isShowDownload">
+            <form [formGroup]="importmodel" enctype="multipart/form-data" method="POST">
+                <div class="form-group" (ngSubmit)="uploadFile($event)">
+                    <input type="file" id="importFile" (change)="uploadedFile($event)" #fileInput
+                        accept=".xlsx, .xls" />
+                </div>
+            </form>
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link px-1"
+                    (click)="downloadSample()">here</button> to download sample file.</p>
+        </div>
+
+        <div *ngIf="isShowDownload">
+            <fieldset class="custom-fieldset">
+                <p class="pl-2 pt-2">Data has been imported successfully.</p>
+            </fieldset>
+            <p class="pl-2 pt-2">Click <button type="link" class="btn-link button-link"
+                    (click)="exportfiles(savedResult.status_file_name)">here</button> to download status.</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="!isShowDownload">
+            <button type="button" class="btn btn-orange-outline-s mr-2"
+                (click)="modal.dismiss('Cross click')">Cancel</button>
+            <button type="button" class="btn btn-orange-s" (click)="onSave()">Save</button>
+        </div>
+        <div *ngIf="isShowDownload">
+            <button type="button" class="btn btn-orange-s" (click)="onDismiss()">Ok</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #DeleteConfirmationModal let-modal>
+    <app-delete-confirmation [model]="deleteConfirmModel" (ondelete)="onProductMasterDelete($event)"
+        (onclose)="modal.dismiss('no click')">
+    </app-delete-confirmation>
+</ng-template>
+
+<ng-template #AddEditItemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit Cost Master TRD</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="CostMasterForm">
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="articleno" class="required">Article Number</label>
+                        <input type="text" class="form-control" formControlName="articleno"
+                            [ngClass]="{ 'is-invalid': submitted && costMasterForm.articleno.errors }">
+                        <div *ngIf="submitted && costMasterForm.articleno.errors" class="invalid-feedback">
+                            <div *ngIf="costMasterForm.articleno.errors.required">
+                                Please Enter Article Number
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="primaryplant" class="required">Primary Plant</label>
+                        <input type="text" class="form-control" formControlName="primaryplant"
+                            [ngClass]="{ 'is-invalid': submitted && costMasterForm.primaryplant.errors }">
+                        <div *ngIf="submitted && costMasterForm.primaryplant.errors" class="invalid-feedback">
+                            <div *ngIf="costMasterForm.primaryplant.errors.required">
+                                Please Enter Primary Plant
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <ng-select [items]="currencyTypeList" class="form-control" formControlName="currency"
+                            bindLabel="description" bindValue="code" placeholder="Please select"
+                            [ngClass]="{ 'is-invalid': submitted && costMasterForm.currency.errors }">
+                        </ng-select>
+                        <div *ngIf="submitted && costMasterForm.currency.errors" class="invalid-feedback">
+                            <div *ngIf="costMasterForm.currency.errors.required">
+                                Currency is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="landingcost">Landing Cost</label>
+                        <input type="text" class="form-control" formControlName="landingcost" numericwithdecimal
+                            decimals="4" beforedecimals="18">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="copperindex">Copper Index</label>
+                        <input type="text" class="form-control" formControlName="copperindex" numericwithdecimal
+                            decimals="4" beforedecimals="18">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="cubase">CU Base</label>
+                        <input type="text" class="form-control" formControlName="cubase" numericwithdecimal decimals="4"
+                            beforedecimals="18">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="transferprice">Transfer Price</label>
+                        <input type="text" class="form-control" formControlName="transferprice" numericwithdecimal
+                            decimals="4" beforedecimals="18">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="moq" class="required">MOQ</label>
+                        <input type="text" class="form-control" formControlName="moq" [OnlyNumber]=true maxlength="8"
+                            [ngClass]="{ 'is-invalid': submitted && (costMasterForm.moq.errors || costMasterForm.moq.value <= 0) }">
+                        <div *ngIf="submitted && costMasterForm.moq.errors" class="invalid-feedback">
+                            <div *ngIf="costMasterForm.moq.errors.required">
+                                MOQ is required
+                            </div>
+                        </div>
+                        <div *ngIf="submitted && costMasterForm.moq.value <= 0 && !costMasterForm.moq.errors"
+                            class="invalid-feedback">
+                            <div *ngIf="costMasterForm.moq.value <= 0">
+                                MOQ must be greater than 0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label>Valid From</label>
+                        <div class="input-group">
+                            <input class="form-control doc-date" formcontrolname="validfrom" ngbDatepicker
+                                #Validfrom="ngbDatepicker" [value]="formatter.format(validfromDate)"
+                                (dateSelect)="onValidFromDateSelection($event)" readonly [minDate]="todayMinDate" />
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary calendar" (click)="Validfrom.toggle()"
+                                    type="button"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label>Valid To</label>
+                        <div class="input-group">
+                            <input class="form-control doc-date" formcontrolname="validto" ngbDatepicker
+                                #ValidTo="ngbDatepicker" [value]="formatter.format(validtoDate)"
+                                (dateSelect)="onValidToDateSelection($event)" readonly [minDate]="ValidMindate" />
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary calendar" (click)="ValidTo.toggle()"
+                                    type="button"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onCostSaveClick()">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #OmpManageAddEditItemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add/Edit Cost Master MFG</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="OmpManageCostMasterForm">
+            <div class="row">
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="om_articleno" class="required">Article Number</label>
+                        <input type="text" class="form-control" formControlName="om_articleno" readonly>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="om_primaryplant" class="required">Primary Plant</label>
+                        <input type="text" class="form-control" formControlName="om_primaryplant"
+                            [ngClass]="{ 'is-invalid': submitted && ompManageCostMasterForm.om_primaryplant.errors }">
+                        <div *ngIf="submitted && ompManageCostMasterForm.om_primaryplant.errors" class="invalid-feedback">
+                            <div *ngIf="ompManageCostMasterForm.om_primaryplant.errors.required">
+                                Primary Plant is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <label for="om_moq" class="required">MOQ</label>
+                        <input type="text" class="form-control" formControlName="om_moq" [OnlyNumber]=true maxlength="8"
+                            [ngClass]="{ 'is-invalid': submitted && (ompManageCostMasterForm.om_moq.errors || ompManageCostMasterForm.om_moq.value <= 0) }">
+                        <div *ngIf="submitted && ompManageCostMasterForm.om_moq.errors" class="invalid-feedback">
+                            <div *ngIf="ompManageCostMasterForm.om_moq.errors.required">
+                                MOQ is required
+                            </div>
+                        </div>
+                        <div *ngIf="submitted && ompManageCostMasterForm.om_moq.value <= 0 && !ompManageCostMasterForm.om_moq.errors"
+                            class="invalid-feedback">
+                            <div *ngIf="ompManageCostMasterForm.om_moq.value <= 0">
+                                MOQ must be greater than 0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12" style="padding-top: 3%;">
+                    <b>Note: </b> Cost and Validity would be manage from SAP. 
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-orange-outline-s mr-2"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn btn-orange-s" (click)="onOmpManageCostSaveClick()">Save</button>
+    </div>
+</ng-template>
