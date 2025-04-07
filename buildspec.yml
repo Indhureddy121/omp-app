@@ -1,0 +1,34 @@
+version: 0.2
+
+env:
+  variables:
+    S3_BUCKET: omp-angular-bucket        
+    BUILD_FOLDER: dist/OMP
+    CACHE_CONTROL: "86400"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+    commands:
+      - echo Installing Angular 8 CLI...
+      - npm install -g @angular/cli@8.3.21
+      - echo Installing NPM dependencies...
+      - npm ci
+
+  build:
+    commands:
+      - echo Building Angular app...
+      - ng build --prod
+
+  post_build:
+    commands:
+      - echo Uploading to S3...
+      - aws s3 sync $BUILD_FOLDER s3://$S3_BUCKET/ --delete --cache-control "max-age=$CACHE_CONTROL"
+      - echo ✅ Deployment to S3 completed!
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: dist/OMP
+  discard-paths: yes
