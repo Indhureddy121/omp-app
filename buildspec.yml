@@ -19,7 +19,7 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Uploading to S3...
-      - aws s3 sync dist/OMP s3://YOUR_S3_BUCKET_NAME --delete
+      - aws s3 sync dist/OMP s3://omp-angular-bucket --delete
       - echo Invalidate CloudFront cache (if using CloudFront)...
 
 artifacts:
